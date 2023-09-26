@@ -11,3 +11,7 @@ end_of_line = crlf
 
 [*.sh]
 end_of_line = lf
+
+[*.{tf,sh}]
+indent_style = space
+indent_size = 4
