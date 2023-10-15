@@ -86,6 +86,10 @@ variable "repository" {
             name = "vagrant-ssh-config"
             description = "A vagrant plugin that automatically creates ssh configs for vms"
         }
+        vitest-link-reproduction = {
+            name = "vitest-link-reproduction"
+            description = "This project demonstrates an issue where vitest runs fail when a dependency is included via a link"
+        }
         wait-for-ports = {
             name = "wait-for-ports"
             description = "A command-line utility that waits until a port is open"

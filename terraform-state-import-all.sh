@@ -23,6 +23,7 @@ sh terraform-state-import-repository.sh rss-to-mail
 sh terraform-state-import-repository.sh sci-fi-movies
 sh terraform-state-import-repository.sh testcontainers-colima-github-actions
 sh terraform-state-import-repository.sh vagrant-ssh-config
+sh terraform-state-import-repository.sh vitest-link-reproduction
 sh terraform-state-import-repository.sh wait-for-ports
 sh terraform-state-import-repository.sh webapp-classloader-test
 sh terraform-state-import-repository.sh website-janitor
