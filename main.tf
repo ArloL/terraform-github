@@ -11,4 +11,6 @@ module "repository" {
     description = each.value.description
     main_branch = lookup(each.value, "main_branch", "main")
     homepage = lookup(each.value, "homepage", null)
+    pages_build_type = lookup(each.value, "pages_build_type", null)
+    pages_source_branch = lookup(each.value, "pages_source_branch", null)
 }

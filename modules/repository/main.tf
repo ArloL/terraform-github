@@ -12,10 +12,15 @@ resource "github_repository" "repository" {
     has_wiki = true
     vulnerability_alerts = true
 
-    lifecycle {
-        ignore_changes = [
-            pages
-        ]
+    dynamic "pages" {
+        for_each = var.pages_build_type == null ? [] : [1]
+        content {
+            build_type = var.pages_build_type
+            source {
+                branch = var.pages_source_branch
+                path   = "/"
+            }
+        }
     }
 }
 

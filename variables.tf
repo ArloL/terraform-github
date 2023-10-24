@@ -7,15 +7,21 @@ variable "repository" {
             description = "Mum's website for Abenteuer Irland"
             main_branch = "gh-pages"
             homepage = "https://arlol.github.io/abenteuer-irland/"
+            pages_build_type = "legacy"
+            pages_source_branch = "gh-pages"
         }
         "arlol.github.io" = {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
+            pages_build_type = "legacy"
+            pages_source_branch = "main"
         }
         business-english = {
             name = "business-english"
             description = "Mum's website for Business English"
             main_branch = "gh-pages"
+            pages_build_type = "legacy"
+            pages_source_branch = "gh-pages"
         }
         chorito = {
             name = "chorito"
@@ -33,6 +39,8 @@ variable "repository" {
             name = "eclipse-projects"
             description = "Arlo's project catalog for the Eclipse Installer"
             homepage = "https://arlol.github.io/eclipse-projects/"
+            pages_build_type = "workflow"
+            pages_source_branch = "main"
         }
         gitfx = {
             name = "gitfx"
