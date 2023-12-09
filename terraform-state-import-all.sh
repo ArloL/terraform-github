@@ -21,6 +21,7 @@ sh terraform-state-import-repository.sh postgres-sync-demo
 sh terraform-state-import-repository.sh python-nc
 sh terraform-state-import-repository.sh rss-to-mail
 sh terraform-state-import-repository.sh sci-fi-movies
+sh terraform-state-import-repository.sh terraform-github
 sh terraform-state-import-repository.sh testcontainers-colima-github-actions
 sh terraform-state-import-repository.sh vagrant-ssh-config
 sh terraform-state-import-repository.sh vitest-link-reproduction

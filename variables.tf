@@ -86,6 +86,10 @@ variable "repository" {
             name = "sci-fi-movies"
             description = "an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
         }
+        terraform-github = {
+            name = "terraform-github"
+            description = "A project to manage github settings with terraform"
+        }
         testcontainers-colima-github-actions = {
             name = "testcontainers-colima-github-actions"
             description = "A demo project of running testcontainers with colima on GitHub Actions"
