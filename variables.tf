@@ -86,6 +86,10 @@ variable "repository" {
             name = "sci-fi-movies"
             description = "an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
         }
+        self-hosted-gh-actions-runner = {
+            name = "self-hosted-gh-actions-runner"
+            description = "An experiment to test docker-based builds inside a GitHub Actions Runner that is a running container itself"
+        }
         terraform-github = {
             name = "terraform-github"
             description = "A project to manage github settings with terraform"
