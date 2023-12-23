@@ -10,6 +10,7 @@ sh terraform-state-import-repository.sh chorito
 sh terraform-state-import-repository.sh corporate-python
 sh terraform-state-import-repository.sh dotfiles
 sh terraform-state-import-repository.sh eclipse-projects
+sh terraform-state-import-repository.sh git-dora-lead-time-calculator
 sh terraform-state-import-repository.sh gitfx
 sh terraform-state-import-repository.sh homebrew-tap
 sh terraform-state-import-repository.sh menubar-scripts
