@@ -13,7 +13,7 @@ variable "repository" {
         "arlol.github.io" = {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
-            pages_build_type = "legacy"
+            pages_build_type = "workflow"
             pages_source_branch = "main"
         }
         business-english = {
