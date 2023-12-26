@@ -42,6 +42,10 @@ variable "repository" {
             pages_build_type = "workflow"
             pages_source_branch = "main"
         }
+        effortful-retrieval-questions = {
+            name = "effortful-retrieval-questions"
+            description = "A collection of effortful retrieval questions of a number of articles I've read"
+        }
         git-dora-lead-time-calculator = {
             name = "git-dora-lead-time-calculator"
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
