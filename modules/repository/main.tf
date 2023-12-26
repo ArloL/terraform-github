@@ -36,3 +36,8 @@ resource "github_branch_protection" "default" {
     force_push_bypassers = []
     push_restrictions = []
 }
+
+resource "github_repository_dependabot_security_updates" "security_updates" {
+    repository  = github_repository.repository.id
+    enabled     = true
+}
