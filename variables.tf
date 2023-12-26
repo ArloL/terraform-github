@@ -58,6 +58,10 @@ variable "repository" {
             name = "gitfx"
             description = "A simple git client with Java 11+, JavaFX 15+ and GraalVM"
         }
+        graalfx = {
+            name = "graalfx"
+            description = "A simple desktop app with JavaFX and GraalVM"
+        }
         homebrew-tap = {
             name = "homebrew-tap"
             description = "A homebrew tap for my own formulas and casks"
