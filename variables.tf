@@ -50,6 +50,10 @@ variable "repository" {
             name = "git-dora-lead-time-calculator"
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
         }
+        git-presentation-2018-10 = {
+            name = "git-presentation-2018-10"
+            description = "Git Präsentation für Vorlesung Industrielle Softwareentwicklung"
+        }
         gitfx = {
             name = "gitfx"
             description = "A simple git client with Java 11+, JavaFX 15+ and GraalVM"
