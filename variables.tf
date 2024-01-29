@@ -23,6 +23,10 @@ variable "repository" {
             pages_build_type = "legacy"
             pages_source_branch = "gh-pages"
         }
+        calver-tag-action = {
+            name = "calver-tag-action"
+            description = "A GitHub Actions action that creates a new version using a CalVer-style derivative and pushes it"
+        }
         chorito = {
             name = "chorito"
             description = "A tool that does some chores in your source code"
