@@ -3,9 +3,9 @@
 set -o nounset
 set -o xtrace
 
-sh terraform-state-import-repository.sh abenteuer-irland gh-pages
-sh terraform-state-import-repository.sh arlol.github.io gh-pages
-sh terraform-state-import-repository.sh business-english gh-pages
+sh terraform-state-import-repository.sh abenteuer-irland
+sh terraform-state-import-repository.sh arlol.github.io
+sh terraform-state-import-repository.sh business-english
 sh terraform-state-import-repository.sh calver-tag-action
 sh terraform-state-import-repository.sh chorito
 sh terraform-state-import-repository.sh corporate-python
