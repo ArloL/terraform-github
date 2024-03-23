@@ -22,8 +22,3 @@ variable "pages_build_type" {
     description = "GitHub pages build type"
     type = string
 }
-
-variable "pages_source_branch" {
-    description = "GitHub pages source branch"
-    type = string
-}

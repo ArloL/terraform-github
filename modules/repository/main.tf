@@ -17,7 +17,7 @@ resource "github_repository" "repository" {
         content {
             build_type = var.pages_build_type
             source {
-                branch = var.pages_source_branch
+                branch = "main"
                 path   = "/"
             }
         }

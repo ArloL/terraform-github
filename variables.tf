@@ -7,19 +7,16 @@ variable "repository" {
             description = "Mum's website for Abenteuer Irland"
             homepage = "https://arlol.github.io/abenteuer-irland/"
             pages_build_type = "workflow"
-            pages_source_branch = "main"
         }
         "arlol.github.io" = {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
             pages_build_type = "workflow"
-            pages_source_branch = "main"
         }
         business-english = {
             name = "business-english"
             description = "Mum's website for Business English"
             pages_build_type = "workflow"
-            pages_source_branch = "main"
         }
         calver-tag-action = {
             name = "calver-tag-action"
@@ -42,7 +39,6 @@ variable "repository" {
             description = "Arlo's project catalog for the Eclipse Installer"
             homepage = "https://arlol.github.io/eclipse-projects/"
             pages_build_type = "workflow"
-            pages_source_branch = "main"
         }
         effortful-retrieval-questions = {
             name = "effortful-retrieval-questions"
