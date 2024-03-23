@@ -16,10 +16,6 @@ resource "github_repository" "repository" {
         for_each = var.pages_build_type == null ? [] : [1]
         content {
             build_type = var.pages_build_type
-            source {
-                branch = "main"
-                path   = "/"
-            }
         }
     }
 }
