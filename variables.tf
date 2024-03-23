@@ -18,9 +18,8 @@ variable "repository" {
         business-english = {
             name = "business-english"
             description = "Mum's website for Business English"
-            main_branch = "gh-pages"
-            pages_build_type = "legacy"
-            pages_source_branch = "gh-pages"
+            pages_build_type = "workflow"
+            pages_source_branch = "main"
         }
         calver-tag-action = {
             name = "calver-tag-action"
