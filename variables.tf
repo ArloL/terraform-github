@@ -16,6 +16,7 @@ variable "repository" {
         business-english = {
             name = "business-english"
             description = "Mum's website for Business English"
+            homepage = "https://arlol.github.io/business-english/"
             pages_build_type = "workflow"
         }
         calver-tag-action = {
