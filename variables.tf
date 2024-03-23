@@ -5,10 +5,9 @@ variable "repository" {
         abenteuer-irland = {
             name = "abenteuer-irland"
             description = "Mum's website for Abenteuer Irland"
-            main_branch = "gh-pages"
             homepage = "https://arlol.github.io/abenteuer-irland/"
-            pages_build_type = "legacy"
-            pages_source_branch = "gh-pages"
+            pages_build_type = "workflow"
+            pages_source_branch = "main"
         }
         "arlol.github.io" = {
             name = "arlol.github.io"
