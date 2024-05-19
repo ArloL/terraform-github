@@ -5,6 +5,7 @@ set -o xtrace
 
 sh terraform-state-import-repository.sh abenteuer-irland
 sh terraform-state-import-repository.sh arlol.github.io
+sh terraform-state-import-repository.sh bulma-playground
 sh terraform-state-import-repository.sh business-english
 sh terraform-state-import-repository.sh calver-tag-action
 sh terraform-state-import-repository.sh chorito

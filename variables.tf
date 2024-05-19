@@ -13,6 +13,12 @@ variable "repository" {
             description = "This is the source of my GitHub page"
             pages_build_type = "workflow"
         }
+        bulma-playground = {
+            name = "bulma-playground"
+            description = "A playground for the Bulma CSS framework"
+            homepage = "https://arlol.github.io/bulma-playground/"
+            pages_build_type = "workflow"
+        }
         business-english = {
             name = "business-english"
             description = "Mum's website for Business English"
