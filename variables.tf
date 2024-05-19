@@ -110,6 +110,7 @@ variable "repository" {
         self-hosted-gh-actions-runner = {
             name = "self-hosted-gh-actions-runner"
             description = "An experiment to test docker-based builds inside a GitHub Actions Runner that is a running container itself"
+            archived = true
         }
         terraform-github = {
             name = "terraform-github"
@@ -118,6 +119,7 @@ variable "repository" {
         testcontainers-colima-github-actions = {
             name = "testcontainers-colima-github-actions"
             description = "A demo project of running testcontainers with colima on GitHub Actions"
+            archived = true
         }
         vagrant-ssh-config = {
             name = "vagrant-ssh-config"
