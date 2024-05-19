@@ -12,4 +12,5 @@ module "repository" {
     main_branch = lookup(each.value, "main_branch", "main")
     homepage = lookup(each.value, "homepage", null)
     pages_build_type = lookup(each.value, "pages_build_type", null)
+    archived = lookup(each.value, "archived", null)
 }
