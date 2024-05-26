@@ -23,6 +23,7 @@ sh terraform-state-import-repository.sh mvnx
 sh terraform-state-import-repository.sh myprojects-cleaner
 sh terraform-state-import-repository.sh newlinechecker
 sh terraform-state-import-repository.sh nope-amine
+sh terraform-state-import-repository.sh pico-playground
 sh terraform-state-import-repository.sh postgres-sync-demo
 sh terraform-state-import-repository.sh python-nc
 sh terraform-state-import-repository.sh rss-to-mail

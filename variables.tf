@@ -91,6 +91,12 @@ variable "repository" {
             name = "nope-amine"
             description = "A firefox extension that slowly increases the time for things to load on reddit.com"
         }
+        pico-playground = {
+            name = "pico-playground"
+            description = "A playground for the Pico CSS framework"
+            homepage = "https://arlol.github.io/pico-playground/"
+            pages_build_type = "workflow"
+        }
         postgres-sync-demo = {
             name = "postgres-sync-demo"
             description = "A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
