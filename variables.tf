@@ -62,6 +62,7 @@ variable "repository" {
         gitfx = {
             name = "gitfx"
             description = "A simple git client with Java 11+, JavaFX 15+ and GraalVM"
+            archived = true
         }
         graalfx = {
             name = "graalfx"
