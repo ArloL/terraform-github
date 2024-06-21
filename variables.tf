@@ -67,6 +67,7 @@ variable "repository" {
         graalfx = {
             name = "graalfx"
             description = "A simple desktop app with JavaFX and GraalVM"
+            archived = true
         }
         homebrew-tap = {
             name = "homebrew-tap"
