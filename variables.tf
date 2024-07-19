@@ -69,6 +69,10 @@ variable "repository" {
             description = "A simple desktop app with JavaFX and GraalVM"
             archived = true
         }
+        kafka-debugger = {
+            name = "kafka-debugger"
+            description = "A small jar utility to test kafka connections"
+        }
         homebrew-tap = {
             name = "homebrew-tap"
             description = "A homebrew tap for my own formulas and casks"

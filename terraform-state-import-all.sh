@@ -18,6 +18,7 @@ sh terraform-state-import-repository.sh git-presentation-2018-10
 sh terraform-state-import-repository.sh gitfx
 sh terraform-state-import-repository.sh graalfx
 sh terraform-state-import-repository.sh homebrew-tap
+sh terraform-state-import-repository.sh kafka-debugger
 sh terraform-state-import-repository.sh menubar-scripts
 sh terraform-state-import-repository.sh mvnx
 sh terraform-state-import-repository.sh myprojects-cleaner
