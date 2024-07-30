@@ -64,6 +64,10 @@ variable "repository" {
             description = "A simple git client with Java 11+, JavaFX 15+ and GraalVM"
             archived = true
         }
+        github-actions-shared-workflows = {
+            name = "github-actions-shared-workflows"
+            description = "A demonstration of an automated release workflow for shared workflows and actions"
+        }
         graalfx = {
             name = "graalfx"
             description = "A simple desktop app with JavaFX and GraalVM"
