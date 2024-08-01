@@ -5,7 +5,7 @@ provider "github" {
 module "repository" {
     source = "./modules/repository"
 
-    for_each = var.repository
+    for_each = { for repo in var.repository : repo.name => repo }
 
     name = each.value.name
     description = each.value.description
