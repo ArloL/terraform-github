@@ -12,6 +12,7 @@ resource "github_repository" "repository" {
     has_wiki = true
     vulnerability_alerts = true
     archived = var.archived
+    allow_auto_merge = true
 
     dynamic "pages" {
         for_each = var.pages_build_type == null ? [] : [1]
