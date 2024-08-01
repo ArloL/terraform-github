@@ -8,6 +8,10 @@ variable "repository" {
             homepage = "https://arlol.github.io/abenteuer-irland/"
             pages_build_type = "workflow"
         }
+        actions = {
+            name = "actions"
+            description = "A demonstration of an automated release workflow for shared workflows and actions"
+        }
         "arlol.github.io" = {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
@@ -63,10 +67,6 @@ variable "repository" {
             name = "gitfx"
             description = "A simple git client with Java 11+, JavaFX 15+ and GraalVM"
             archived = true
-        }
-        github-actions-shared-workflows = {
-            name = "github-actions-shared-workflows"
-            description = "A demonstration of an automated release workflow for shared workflows and actions"
         }
         graalfx = {
             name = "graalfx"
