@@ -33,6 +33,12 @@ resource "github_branch_protection" "default" {
     required_linear_history = true
     force_push_bypassers = []
     push_restrictions = []
+    dynamic "required_status_checks" {
+        for_each = var.required_status_checks == null ? [] : [1]
+        content {
+            contexts = var.required_status_checks
+        }
+    }
 }
 
 resource "github_repository_dependabot_security_updates" "security_updates" {

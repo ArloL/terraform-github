@@ -13,4 +13,5 @@ module "repository" {
     homepage = lookup(each.value, "homepage", null)
     pages_build_type = lookup(each.value, "pages_build_type", null)
     archived = lookup(each.value, "archived", null)
+    required_status_checks = lookup(each.value, "required_status_checks", [])
 }

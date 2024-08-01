@@ -5,6 +5,7 @@ variable "repository" {
         description = string
         homepage = optional(string)
         pages_build_type = optional(string)
+        required_status_checks = optional(list(string))
     }))
     default = [
         {

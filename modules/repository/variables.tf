@@ -27,3 +27,9 @@ variable "archived" {
     description = "(Optional) Specifies if the repository should be archived."
     default = false
 }
+
+variable "required_status_checks" {
+    description = "(Optional) The list of status checks to require in order to merge into this branch. No status checks are required by default."
+    type = list(string)
+    default = []
+}
