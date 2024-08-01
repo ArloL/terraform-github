@@ -29,6 +29,7 @@ resource "github_branch_default" "main" {
 resource "github_branch_protection" "default" {
     repository_id = github_repository.repository.node_id
     pattern = github_branch_default.main.branch
+    enforce_admins = true
     required_linear_history = true
     force_push_bypassers = []
     push_restrictions = []
