@@ -25,6 +25,7 @@ variable "pages_build_type" {
 
 variable "archived" {
     description = "(Optional) Specifies if the repository should be archived."
+    type = bool
     default = false
 }
 

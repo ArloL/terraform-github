@@ -3,6 +3,7 @@ variable "repository" {
     type = list(object({
         name = string
         description = string
+        archived = optional(bool)
         homepage = optional(string)
         pages_build_type = optional(string)
         required_status_checks = optional(list(string))
