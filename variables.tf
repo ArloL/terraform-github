@@ -43,7 +43,7 @@ variable "repository" {
         {
             name = "chorito"
             description = "A tool that does some chores in your source code"
-            required_status_checks = ["deploy"]
+            required_status_checks = [ "deploy", "linux", "macos", "windows" ]
         },
         {
             name = "corporate-python"
