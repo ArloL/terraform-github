@@ -1,6 +1,5 @@
 # Configure the GitHub Provider
 provider "github" {
-    token = file("${path.module}/.github-token")
 }
 
 module "repository" {
