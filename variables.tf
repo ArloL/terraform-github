@@ -29,6 +29,7 @@ variable "repository" {
             description = "A playground for the Bulma CSS framework"
             homepage = "https://arlol.github.io/bulma-playground/"
             pages_build_type = "workflow"
+            archived = true
         },
         {
             name = "business-english"
@@ -114,6 +115,7 @@ variable "repository" {
             description = "A playground for the Pico CSS framework"
             homepage = "https://arlol.github.io/pico-playground/"
             pages_build_type = "workflow"
+            archived = true
         },
         {
             name = "postgres-sync-demo"
