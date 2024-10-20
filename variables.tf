@@ -22,6 +22,7 @@ variable "repository" {
         {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
+            homepage = "https://arlol.github.io/"
             pages_build_type = "workflow"
         },
         {
