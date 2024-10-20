@@ -20,6 +20,12 @@ variable "repository" {
             description = "A demonstration of an automated release workflow for shared workflows and actions"
         },
         {
+            name = "angular-playground"
+            description = "A playground for the Angular framework"
+            homepage = "https://arlol.github.io/angular-playground/"
+            pages_build_type = "workflow"
+        },
+        {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
             homepage = "https://arlol.github.io/"
