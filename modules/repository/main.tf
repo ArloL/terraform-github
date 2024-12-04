@@ -10,7 +10,7 @@ resource "github_repository" "repository" {
     has_issues = true
     has_projects = true
     has_wiki = true
-    vulnerability_alerts = true
+    vulnerability_alerts = var.archived == true ? false : true
     archived = var.archived
     allow_auto_merge = true
 
