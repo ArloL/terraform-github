@@ -20,6 +20,10 @@ variable "repository" {
             description = "A demonstration of an automated release workflow for shared workflows and actions"
         },
         {
+            name = "advent-of-code"
+            description = "My advent of code solutions"
+        },
+        {
             name = "angular-playground"
             description = "A playground for the Angular framework"
             homepage = "https://arlol.github.io/angular-playground/"
