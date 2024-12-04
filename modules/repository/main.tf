@@ -13,6 +13,7 @@ resource "github_repository" "repository" {
     vulnerability_alerts = var.archived == true ? false : true
     archived = var.archived
     allow_auto_merge = true
+    auto_init = true
 
     dynamic "pages" {
         for_each = var.github_pages == true ? [1] : []
