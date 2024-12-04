@@ -18,9 +18,10 @@ variable "main_branch" {
     type = string
 }
 
-variable "pages_build_type" {
-    description = "GitHub pages build type"
-    type = string
+variable "github_pages" {
+    description = "Enable GitHub Pages"
+    type = bool
+    default = false
 }
 
 variable "archived" {

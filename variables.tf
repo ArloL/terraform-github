@@ -5,7 +5,7 @@ variable "repository" {
         description = string
         archived = optional(bool)
         homepage = optional(string)
-        pages_build_type = optional(string)
+        github_pages = optional(bool)
         required_status_checks = optional(list(string))
     }))
     default = [
@@ -13,7 +13,7 @@ variable "repository" {
             name = "abenteuer-irland"
             description = "Mum's website for Abenteuer Irland"
             homepage = "https://arlol.github.io/abenteuer-irland/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "actions"
@@ -23,25 +23,25 @@ variable "repository" {
             name = "angular-playground"
             description = "A playground for the Angular framework"
             homepage = "https://arlol.github.io/angular-playground/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
             homepage = "https://arlol.github.io/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "bulma-playground"
             description = "A playground for the Bulma CSS framework"
             homepage = "https://arlol.github.io/bulma-playground/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "business-english"
             description = "Mum's website for Business English"
             homepage = "https://arlol.github.io/business-english/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "calver-tag-action"
@@ -68,7 +68,7 @@ variable "repository" {
             name = "eclipse-projects"
             description = "Arlo's project catalog for the Eclipse Installer"
             homepage = "https://arlol.github.io/eclipse-projects/"
-            pages_build_type = "workflow"
+            github_pages = "true"
         },
         {
             name = "effortful-retrieval-questions"
@@ -124,7 +124,7 @@ variable "repository" {
             name = "pico-playground"
             description = "A playground for the Pico CSS framework"
             homepage = "https://arlol.github.io/pico-playground/"
-            pages_build_type = "workflow"
+            github_pages = "true"
             archived = true
         },
         {

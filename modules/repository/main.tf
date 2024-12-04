@@ -15,9 +15,13 @@ resource "github_repository" "repository" {
     allow_auto_merge = true
 
     dynamic "pages" {
-        for_each = var.pages_build_type == null ? [] : [1]
+        for_each = var.github_pages == true ? [1] : []
         content {
-            build_type = var.pages_build_type
+            build_type = "workflow"
+            source {
+                branch = var.main_branch
+                path = "/"
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ module "repository" {
     description = each.value.description
     main_branch = lookup(each.value, "main_branch", "main")
     homepage = lookup(each.value, "homepage", null)
-    pages_build_type = lookup(each.value, "pages_build_type", null)
+    github_pages = lookup(each.value, "github_pages", null)
     archived = lookup(each.value, "archived", null)
     required_status_checks = lookup(each.value, "required_status_checks", [])
 }
