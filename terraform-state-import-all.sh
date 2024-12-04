@@ -13,6 +13,7 @@ sh terraform-state-import-repository.sh calver-tag-action
 sh terraform-state-import-repository.sh chorito
 sh terraform-state-import-repository.sh corporate-python
 sh terraform-state-import-repository.sh dotfiles
+sh terraform-state-import-repository.sh dotnet-http-client-reproduction
 sh terraform-state-import-repository.sh eclipse-projects
 sh terraform-state-import-repository.sh effortful-retrieval-questions
 sh terraform-state-import-repository.sh git-dora-lead-time-calculator

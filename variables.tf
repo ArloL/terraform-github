@@ -61,6 +61,10 @@ variable "repository" {
             description = "My collection of dotfiles used to configure my command line environments"
         },
         {
+            name = "dotnet-http-client-reproduction"
+            description = "A reproduction of an issue with the dotnet http client"
+        },
+        {
             name = "eclipse-projects"
             description = "Arlo's project catalog for the Eclipse Installer"
             homepage = "https://arlol.github.io/eclipse-projects/"
