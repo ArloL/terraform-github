@@ -10,4 +10,3 @@ A project to manage github settings with terraform.
 4. Execute `terraform plan` and see if the changes make sense
 5. Execute `terraform apply` and check if the changes make sense
 6. Enter *yes* if they do
-7. Profit
