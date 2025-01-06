@@ -125,6 +125,10 @@ variable "repository" {
             description = "A firefox extension that slowly increases the time for things to load on reddit.com"
         },
         {
+            name = "open-webui-runner"
+            description = "A small repo to run open-webui locally and stop it after using it"
+        },
+        {
             name = "pico-playground"
             description = "A playground for the Pico CSS framework"
             homepage = "https://arlol.github.io/pico-playground/"
