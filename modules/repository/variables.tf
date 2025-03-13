@@ -35,3 +35,9 @@ variable "required_status_checks" {
     type = list(string)
     default = []
 }
+
+variable "actions_secrets" {
+    description = "(Optional) a map of secrets added to the repository in the actions scope"
+    type = map(string)
+    default = {}
+}

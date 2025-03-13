@@ -51,3 +51,11 @@ resource "github_repository_dependabot_security_updates" "security_updates" {
     repository  = github_repository.repository.id
     enabled     = true
 }
+
+resource "github_actions_secret" "actions_secrets" {
+    for_each        = var.actions_secrets
+
+    repository      = github_repository.repository.id
+    secret_name     = each.key
+    plaintext_value = each.value
+}
