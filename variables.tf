@@ -1,5 +1,5 @@
-variable "repository" {
-    description = "Map of repository names"
+variable "repositories" {
+    description = "A list of all repositories"
     type = list(object({
         name = string
         description = string
@@ -7,6 +7,8 @@ variable "repository" {
         homepage = optional(string)
         github_pages = optional(bool)
         required_status_checks = optional(list(string))
+        homebrew_tap_livecheck_pat = optional(bool)
+        actions_secrets = optional(list(string))
     }))
     default = [
         {
@@ -55,6 +57,8 @@ variable "repository" {
             name = "chorito"
             description = "A tool that does some chores in your source code"
             required_status_checks = [ "deploy", "linux", "macos", "windows" ]
+            homebrew_tap_livecheck_pat = true
+            actions_secrets = [ "PAT" ]
         },
         {
             name = "corporate-python"
@@ -81,6 +85,7 @@ variable "repository" {
         {
             name = "git-dora-lead-time-calculator"
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
+            homebrew_tap_livecheck_pat = true
         },
         {
             name = "git-presentation-2018-10"
@@ -107,6 +112,7 @@ variable "repository" {
         {
             name = "menubar-scripts"
             description = "A collection of scripts that can run in e.g. xbar, swiftbar, etc."
+            homebrew_tap_livecheck_pat = true
         },
         {
             name = "mvnx"
@@ -119,6 +125,7 @@ variable "repository" {
         {
             name = "newlinechecker"
             description = "A sample project to play with GraalVM builds on GitHub Actions"
+            homebrew_tap_livecheck_pat = true
         },
         {
             name = "nope-amine"
@@ -146,6 +153,7 @@ variable "repository" {
         {
             name = "rss-to-mail"
             description = "Read from RSS feeds and send an email for every new item"
+            homebrew_tap_livecheck_pat = true
         },
         {
             name = "sci-fi-movies"
@@ -176,6 +184,7 @@ variable "repository" {
         {
             name = "wait-for-ports"
             description = "A command-line utility that waits until a port is open"
+            homebrew_tap_livecheck_pat = true
         },
         {
             name = "webapp-classloader-test"
@@ -186,4 +195,11 @@ variable "repository" {
             description = "A set of tools that check websites for common misconfigurations or downtime"
         }
     ]
+}
+
+variable "secret_values" {
+    description = "The map of secret values"
+    type = map(string)
+    sensitive = true
+    default = {}
 }
