@@ -20,9 +20,9 @@ secret_name_from_addr() {
 
 trap cleanup INT TERM EXIT
 
-rm -f terraform.tfstate
 rm -rf work_dir
 mkdir -p work_dir
+cp terraform.tfstate work_dir/terraform.tfstate
 
 terraform plan \
         -out=work_dir/terraform-plan.out \
@@ -38,8 +38,6 @@ gsed -n \
         work_dir/terraform-plan.txt \
     > work_dir/addrs.txt
 
-commands_file=$(mktemp -p work_dir)
-
 repos=$(gh repo list ArloL \
   --no-archived \
   --limit 200 \
@@ -47,13 +45,11 @@ repos=$(gh repo list ArloL \
   --jq '.[].name')
 
 for repository in $repos; do
-    state=$(mktemp -u -p work_dir -t state_)
     addr="module.repository[\"${repository}\"].github_repository.repository"
-    echo terraform import \
-        -state "${state}" \
-        "'${addr}'" \
-        "${repository}" >> "${commands_file}"
+    echo "${addr}" >> work_dir/addrs.txt
 done
+
+sort work_dir/addrs.txt | uniq > work_dir/addrs-unique.txt
 
 while IFS= read -r addr; do
     repository=$(repository_from_addr "${addr}")
@@ -63,26 +59,29 @@ while IFS= read -r addr; do
         echo terraform import \
             -state "${state}" \
             "'${addr}'" \
-            "${repository}:${pattern}" >> "${commands_file}"
+            "${repository}:${pattern}" >> work_dir/commands.txt
     elif [[ "$addr" == *".github_actions_secret."* ]]; then
         secret_name=$(secret_name_from_addr "${addr}")
         echo terraform import \
             -state "${state}" \
             "'${addr}'" \
-            "${repository}/${secret_name}" >> "${commands_file}"
+            "${repository}/${secret_name}" >> work_dir/commands.txt
     else
         echo terraform import \
             -state "${state}" \
             "'${addr}'" \
-            "${repository}" >> "${commands_file}"
+            "${repository}" >> work_dir/commands.txt
     fi
-done < work_dir/addrs.txt
+done < work_dir/addrs-unique.txt
 
+set +o errexit
 parallel \
     --verbose \
     --bar \
     --jobs "100%" \
-    < "${commands_file}"
+    < work_dir/commands.txt
+status=$?
+set -o errexit
 
 for state in work_dir/state_*; do
     resources=$(terraform state list -state="${state}")
@@ -98,3 +97,7 @@ done
 mv -f \
     work_dir/terraform.tfstate \
     terraform.tfstate
+
+if [ $status -ne 0 ]; then
+    exit $status
+fi
