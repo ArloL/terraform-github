@@ -6,7 +6,7 @@ set -o xtrace
 
 cleanup() {
     currentExitCode=$?
-    #rm -rf work_dir
+    rm -rf work_dir
     exit ${currentExitCode}
 }
 
