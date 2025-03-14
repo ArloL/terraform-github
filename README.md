@@ -5,13 +5,14 @@ A project to manage github settings with terraform.
 ## Adding a new repository
 
 1. Add it to `variables.tf`
-2. Add it to `terraform-state-import-all.sh`
-3. Execute `./terraform-state-import-repository.sh ${name}` once
-4. Execute `terraform plan` and see if the changes make sense
-5. Execute `terraform apply` and check if the changes make sense
-6. Enter *yes* if they do
+2. Execute `terraform-state-import.sh`
+3. Execute `terraform plan` and see if the changes make sense
+4. Execute `terraform apply` and check if the changes make sense
+5. Enter *yes* if they do
 
 # Secrets
+
+These are the secrets you need:
 
 * homebrew-tap-livecheck
     * Fine-grained token
@@ -28,3 +29,14 @@ A project to manage github settings with terraform.
     * Permissions
         * Contents: Read and write
         * Metadata: Read-only
+
+And you can add them in a `mise.local.toml` like this
+
+```
+[env]
+GITHUB_TOKEN='token'
+TF_VAR_secret_values=""" {
+        "chorito-pat": "token",
+        "homebrew-tap-livecheck-pat": "token"
+    } """
+```
