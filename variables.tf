@@ -65,6 +65,10 @@ variable "repositories" {
             description = "A container for executing python in corporate environments"
         },
         {
+            name = "dependabot-dockerfile-test"
+            description = "A test to see whether dependabot updates dockerfiles with args"
+        },
+        {
             name = "dotfiles"
             description = "My collection of dotfiles used to configure my command line environments"
         },
