@@ -20,9 +20,9 @@ secret_name_from_addr() {
 
 trap cleanup INT TERM EXIT
 
+rm -f terraform.tfstate
 rm -rf work_dir
 mkdir -p work_dir
-cp terraform.tfstate work_dir/terraform.tfstate
 
 terraform plan \
         -out=work_dir/terraform-plan.out \
