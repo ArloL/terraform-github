@@ -40,6 +40,21 @@ gsed -n \
 
 commands_file=$(mktemp -p work_dir)
 
+repos=$(gh repo list ArloL \
+  --no-archived \
+  --limit 200 \
+  --json name \
+  --jq '.[].name')
+
+for repository in $repos; do
+    state=$(mktemp -u -p work_dir -t state_)
+    addr="module.repository[\"${repository}\"].github_repository.repository"
+    echo terraform import \
+        -state "${state}" \
+        "'${addr}'" \
+        "${repository}" >> "${commands_file}"
+done
+
 while IFS= read -r addr; do
     repository=$(repository_from_addr "${addr}")
     state=$(mktemp -u -p work_dir -t state_)
