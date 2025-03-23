@@ -33,6 +33,7 @@ resource "github_branch_default" "main" {
 }
 
 resource "github_branch_protection" "default" {
+    count = var.visibility == "private" ? 0 : 1
     repository_id = github_repository.repository.node_id
     pattern = github_branch_default.main.branch
     enforce_admins = true
