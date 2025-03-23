@@ -9,6 +9,7 @@ variable "repositories" {
         required_status_checks = optional(list(string))
         homebrew_tap_livecheck_pat = optional(bool)
         actions_secrets = optional(list(string))
+        visibility = optional(string)
     }))
     default = [
         {
