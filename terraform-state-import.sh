@@ -25,8 +25,7 @@ mkdir -p work_dir
 
 terraform plan \
         -state=work_dir/empty \
-        -out=work_dir/terraform-plan.out \
-    > /dev/null 2>&1
+        -out=work_dir/terraform-plan.out
 
 terraform show \
         -no-color \
