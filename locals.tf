@@ -13,7 +13,7 @@ locals {
                 coalesce(repo.homebrew_tap_livecheck_pat, false)
                     ? merge(repo.actions_secrets, {
                             "LIVECHECK_PAT": (
-                                lookup(var.secret_values, "homebrew-tap-livecheck-pat")
+                                lookup(var.secret_values, "homebrew-tap-LIVECHECK_PAT")
                             )
                         })
                     : repo.actions_secrets
