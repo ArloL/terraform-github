@@ -3,7 +3,7 @@ locals {
         for repo in var.repositories : merge(repo, {
             actions_secrets = {
                 for secret in coalesce(repo.actions_secrets, []) :
-                secret => lookup(var.secret_values, "${repo.name}-${secret}", "")
+                secret => lookup(var.secret_values, "${repo.name}-${secret}")
             }
         })
     ]
