@@ -21,6 +21,7 @@ variable "repositories" {
         {
             name = "actions"
             description = "A demonstration of an automated release workflow for shared workflows and actions"
+            archived = true
         },
         {
             name = "advent-of-code"
@@ -36,7 +37,7 @@ variable "repositories" {
             name = "arlol.github.io"
             description = "This is the source of my GitHub page"
             homepage = "https://arlol.github.io/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "bulma-playground"
