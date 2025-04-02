@@ -16,7 +16,7 @@ variable "repositories" {
             name = "abenteuer-irland"
             description = "Mum's website for Abenteuer Irland"
             homepage = "https://arlol.github.io/abenteuer-irland/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "actions"
@@ -30,7 +30,7 @@ variable "repositories" {
             name = "angular-playground"
             description = "A playground for the Angular framework"
             homepage = "https://arlol.github.io/angular-playground/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "arlol.github.io"
@@ -42,13 +42,13 @@ variable "repositories" {
             name = "bulma-playground"
             description = "A playground for the Bulma CSS framework"
             homepage = "https://arlol.github.io/bulma-playground/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "business-english"
             description = "Mum's website for Business English"
             homepage = "https://arlol.github.io/business-english/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "calver-tag-action"
@@ -81,7 +81,7 @@ variable "repositories" {
             name = "eclipse-projects"
             description = "Arlo's project catalog for the Eclipse Installer"
             homepage = "https://arlol.github.io/eclipse-projects/"
-            github_pages = "true"
+            github_pages = true
         },
         {
             name = "effortful-retrieval-questions"
@@ -144,7 +144,7 @@ variable "repositories" {
             name = "pico-playground"
             description = "A playground for the Pico CSS framework"
             homepage = "https://arlol.github.io/pico-playground/"
-            github_pages = "true"
+            github_pages = true
             archived = true
         },
         {
