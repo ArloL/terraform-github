@@ -45,8 +45,9 @@ resource "github_branch_protection" "default" {
 }
 
 resource "github_repository_dependabot_security_updates" "security_updates" {
+    count = var.archived == true ? 0 : 1
     repository  = github_repository.repository.id
-    enabled     = var.archived == true ? false : true
+    enabled     = true
 }
 
 resource "github_actions_secret" "actions_secrets" {
