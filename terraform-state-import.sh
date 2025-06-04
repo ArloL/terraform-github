@@ -18,6 +18,10 @@ secret_name_from_addr() {
     echo "${1}" | gsed -n 's/[^"]*"[^"]*"[^"]*"\([^"]*\)".*/\1/p'
 }
 
+terraform --version
+gh --version
+parallel --version
+
 trap cleanup INT TERM EXIT
 
 rm -rf work_dir
