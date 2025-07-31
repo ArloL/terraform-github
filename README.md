@@ -6,8 +6,8 @@ A project to manage github settings with terraform.
 
 1. Add it to `variables.tf`
 2. Execute `terraform-state-import.sh`
-3. Execute `terraform plan` and see if the changes make sense
-4. Execute `terraform apply` and check if the changes make sense
+3. Execute `terraform plan -refresh=false` and see if the changes make sense
+4. Execute `terraform apply -refresh=false` and check if the changes make sense
 5. Enter *yes* if they do
 
 # Secrets
