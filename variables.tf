@@ -40,6 +40,10 @@ variable "repositories" {
             github_pages = true
         },
         {
+            name = "beatunes-keytocomment"
+            description = "A beatunes plugin that writes the key to the comment"
+        },
+        {
             name = "bulma-playground"
             description = "A playground for the Bulma CSS framework"
             homepage = "https://arlol.github.io/bulma-playground/"
