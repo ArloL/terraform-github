@@ -81,6 +81,7 @@ variable "repositories" {
         {
             name = "dotnet-http-client-reproduction"
             description = "A reproduction of an issue with the dotnet http client"
+            archived = true
         },
         {
             name = "eclipse-projects"
