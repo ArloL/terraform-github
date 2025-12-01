@@ -135,7 +135,6 @@ variable "repositories" {
         {
             name = "newlinechecker"
             description = "A sample project to play with GraalVM builds on GitHub Actions"
-            required_status_checks = [ "Main.required-status-check" ]
             homebrew_tap_livecheck_pat = true
         },
         {
