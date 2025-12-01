@@ -1,5 +1,5 @@
 # Configure the GitHub Provider
-provider "github" {
+provider "integrations-github" {
 }
 
 module "repository" {

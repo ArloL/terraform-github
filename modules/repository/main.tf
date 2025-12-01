@@ -35,7 +35,6 @@ resource "github_branch_protection" "default" {
     enforce_admins = true
     required_linear_history = true
     force_push_bypassers = []
-    push_restrictions = []
     dynamic "required_status_checks" {
         for_each = var.required_status_checks == null ? [] : [1]
         content {
