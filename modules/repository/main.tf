@@ -56,3 +56,9 @@ resource "github_actions_secret" "actions_secrets" {
     secret_name     = each.key
     plaintext_value = each.value
 }
+
+resource "github_workflow_repository_permissions" "workflow_permissions" {
+    repository                       = github_repository.repository.id
+    default_workflow_permissions     = "read"
+    can_approve_pull_request_reviews = false
+}
