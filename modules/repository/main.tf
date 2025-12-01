@@ -60,5 +60,5 @@ resource "github_actions_secret" "actions_secrets" {
 resource "github_workflow_repository_permissions" "workflow_permissions" {
     repository                       = github_repository.repository.id
     default_workflow_permissions     = "read"
-    can_approve_pull_request_reviews = false
+    can_approve_pull_request_reviews = true
 }
