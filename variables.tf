@@ -191,6 +191,7 @@ variable "repositories" {
         {
             name = "vitest-link-reproduction"
             description = "This project demonstrates an issue where vitest runs fail when a dependency is included via a link"
+            archived = true
         },
         {
             name = "wait-for-ports"
