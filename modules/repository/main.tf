@@ -35,11 +35,12 @@ resource "github_branch_protection" "default" {
     enforce_admins = true
     required_linear_history = true
     force_push_bypassers = []
-    dynamic "required_status_checks" {
-        for_each = var.required_status_checks == null ? [] : [1]
-        content {
-            contexts = var.required_status_checks
-        }
+    required_status_checks {
+        strict = false
+        contexts = distinct(concat(
+            ["check-actions.required-status-check"],
+            var.required_status_checks == null ? [] : var.required_status_checks
+        ))
     }
 }
 

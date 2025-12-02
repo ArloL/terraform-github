@@ -64,6 +64,10 @@ variable "repositories" {
             description = "A tool that does some chores in your source code"
             homebrew_tap_livecheck_pat = true
             actions_secrets = [ "PAT" ]
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "corporate-python"
@@ -96,6 +100,10 @@ variable "repositories" {
             name = "git-dora-lead-time-calculator"
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
             homebrew_tap_livecheck_pat = true
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "git-presentation-2018-10"
@@ -114,6 +122,9 @@ variable "repositories" {
         {
             name = "kafka-debugger"
             description = "A small jar utility to test kafka connections"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "homebrew-tap"
@@ -136,7 +147,6 @@ variable "repositories" {
             name = "newlinechecker"
             description = "A sample project to play with GraalVM builds on GitHub Actions"
             required_status_checks = [
-                "check-actions.required-status-check",
                 "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
