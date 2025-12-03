@@ -35,6 +35,9 @@ variable "repositories" {
             description = "A playground for the Angular framework"
             homepage = "https://arlol.github.io/angular-playground/"
             github_pages = true
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "arlol.github.io"
@@ -45,6 +48,9 @@ variable "repositories" {
         {
             name = "beatunes-keytocomment"
             description = "A beatunes plugin that writes the key to the comment"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "bulma-playground"
@@ -141,23 +147,34 @@ variable "repositories" {
         {
             name = "mvnx"
             description = "An experiment with Maven dependencies and dynamic classloading"
-        },
-        {
-            name = "myprojects-cleaner"
-            description = "A java application that runs git clean in a bunch of directories"
-        },
-        {
-            name = "newlinechecker"
-            description = "A sample project to play with GraalVM builds on GitHub Actions"
             required_status_checks = [
                 "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
+        },
+        {
+            name = "myprojects-cleaner"
+            description = "A java application that runs git clean in a bunch of directories"
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
+        },
+        {
+            name = "newlinechecker"
+            description = "A sample project to play with GraalVM builds on GitHub Actions"
             homebrew_tap_livecheck_pat = true
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "nope-amine"
             description = "A firefox extension that slowly increases the time for things to load on reddit.com"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "open-webui-runner"
@@ -173,19 +190,32 @@ variable "repositories" {
         {
             name = "postgres-sync-demo"
             description = "A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "python-nc"
             description = "A test to see if I can implement nc's proxy functionality with python"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "rss-to-mail"
             description = "Read from RSS feeds and send an email for every new item"
             homebrew_tap_livecheck_pat = true
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "sci-fi-movies"
             description = "an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "self-hosted-gh-actions-runner"
@@ -214,14 +244,26 @@ variable "repositories" {
             name = "wait-for-ports"
             description = "A command-line utility that waits until a port is open"
             homebrew_tap_livecheck_pat = true
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "webapp-classloader-test"
             description = "This is a test that can be used during integration testing to check for classloader leaks"
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         },
         {
             name = "website-janitor"
             description = "A set of tools that check websites for common misconfigurations or downtime"
+            required_status_checks = [
+                "codeql-analysis.required-status-check",
+                "main.required-status-check"
+            ]
         }
     ]
 }
