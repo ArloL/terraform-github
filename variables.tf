@@ -26,6 +26,9 @@ variable "repositories" {
         {
             name = "advent-of-code"
             description = "My advent of code solutions"
+            required_status_checks = [
+                "codeql-analysis.required-status-check"
+            ]
         },
         {
             name = "angular-playground"
