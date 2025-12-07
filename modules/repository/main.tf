@@ -64,3 +64,36 @@ resource "github_workflow_repository_permissions" "workflow_permissions" {
     default_workflow_permissions     = "read"
     can_approve_pull_request_reviews = true
 }
+
+resource "github_repository_ruleset" "ruleset_required_status_checks" {
+    count       = var.archived == true ? 0 : 1
+    name        = "main-branch-rules"
+    repository  = github_repository.repository.id
+    target      = "branch"
+    enforcement = "active"
+
+    conditions {
+    ref_name {
+        include = ["refs/heads/main"]
+        exclude = []
+    }
+    }
+
+    rules {
+        required_linear_history = true
+
+        required_status_checks {
+            dynamic "required_check" {
+                for_each = distinct(concat(
+                    ["check-actions.required-status-check"],
+                    ["codeql-analysis.required-status-check"],
+                    var.required_status_checks == null ? [] : var.required_status_checks
+                ))
+                content {
+                    context        = required_check.value
+                    integration_id = 15368
+                }
+            }
+        }
+    }
+}
