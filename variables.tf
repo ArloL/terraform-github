@@ -26,18 +26,12 @@ variable "repositories" {
         {
             name = "advent-of-code"
             description = "My advent of code solutions"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "angular-playground"
             description = "A playground for the Angular framework"
             homepage = "https://arlol.github.io/angular-playground/"
             github_pages = true
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "arlol.github.io"
@@ -48,9 +42,6 @@ variable "repositories" {
         {
             name = "beatunes-keytocomment"
             description = "A beatunes plugin that writes the key to the comment"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "bulma-playground"
@@ -131,9 +122,6 @@ variable "repositories" {
         {
             name = "kafka-debugger"
             description = "A small jar utility to test kafka connections"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "homebrew-tap"
@@ -172,9 +160,6 @@ variable "repositories" {
         {
             name = "nope-amine"
             description = "A firefox extension that slowly increases the time for things to load on reddit.com"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "open-webui-runner"
@@ -190,16 +175,10 @@ variable "repositories" {
         {
             name = "postgres-sync-demo"
             description = "A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "python-nc"
             description = "A test to see if I can implement nc's proxy functionality with python"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "rss-to-mail"
@@ -213,9 +192,6 @@ variable "repositories" {
         {
             name = "sci-fi-movies"
             description = "an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
-            required_status_checks = [
-                "codeql-analysis.required-status-check"
-            ]
         },
         {
             name = "self-hosted-gh-actions-runner"
