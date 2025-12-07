@@ -21,6 +21,15 @@ resource "github_repository" "repository" {
             build_type = "workflow"
         }
     }
+
+    security_and_analysis {
+        secret_scanning {
+            status = "enabled"
+        }
+        secret_scanning_push_protection {
+            status = "enabled"
+        }
+    }
 }
 
 resource "github_branch_default" "main" {
