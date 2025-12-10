@@ -65,7 +65,6 @@ variable "repositories" {
             homebrew_tap_livecheck_pat = true
             actions_secrets = [ "PAT" ]
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -101,7 +100,6 @@ variable "repositories" {
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
             homebrew_tap_livecheck_pat = true
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -136,7 +134,6 @@ variable "repositories" {
             name = "mvnx"
             description = "An experiment with Maven dependencies and dynamic classloading"
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -144,7 +141,6 @@ variable "repositories" {
             name = "myprojects-cleaner"
             description = "A java application that runs git clean in a bunch of directories"
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -153,7 +149,6 @@ variable "repositories" {
             description = "A sample project to play with GraalVM builds on GitHub Actions"
             homebrew_tap_livecheck_pat = true
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -185,7 +180,6 @@ variable "repositories" {
             description = "Read from RSS feeds and send an email for every new item"
             homebrew_tap_livecheck_pat = true
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -221,7 +215,6 @@ variable "repositories" {
             description = "A command-line utility that waits until a port is open"
             homebrew_tap_livecheck_pat = true
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -229,7 +222,6 @@ variable "repositories" {
             name = "webapp-classloader-test"
             description = "This is a test that can be used during integration testing to check for classloader leaks"
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         },
@@ -237,7 +229,6 @@ variable "repositories" {
             name = "website-janitor"
             description = "A set of tools that check websites for common misconfigurations or downtime"
             required_status_checks = [
-                "codeql-analysis.required-status-check",
                 "main.required-status-check"
             ]
         }
