@@ -18,6 +18,10 @@ secret_name_from_addr() {
     echo "${1}" | gsed -n 's/[^"]*"[^"]*"[^"]*"\([^"]*\)".*/\1/p'
 }
 
+ruleset_name_from_addr() {
+    echo "${1}" | gsed -n 's/.*\.github_repository_ruleset\.\([^[]*\)\[.*/\1/p'
+}
+
 terraform --version
 gh --version
 parallel --version
@@ -69,6 +73,12 @@ while IFS= read -r addr; do
             -state "${state}" \
             "'${addr}'" \
             "${repository}/${secret_name}" >> work_dir/commands.txt
+    elif [[ "${addr}" == *".github_repository_ruleset."* ]]; then
+        ruleset_name=$(ruleset_name_from_addr "${addr}")
+        echo terraform import \
+            -state "${state}" \
+            "'${addr}'" \
+            "${repository}:${ruleset_name}" >> work_dir/commands.txt
     else
         echo terraform import \
             -state "${state}" \
