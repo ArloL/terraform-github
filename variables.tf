@@ -134,6 +134,10 @@ variable "repositories" {
             homebrew_tap_livecheck_pat = true
         },
         {
+            name = "music-stuff"
+            description = "Some spotify and beatunes stuff"
+        },
+        {
             name = "mvnx"
             description = "An experiment with Maven dependencies and dynamic classloading"
             required_status_checks = [
