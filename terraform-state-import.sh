@@ -57,13 +57,13 @@ sort work_dir/addrs.txt | uniq > work_dir/addrs-unique.txt
 while IFS= read -r addr; do
     repository=$(repository_from_addr "${addr}")
     state=$(mktemp -u -p work_dir -t state_)
-    if [[ "$addr" == *".github_branch_protection."* ]]; then
+    if [[ "${addr}" == *".github_branch_protection."* ]]; then
         pattern=main
         echo terraform import \
             -state "${state}" \
             "'${addr}'" \
             "${repository}:${pattern}" >> work_dir/commands.txt
-    elif [[ "$addr" == *".github_actions_secret."* ]]; then
+    elif [[ "${addr}" == *".github_actions_secret."* ]]; then
         secret_name=$(secret_name_from_addr "${addr}")
         echo terraform import \
             -state "${state}" \
