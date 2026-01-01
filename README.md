@@ -14,13 +14,6 @@ A project to manage github settings with terraform.
 
 These are the secrets you need:
 
-* homebrew-tap-livecheck
-    * Fine-grained token
-    * Name: homebrew-tap-livecheck
-    * Only selected repositories: ArloL/homebrew-tap
-    * Permissions
-        * Contents: Read and write
-        * Metadata: Read-only
 * chorito-trigger
     * Fine-grained token
     * Name: chorito-trigger
@@ -37,6 +30,5 @@ And you can add them in a `mise.local.toml` like this
 GITHUB_TOKEN='token'
 TF_VAR_secret_values=""" {
         "chorito-pat": "token",
-        "homebrew-tap-livecheck-pat": "token"
     } """
 ```

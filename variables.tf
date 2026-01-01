@@ -7,7 +7,6 @@ variable "repositories" {
         homepage = optional(string)
         github_pages = optional(bool)
         required_status_checks = optional(list(string))
-        homebrew_tap_livecheck_pat = optional(bool)
         actions_secrets = optional(list(string))
         visibility = optional(string)
     }))
@@ -65,7 +64,6 @@ variable "repositories" {
         {
             name = "chorito"
             description = "A tool that does some chores in your source code"
-            homebrew_tap_livecheck_pat = true
             actions_secrets = [ "PAT" ]
             required_status_checks = [
                 "main.required-status-check"
@@ -101,7 +99,6 @@ variable "repositories" {
         {
             name = "git-dora-lead-time-calculator"
             description = "A project to calculate the DORA metric lead time with the info from a git repo"
-            homebrew_tap_livecheck_pat = true
             required_status_checks = [
                 "main.required-status-check"
             ]
@@ -131,7 +128,6 @@ variable "repositories" {
         {
             name = "menubar-scripts"
             description = "A collection of scripts that can run in e.g. xbar, swiftbar, etc."
-            homebrew_tap_livecheck_pat = true
         },
         {
             name = "music-stuff"
@@ -154,7 +150,6 @@ variable "repositories" {
         {
             name = "newlinechecker"
             description = "A sample project to play with GraalVM builds on GitHub Actions"
-            homebrew_tap_livecheck_pat = true
             required_status_checks = [
                 "main.required-status-check"
             ]
@@ -185,7 +180,6 @@ variable "repositories" {
         {
             name = "rss-to-mail"
             description = "Read from RSS feeds and send an email for every new item"
-            homebrew_tap_livecheck_pat = true
             required_status_checks = [
                 "main.required-status-check"
             ]
@@ -220,7 +214,6 @@ variable "repositories" {
         {
             name = "wait-for-ports"
             description = "A command-line utility that waits until a port is open"
-            homebrew_tap_livecheck_pat = true
             required_status_checks = [
                 "main.required-status-check"
             ]
