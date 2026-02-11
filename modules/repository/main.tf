@@ -6,7 +6,6 @@ resource "github_repository" "repository" {
     allow_merge_commit = false
     allow_squash_merge = false
     delete_branch_on_merge = true
-    has_downloads = true
     has_issues = true
     has_projects = true
     has_wiki = true
