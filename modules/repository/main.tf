@@ -48,6 +48,8 @@ resource "github_branch_protection" "default" {
         contexts = distinct(concat(
             ["check-actions.required-status-check"],
             ["codeql-analysis.required-status-check"],
+            ["CodeQL"],
+            ["zizmor"],
             var.required_status_checks == null ? [] : var.required_status_checks
         ))
     }
