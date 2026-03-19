@@ -22,6 +22,14 @@ environment_name_from_addr() {
     echo "${1}" | $SED -n 's/[^"]*"[^"]*"[^"]*"\([^"]*\)".*/\1/p'
 }
 
+environment_secret_environment_from_addr() {
+    echo "${1}" | $SED -n 's/[^"]*"[^"]*"[^"]*"\([^/]*\)\/.*/\1/p'
+}
+
+environment_secret_name_from_addr() {
+    echo "${1}" | $SED -n 's/[^"]*"[^"]*"[^"]*"[^/]*\/\([^"]*\)".*/\1/p'
+}
+
 ruleset_name_from_addr() {
     echo "${1}" | $SED -n 's/.*\.github_repository_ruleset\.\([^[]*\)\[.*/\1/p'
 }
@@ -86,9 +94,8 @@ while IFS= read -r addr; do
             "'${addr}'" \
             "${repository}/${secret_name}" >> work_dir/commands.txt
     elif [[ "${addr}" == *".github_actions_environment_secret."* ]]; then
-        env_secret=$(secret_name_from_addr "${addr}")
-        environment=$(echo "${env_secret}" | $SED 's|/.*||')
-        secret_name=$(echo "${env_secret}" | $SED 's|[^/]*/||')
+        environment=$(environment_secret_environment_from_addr "${addr}")
+        secret_name=$(environment_secret_name_from_addr "${addr}")
         echo terraform import \
             -state "${state}" \
             "'${addr}'" \
