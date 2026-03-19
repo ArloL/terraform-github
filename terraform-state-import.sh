@@ -26,6 +26,7 @@ ruleset_name_from_addr() {
 if command -v gsed > /dev/null 2>&1; then
     SED=gsed
 else
+    # shellcheck disable=SC2209
     SED=sed
 fi
 
