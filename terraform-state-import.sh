@@ -7,6 +7,7 @@ set -o xtrace
 cleanup() {
     currentExitCode=$?
     rm -rf work_dir
+    rm -f empty_state_backend_override.tf
     exit ${currentExitCode}
 }
 
@@ -38,9 +39,21 @@ trap cleanup INT TERM EXIT
 rm -rf work_dir
 mkdir -p work_dir
 
+cat > empty_state_backend_override.tf << 'EOF'
+terraform {
+    backend "local" {
+        path = "work_dir/empty.tfstate"
+    }
+}
+EOF
+
+terraform init -reconfigure -input=false
+
 terraform plan \
-        -state=work_dir/empty \
         -out=work_dir/terraform-plan.out
+
+rm empty_state_backend_override.tf
+terraform init -reconfigure -input=false
 
 terraform show \
         -no-color \
