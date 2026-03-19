@@ -132,6 +132,9 @@ variable "repositories" {
         {
             name = "music-stuff"
             description = "Some spotify and beatunes stuff"
+            required_status_checks = [
+                "test.required-status-check"
+            ]
         },
         {
             name = "mvnx"
