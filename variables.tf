@@ -8,6 +8,7 @@ variable "repositories" {
         github_pages = optional(bool)
         required_status_checks = optional(list(string))
         actions_secrets = optional(list(string))
+        environments = optional(list(string))
         visibility = optional(string)
     }))
     default = [
@@ -199,6 +200,7 @@ variable "repositories" {
         {
             name = "terraform-github"
             description = "A project to manage github settings with terraform"
+            environments = ["production"]
         },
         {
             name = "testcontainers-colima-github-actions"

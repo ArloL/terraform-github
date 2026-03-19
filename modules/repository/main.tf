@@ -61,6 +61,13 @@ resource "github_repository_dependabot_security_updates" "security_updates" {
     enabled     = true
 }
 
+resource "github_repository_environment" "environments" {
+    for_each    = toset(var.environments)
+
+    repository  = github_repository.repository.name
+    environment = each.key
+}
+
 resource "github_actions_secret" "actions_secrets" {
     for_each        = var.actions_secrets
 
