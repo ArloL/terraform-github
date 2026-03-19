@@ -29,12 +29,15 @@ resource "github_repository" "repository" {
         }
     }
 
-    security_and_analysis {
-        secret_scanning {
-            status = "enabled"
-        }
-        secret_scanning_push_protection {
-            status = "enabled"
+    dynamic "security_and_analysis" {
+        for_each = var.archived == true ? [] : [1]
+        content {
+            secret_scanning {
+                status = "enabled"
+            }
+            secret_scanning_push_protection {
+                status = "enabled"
+            }
         }
     }
 }
