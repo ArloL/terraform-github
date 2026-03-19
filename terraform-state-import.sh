@@ -89,6 +89,12 @@ while IFS= read -r addr; do
             -state "${state}" \
             "'${addr}'" \
             "${repository}:${environment}:${secret_name}" >> work_dir/commands.txt
+    elif [[ "${addr}" == *".github_repository_environment."* ]]; then
+        environment=$(secret_name_from_addr "${addr}")
+        echo terraform import \
+            -state "${state}" \
+            "'${addr}'" \
+            "${repository}:${environment}" >> work_dir/commands.txt
     elif [[ "${addr}" == *".github_repository_ruleset."* ]]; then
         ruleset_name=$(ruleset_name_from_addr "${addr}")
         echo terraform import \
