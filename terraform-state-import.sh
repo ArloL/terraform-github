@@ -80,7 +80,7 @@ sort work_dir/addrs.txt | uniq > work_dir/addrs-unique.txt
 
 while IFS= read -r addr; do
     repository=$(repository_from_addr "${addr}")
-    state=$(mktemp -u -p work_dir -t state_)
+    state=$(mktemp -u -p work_dir -t state_XXXXX)
     if [[ "${addr}" == *".github_branch_protection."* ]]; then
         pattern=main
         echo terraform import \
