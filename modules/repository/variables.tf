@@ -38,8 +38,9 @@ variable "required_status_checks" {
 
 variable "actions_secrets" {
     description = "(Optional) a map of secrets added to the repository in the actions scope"
-    type = map(string)
-    default = {}
+    type      = map(string)
+    default   = {}
+    sensitive = true
 }
 
 variable "environments" {

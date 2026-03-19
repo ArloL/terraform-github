@@ -69,11 +69,11 @@ resource "github_repository_environment" "environments" {
 }
 
 resource "github_actions_secret" "actions_secrets" {
-    for_each        = var.actions_secrets
+    for_each        = nonsensitive(toset(keys(coalesce(var.actions_secrets, {}))))
 
     repository      = github_repository.repository.id
     secret_name     = each.key
-    plaintext_value = each.value
+    plaintext_value = var.actions_secrets[each.key]
 }
 
 resource "github_workflow_repository_permissions" "workflow_permissions" {
