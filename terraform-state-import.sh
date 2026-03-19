@@ -106,7 +106,6 @@ done < work_dir/addrs-unique.txt
 set +o errexit
 parallel \
     --verbose \
-    --bar \
     --jobs "100%" \
     < work_dir/commands.txt
 status=$?
