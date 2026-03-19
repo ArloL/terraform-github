@@ -1,6 +1,5 @@
 # Configure the GitHub Provider
 provider "github" {
-    owner = "ArloL"
 }
 
 module "repository" {
