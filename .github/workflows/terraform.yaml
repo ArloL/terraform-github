@@ -1,0 +1,84 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+permissions: {}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y parallel
+        mkdir -p ~/.parallel && touch ~/.parallel/will-cite
+        sudo ln -sf "$(which sed)" /usr/local/bin/gsed
+    - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269ef065 # v3.1.2
+    - name: Terraform Init
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+      run: terraform init
+    - name: Import state
+      env:
+        GH_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+      run: ./terraform-state-import.sh
+    - name: Terraform Plan
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        TF_VAR_secret_values: ${{ secrets.TF_SECRET_VALUES }}
+      run: terraform plan -refresh=false
+  apply:
+    needs:
+    - plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y parallel
+        mkdir -p ~/.parallel && touch ~/.parallel/will-cite
+        sudo ln -sf "$(which sed)" /usr/local/bin/gsed
+    - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269ef065 # v3.1.2
+    - name: Terraform Init
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+      run: terraform init
+    - name: Import state
+      env:
+        GH_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+      run: ./terraform-state-import.sh
+    - name: Terraform Apply
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        TF_VAR_secret_values: ${{ secrets.TF_SECRET_VALUES }}
+      run: terraform apply -refresh=false -auto-approve
+  required-status-check:
+    name: terraform.required-status-check
+    needs:
+    - plan
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Use this job as the required status check of this workflow"
+    - name: Check that all jobs were successful
+      env:
+        RESULTS: ${{ toJSON(needs) }}
+      run: |
+        echo "$RESULTS" | jq --exit-status 'all(.result == "success")' || exit 1
