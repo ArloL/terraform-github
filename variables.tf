@@ -203,7 +203,12 @@ variable "repositories" {
         {
             name = "terraform-github"
             description = "A project to manage github settings with terraform"
-            environments = [{ name = "production" }]
+            environments = [
+                {
+                    name = "production",
+                    secrets = ["TF_GITHUB_TOKEN"]
+                }
+            ]
         },
         {
             name = "testcontainers-colima-github-actions"
