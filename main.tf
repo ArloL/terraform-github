@@ -15,5 +15,6 @@ module "repository" {
     archived = lookup(each.value, "archived", null)
     required_status_checks = lookup(each.value, "required_status_checks", [])
     actions_secrets = lookup(each.value, "actions_secrets", {})
+    environments = lookup(each.value, "environments", [])
     visibility = lookup(each.value, "visibility", "public")
 }

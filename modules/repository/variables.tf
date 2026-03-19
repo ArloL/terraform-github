@@ -42,6 +42,12 @@ variable "actions_secrets" {
     default = {}
 }
 
+variable "environments" {
+    description = "(Optional) a list of environments to create for the repository"
+    type = list(string)
+    default = []
+}
+
 variable "visibility" {
     description = "(Optional) Can be public or private. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, visibility can also be internal. The visibility parameter overrides the private parameter."
     type = string
