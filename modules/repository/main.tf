@@ -84,6 +84,17 @@ resource "github_actions_secret" "actions_secrets" {
     plaintext_value = var.actions_secrets[each.key]
 }
 
+resource "github_actions_environment_secret" "environment_secrets" {
+    for_each        = nonsensitive(toset(keys(coalesce(var.environment_secrets, {}))))
+
+    repository      = github_repository.repository.id
+    environment     = split("/", each.key)[0]
+    secret_name     = split("/", each.key)[1]
+    plaintext_value = var.environment_secrets[each.key]
+
+    depends_on = [github_repository_environment.environments]
+}
+
 resource "github_workflow_repository_permissions" "workflow_permissions" {
     repository                       = github_repository.repository.id
     default_workflow_permissions     = "read"
