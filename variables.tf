@@ -216,6 +216,13 @@ variable "repositories" {
             archived = true
         },
         {
+            name = "tsaf-parser"
+            description = "Binary format exploration"
+            required_status_checks = [
+                "test.required-status-check"
+            ]
+        },
+        {
             name = "vagrant-ssh-config"
             description = "A vagrant plugin that automatically creates ssh configs for vms"
         },
