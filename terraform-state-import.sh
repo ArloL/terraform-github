@@ -47,13 +47,13 @@ terraform {
 }
 EOF
 
-terraform init -reconfigure -input=false
+terraform init -migrate-state -force-copy -input=false
 
 terraform plan \
         -out=work_dir/terraform-plan.out
 
 rm empty_state_backend_override.tf
-terraform init -reconfigure -input=false
+terraform init -migrate-state -force-copy -input=false
 
 terraform show \
         -no-color \
