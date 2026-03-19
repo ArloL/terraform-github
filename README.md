@@ -29,6 +29,7 @@ And you can add them in a `mise.local.toml` like this
 [env]
 GITHUB_TOKEN='token'
 TF_VAR_secret_values=""" {
-        "chorito-pat": "token",
+        "chorito-PAT": "token",
+        "terraform-github-production-TF_GITHUB_TOKEN" = "token",
     } """
 ```
