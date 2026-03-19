@@ -62,7 +62,7 @@ resource "github_repository_dependabot_security_updates" "security_updates" {
 }
 
 resource "github_repository_environment" "environments" {
-    for_each    = toset(var.environments)
+    for_each    = toset(coalesce(var.environments, []))
 
     repository  = github_repository.repository.name
     environment = each.key
