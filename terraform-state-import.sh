@@ -11,20 +11,27 @@ cleanup() {
 }
 
 repository_from_addr() {
-    echo "${1}" | gsed -n 's/[^"]*"\([^"]*\)".*/\1/p'
+    echo "${1}" | $SED -n 's/[^"]*"\([^"]*\)".*/\1/p'
 }
 
 secret_name_from_addr() {
-    echo "${1}" | gsed -n 's/[^"]*"[^"]*"[^"]*"\([^"]*\)".*/\1/p'
+    echo "${1}" | $SED -n 's/[^"]*"[^"]*"[^"]*"\([^"]*\)".*/\1/p'
 }
 
 ruleset_name_from_addr() {
-    echo "${1}" | gsed -n 's/.*\.github_repository_ruleset\.\([^[]*\)\[.*/\1/p'
+    echo "${1}" | $SED -n 's/.*\.github_repository_ruleset\.\([^[]*\)\[.*/\1/p'
 }
+
+if command -v gsed > /dev/null 2>&1; then
+    SED=gsed
+else
+    SED=sed
+fi
 
 terraform --version
 gh --version
 parallel --version
+$SED --version | head -1
 
 trap cleanup INT TERM EXIT
 
@@ -40,7 +47,7 @@ terraform show \
         work_dir/terraform-plan.out \
     > work_dir/terraform-plan.txt
 
-gsed -n \
+$SED -n \
         's/^  # \(\S\+\).*/\1/p' \
         work_dir/terraform-plan.txt \
     > work_dir/addrs.txt

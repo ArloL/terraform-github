@@ -22,7 +22,6 @@ jobs:
       run: |
         sudo apt-get install -y parallel
         mkdir -p ~/.parallel && touch ~/.parallel/will-cite
-        sudo ln -sf "$(which sed)" /usr/local/bin/gsed
     - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269ef065 # v3.1.2
     - name: Terraform Init
       env:
@@ -36,7 +35,6 @@ jobs:
     - name: Terraform Plan
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
-        TF_VAR_secret_values: ${{ secrets.TF_SECRET_VALUES }}
       run: terraform plan -refresh=false
   apply:
     needs:
@@ -53,7 +51,6 @@ jobs:
       run: |
         sudo apt-get install -y parallel
         mkdir -p ~/.parallel && touch ~/.parallel/will-cite
-        sudo ln -sf "$(which sed)" /usr/local/bin/gsed
     - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269ef065 # v3.1.2
     - name: Terraform Init
       env:
@@ -67,7 +64,6 @@ jobs:
     - name: Terraform Apply
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
-        TF_VAR_secret_values: ${{ secrets.TF_SECRET_VALUES }}
       run: terraform apply -refresh=false -auto-approve
   required-status-check:
     name: terraform.required-status-check
