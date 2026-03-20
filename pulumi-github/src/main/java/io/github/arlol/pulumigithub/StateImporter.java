@@ -79,11 +79,13 @@ public class StateImporter {
                 }
             }
 
-            for (var env : config.environments()) {
-                addResource(resources,
-                        "github:index/repositoryEnvironment:RepositoryEnvironment",
-                        config.name() + "-env-" + env.name(),
-                        config.name() + ":" + env.name());
+            if (!config.archived()) {
+                for (var env : config.environments()) {
+                    addResource(resources,
+                            "github:index/repositoryEnvironment:RepositoryEnvironment",
+                            config.name() + "-env-" + env.name(),
+                            config.name() + ":" + env.name());
+                }
             }
         }
         return resources;
