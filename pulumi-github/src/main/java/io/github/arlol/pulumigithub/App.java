@@ -19,8 +19,10 @@ public class App {
         // and {"repoName-envName-secretName": "value"} for environment secrets.
         var secretValuesJson = Objects.requireNonNullElse(
                 System.getenv("TF_VAR_secret_values"), "{}");
-        Map<String, String> secrets = new Gson().fromJson(
-                secretValuesJson, new TypeToken<Map<String, String>>() {}.getType());
+        Map<String, String> secrets = Objects.requireNonNullElse(
+                new Gson().fromJson(secretValuesJson,
+                        new TypeToken<Map<String, String>>() {}.getType()),
+                Map.of());
 
         for (var config : Repositories.ALL) {
             RepositoryProvisioner.provision(config, secrets);

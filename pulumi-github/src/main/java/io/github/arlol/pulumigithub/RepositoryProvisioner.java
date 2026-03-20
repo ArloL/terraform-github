@@ -96,8 +96,7 @@ public class RepositoryProvisioner {
                 .allowAutoMerge(true)
                 .autoInit(false)
                 .vulnerabilityAlerts(!config.archived())
-                .archived(config.archived())
-                .defaultBranch(config.mainBranch());
+                .archived(config.archived());
 
         if (config.homepage() != null) {
             repoArgsBuilder.homepageUrl(config.homepage());
