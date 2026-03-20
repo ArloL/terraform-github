@@ -11,4 +11,4 @@ cd "${SCRIPT_DIR}"
 
 pulumi stack init dev 2>/dev/null || pulumi stack select dev
 
-mvn exec:java -DmainClass=io.github.arlol.pulumigithub.StateImporter
+mvn --batch-mode exec:java -DmainClass=io.github.arlol.pulumigithub.StateImporter
