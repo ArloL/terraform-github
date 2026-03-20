@@ -83,24 +83,62 @@ public class RepositoryProvisioner {
      */
     public static void provision(RepositoryConfig config, Map<String, String> secrets) {
         // 1. github_repository
+        if (config.archived()) {
+            new Repository(config.name(),
+                    RepositoryArgs.builder()
+                            .name(config.name())
+                            .archived(true)
+                            .build(),
+                    CustomResourceOptions.builder()
+                            .ignoreChanges(List.of(
+                                    "allowAutoMerge",
+                                    "allowMergeCommit",
+                                    "allowRebaseMerge",
+                                    "allowSquashMerge",
+                                    "allowUpdateBranch",
+                                    "archiveOnDestroy",
+                                    "autoInit",
+                                    "deleteBranchOnMerge",
+                                    "description",
+                                    "gitignoreTemplate",
+                                    "hasDiscussions",
+                                    "hasDownloads",
+                                    "hasIssues",
+                                    "hasProjects",
+                                    "hasWiki",
+                                    "homepageUrl",
+                                    "ignoreVulnerabilityAlertsDuringRead",
+                                    "isTemplate",
+                                    "licenseTemplate",
+                                    "mergeCommitMessage",
+                                    "mergeCommitTitle",
+                                    "pages",
+                                    "securityAndAnalysis",
+                                    "squashMergeCommitMessage",
+                                    "squashMergeCommitTitle",
+                                    "template",
+                                    "topics",
+                                    "visibility",
+                                    "vulnerabilityAlerts",
+                                    "webCommitSignoffRequired"
+                            ))
+                            .build());
+            return;
+        }
+
         var repoArgsBuilder = RepositoryArgs.builder()
                 .name(config.name())
                 .description(config.description())
                 .visibility(config.visibility())
-                .vulnerabilityAlerts(!config.archived())
-                .archived(config.archived());
-
-        if (!config.archived()) {
-            repoArgsBuilder
-                    .allowMergeCommit(false)
-                    .allowSquashMerge(false)
-                    .deleteBranchOnMerge(true)
-                    .hasIssues(true)
-                    .hasProjects(true)
-                    .hasWiki(true)
-                    .allowAutoMerge(true)
-                    .autoInit(false);
-        }
+                .allowMergeCommit(false)
+                .allowSquashMerge(false)
+                .deleteBranchOnMerge(true)
+                .hasIssues(true)
+                .hasProjects(true)
+                .hasWiki(true)
+                .allowAutoMerge(true)
+                .autoInit(false)
+                .vulnerabilityAlerts(true);
 
         if (config.homepage() != null) {
             repoArgsBuilder.homepageUrl(config.homepage());
@@ -112,42 +150,17 @@ public class RepositoryProvisioner {
                     .build());
         }
 
-        if (!config.archived()) {
-            repoArgsBuilder.securityAndAnalysis(RepositorySecurityAndAnalysisArgs.builder()
-                    .secretScanning(RepositorySecurityAndAnalysisSecretScanningArgs.builder()
-                            .status("enabled")
-                            .build())
-                    .secretScanningPushProtection(
-                            RepositorySecurityAndAnalysisSecretScanningPushProtectionArgs.builder()
-                                    .status("enabled")
-                                    .build())
-                    .build());
-        }
+        repoArgsBuilder.securityAndAnalysis(RepositorySecurityAndAnalysisArgs.builder()
+                .secretScanning(RepositorySecurityAndAnalysisSecretScanningArgs.builder()
+                        .status("enabled")
+                        .build())
+                .secretScanningPushProtection(
+                        RepositorySecurityAndAnalysisSecretScanningPushProtectionArgs.builder()
+                                .status("enabled")
+                                .build())
+                .build());
 
-        var repoOptions = config.archived()
-                ? CustomResourceOptions.builder()
-                        .ignoreChanges(List.of(
-                                "allowAutoMerge",
-                                "allowMergeCommit",
-                                "allowRebaseMerge",
-                                "allowSquashMerge",
-                                "deleteBranchOnMerge",
-                                "description",
-                                "hasIssues",
-                                "hasProjects",
-                                "hasWiki",
-                                "homepageUrl",
-                                "ignoreVulnerabilityAlertsDuringRead",
-                                "mergeCommitMessage",
-                                "mergeCommitTitle",
-                                "squashMergeCommitMessage",
-                                "squashMergeCommitTitle",
-                                "webCommitSignoffRequired"
-                        ))
-                        .build()
-                : CustomResourceOptions.Empty;
-
-        var repo = new Repository(config.name(), repoArgsBuilder.build(), repoOptions);
+        var repo = new Repository(config.name(), repoArgsBuilder.build());
 
         // 2. github_branch_default
         var branchDefault = new BranchDefault(config.name() + "-default",
