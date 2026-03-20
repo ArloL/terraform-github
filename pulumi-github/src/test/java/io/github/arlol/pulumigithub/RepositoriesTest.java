@@ -16,9 +16,11 @@ class RepositoriesTest {
 
     @Test
     void allReposHaveNonEmptyDescription() {
-        Repositories.ALL.forEach(r ->
-                assertFalse(r.description().isBlank(),
-                        "Repository has blank description: " + r.name()));
+        Repositories.ALL.stream()
+                .filter(r -> !r.archived())
+                .forEach(r ->
+                        assertFalse(r.description().isBlank(),
+                                "Repository has blank description: " + r.name()));
     }
 
     @Test
@@ -32,8 +34,7 @@ class RepositoriesTest {
 
     @Test
     void repoCountMatchesTerraform() {
-        // Matches the 43 entries in variables.tf (terraform-github counts as one)
-        assertEquals(43, Repositories.ALL.size());
+        assertEquals(84, Repositories.ALL.size());
     }
 
     @Test

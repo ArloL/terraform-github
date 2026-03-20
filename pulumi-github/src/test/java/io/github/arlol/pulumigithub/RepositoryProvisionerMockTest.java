@@ -34,7 +34,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void publicActiveRepoCreatesAllResources() throws Exception {
-        var config = RepositoryConfig.builder("my-repo", "A public active repo").build();
+        var config = RepositoryConfig.builder("my-repo").description("A public active repo").build();
         var capturedTypes = new ArrayList<String>();
 
         PulumiTest.withMocks(capturingMocks(capturedTypes))
@@ -52,7 +52,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void archivedRepoSkipsBranchProtectionAndDependabot() throws Exception {
-        var config = RepositoryConfig.builder("old-repo", "An archived repo")
+        var config = RepositoryConfig.builder("old-repo").description("An archived repo")
                 .archived(true)
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -62,19 +62,21 @@ class RepositoryProvisionerMockTest {
                 .throwOnError();
 
         assertTrue(capturedTypes.contains("github:index/repository:Repository"));
-        assertTrue(capturedTypes.contains("github:index/branchDefault:BranchDefault"));
+        assertFalse(capturedTypes.contains("github:index/branchDefault:BranchDefault"),
+                "archived repo should not have branch default");
         assertFalse(capturedTypes.contains("github:index/branchProtection:BranchProtection"),
                 "archived repo should not have branch protection");
         assertFalse(capturedTypes.contains(
                 "github:index/repositoryDependabotSecurityUpdates:RepositoryDependabotSecurityUpdates"),
                 "archived repo should not have dependabot security updates");
-        assertTrue(capturedTypes.contains(
-                "github:index/workflowRepositoryPermissions:WorkflowRepositoryPermissions"));
+        assertFalse(capturedTypes.contains(
+                "github:index/workflowRepositoryPermissions:WorkflowRepositoryPermissions"),
+                "archived repo should not have workflow permissions");
     }
 
     @Test
     void privateRepoSkipsBranchProtectionOnly() throws Exception {
-        var config = RepositoryConfig.builder("private-repo", "A private active repo")
+        var config = RepositoryConfig.builder("private-repo").description("A private active repo")
                 .visibility("private")
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -93,7 +95,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void environmentsCreateRepositoryEnvironmentResources() throws Exception {
-        var config = RepositoryConfig.builder("env-repo", "Repo with environments")
+        var config = RepositoryConfig.builder("env-repo").description("Repo with environments")
                 .environments(List.of(
                         new EnvironmentConfig("staging"),
                         new EnvironmentConfig("production")))
@@ -112,7 +114,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void actionsSecretCreatedOnlyWhenKeyPresent() throws Exception {
-        var config = RepositoryConfig.builder("secret-repo", "Repo with secrets")
+        var config = RepositoryConfig.builder("secret-repo").description("Repo with secrets")
                 .actionsSecrets("PAT", "OTHER")
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -132,7 +134,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void actionsSecretNotCreatedWhenSecretsMapEmpty() throws Exception {
-        var config = RepositoryConfig.builder("secret-repo", "Repo with secrets")
+        var config = RepositoryConfig.builder("secret-repo").description("Repo with secrets")
                 .actionsSecrets("PAT")
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -148,7 +150,7 @@ class RepositoryProvisionerMockTest {
     @Test
     void envSecretCreatedOnlyWhenKeyPresent() throws Exception {
         var envWithSecret = new EnvironmentConfig("production", List.of("TF_GITHUB_TOKEN"));
-        var config = RepositoryConfig.builder("env-secret-repo", "Repo with env secrets")
+        var config = RepositoryConfig.builder("env-secret-repo").description("Repo with env secrets")
                 .environments(List.of(envWithSecret))
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -166,7 +168,7 @@ class RepositoryProvisionerMockTest {
     @Test
     void envSecretNotCreatedWhenKeyAbsent() throws Exception {
         var envWithSecret = new EnvironmentConfig("production", List.of("TF_GITHUB_TOKEN"));
-        var config = RepositoryConfig.builder("env-secret-repo", "Repo with env secrets")
+        var config = RepositoryConfig.builder("env-secret-repo").description("Repo with env secrets")
                 .environments(List.of(envWithSecret))
                 .build();
         var capturedTypes = new ArrayList<String>();
@@ -181,7 +183,7 @@ class RepositoryProvisionerMockTest {
 
     @Test
     void repoWithNoEnvironmentsCreatesNoEnvironmentResources() throws Exception {
-        var config = RepositoryConfig.builder("plain-repo", "Plain repo").build();
+        var config = RepositoryConfig.builder("plain-repo").description("Plain repo").build();
         var capturedTypes = new ArrayList<String>();
 
         PulumiTest.withMocks(capturingMocks(capturedTypes))

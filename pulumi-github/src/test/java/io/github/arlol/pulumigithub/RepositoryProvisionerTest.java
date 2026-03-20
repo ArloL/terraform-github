@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class RepositoryProvisionerTest {
 
     private static RepositoryConfig publicActive(String name) {
-        return RepositoryConfig.builder(name, "description").build();
+        return RepositoryConfig.builder(name).description("description").build();
     }
 
     private static RepositoryConfig archived(String name) {
-        return RepositoryConfig.builder(name, "description").archived(true).build();
+        return RepositoryConfig.builder(name).description("description").archived(true).build();
     }
 
     private static RepositoryConfig privateRepo(String name) {
-        return RepositoryConfig.builder(name, "description").visibility("private").build();
+        return RepositoryConfig.builder(name).description("description").visibility("private").build();
     }
 
     // --- shouldHaveBranchProtection ---
@@ -26,11 +26,6 @@ class RepositoryProvisionerTest {
     @Test
     void branchProtectionForPublicActiveRepo() {
         assertTrue(shouldHaveBranchProtection(publicActive("my-repo")));
-    }
-
-    @Test
-    void noBranchProtectionForArchivedRepo() {
-        assertFalse(shouldHaveBranchProtection(archived("my-repo")));
     }
 
     @Test
@@ -51,7 +46,7 @@ class RepositoryProvisionerTest {
 
     @Test
     void customStatusChecksAppendedAfterDefaults() {
-        var config = RepositoryConfig.builder("my-repo", "desc")
+        var config = RepositoryConfig.builder("my-repo").description("desc")
                 .requiredStatusChecks("main.required-status-check")
                 .build();
         var checks = buildStatusChecks(config);
