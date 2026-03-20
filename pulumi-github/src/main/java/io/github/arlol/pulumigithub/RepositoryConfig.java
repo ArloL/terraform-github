@@ -17,20 +17,16 @@ public record RepositoryConfig(
 ) {
 
     public static RepositoryConfig archived(String name) {
-        return new Builder(name, "").archived(true).build();
+        return new Builder(name).archived(true).build();
     }
 
     public static Builder builder(String name) {
-        return new Builder(name, "");
-    }
-
-    public static Builder builder(String name, String description) {
-        return new Builder(name, description);
+        return new Builder(name);
     }
 
     public static final class Builder {
         private final String name;
-        private final String description;
+        private String description = "";
         private boolean archived = false;
         private String homepage = null;
         private boolean githubPages = false;
@@ -40,9 +36,13 @@ public record RepositoryConfig(
         private List<String> actionsSecrets = List.of();
         private List<EnvironmentConfig> environments = List.of();
 
-        private Builder(String name, String description) {
+        private Builder(String name) {
             this.name = name;
+        }
+
+        public Builder description(String description) {
             this.description = description;
+            return this;
         }
 
         public Builder archived(boolean archived) {
