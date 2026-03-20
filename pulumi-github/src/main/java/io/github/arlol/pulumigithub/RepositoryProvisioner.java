@@ -94,7 +94,7 @@ public class RepositoryProvisioner {
                                     "allowAutoMerge", "allowMergeCommit", "allowRebaseMerge",
                                     "allowSquashMerge", "deleteBranchOnMerge", "description",
                                     "hasIssues", "hasProjects", "hasWiki", "homepageUrl",
-                                    "mergeCommitMessage", "mergeCommitTitle", "securityAndAnalysis",
+                                    "mergeCommitMessage", "mergeCommitTitle", "pages", "securityAndAnalysis",
                                     "squashMergeCommitMessage", "squashMergeCommitTitle",
                                     "visibility", "vulnerabilityAlerts", "webCommitSignoffRequired"
                             ))
