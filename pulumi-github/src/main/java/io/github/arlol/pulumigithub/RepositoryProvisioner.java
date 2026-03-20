@@ -87,16 +87,20 @@ public class RepositoryProvisioner {
                 .name(config.name())
                 .description(config.description())
                 .visibility(config.visibility())
-                .allowMergeCommit(false)
-                .allowSquashMerge(false)
-                .deleteBranchOnMerge(true)
-                .hasIssues(true)
-                .hasProjects(true)
-                .hasWiki(true)
-                .allowAutoMerge(true)
-                .autoInit(false)
                 .vulnerabilityAlerts(!config.archived())
                 .archived(config.archived());
+
+        if (!config.archived()) {
+            repoArgsBuilder
+                    .allowMergeCommit(false)
+                    .allowSquashMerge(false)
+                    .deleteBranchOnMerge(true)
+                    .hasIssues(true)
+                    .hasProjects(true)
+                    .hasWiki(true)
+                    .allowAutoMerge(true)
+                    .autoInit(false);
+        }
 
         if (config.homepage() != null) {
             repoArgsBuilder.homepageUrl(config.homepage());
