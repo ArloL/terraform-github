@@ -51,14 +51,16 @@ jobs:
         java-version: '21'
         distribution: temurin
         cache: maven
-    - uses: pulumi/actions@v6
-      with:
-        command: run
-        run: ./pulumi-state-import.sh
-        work-dir: pulumi-github
+    - name: Install Pulumi CLI
+      run: |
+        curl -fsSL https://get.pulumi.com | sh
+        echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
+    - name: Import state
+      working-directory: pulumi-github
+      run: ./pulumi-state-import.sh
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
-        GH_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        GITHUB_OWNER: ${{ github.repository_owner }}
         PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
         PULUMI_CONFIG_PASSPHRASE: ""
     - uses: pulumi/actions@v6
