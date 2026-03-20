@@ -132,6 +132,7 @@ public class RepositoryProvisioner {
                                 "allowRebaseMerge",
                                 "allowSquashMerge",
                                 "deleteBranchOnMerge",
+                                "description",
                                 "hasIssues",
                                 "hasProjects",
                                 "hasWiki",
