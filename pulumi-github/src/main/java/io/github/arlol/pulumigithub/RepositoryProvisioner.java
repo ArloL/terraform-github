@@ -124,7 +124,29 @@ public class RepositoryProvisioner {
                     .build());
         }
 
-        var repo = new Repository(config.name(), repoArgsBuilder.build());
+        var repoOptions = config.archived()
+                ? CustomResourceOptions.builder()
+                        .ignoreChanges(List.of(
+                                "allowAutoMerge",
+                                "allowMergeCommit",
+                                "allowRebaseMerge",
+                                "allowSquashMerge",
+                                "deleteBranchOnMerge",
+                                "hasIssues",
+                                "hasProjects",
+                                "hasWiki",
+                                "homepageUrl",
+                                "ignoreVulnerabilityAlertsDuringRead",
+                                "mergeCommitMessage",
+                                "mergeCommitTitle",
+                                "squashMergeCommitMessage",
+                                "squashMergeCommitTitle",
+                                "webCommitSignoffRequired"
+                        ))
+                        .build()
+                : CustomResourceOptions.Empty;
+
+        var repo = new Repository(config.name(), repoArgsBuilder.build(), repoOptions);
 
         // 2. github_branch_default
         var branchDefault = new BranchDefault(config.name() + "-default",
