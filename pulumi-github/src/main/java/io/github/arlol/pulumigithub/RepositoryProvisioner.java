@@ -83,19 +83,11 @@ public class RepositoryProvisioner {
      */
     public static void provision(RepositoryConfig config, Map<String, String> secrets) {
         // 1. github_repository
-        if (config.archived()) {
-            new Repository(config.name(),
-                    RepositoryArgs.builder()
-                            .name(config.name())
-                            .archived(true)
-                            .build());
-            return;
-        }
-
         var repoArgsBuilder = RepositoryArgs.builder()
                 .name(config.name())
                 .description(config.description())
                 .visibility(config.visibility())
+                .archived(config.archived())
                 .allowMergeCommit(false)
                 .allowSquashMerge(false)
                 .deleteBranchOnMerge(true)
@@ -127,6 +119,10 @@ public class RepositoryProvisioner {
                 .build());
 
         var repo = new Repository(config.name(), repoArgsBuilder.build());
+
+        if (config.archived()) {
+            return;
+        }
 
         // 2. github_branch_default
         var branchDefault = new BranchDefault(config.name() + "-default",
