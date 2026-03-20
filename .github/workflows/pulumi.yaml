@@ -44,6 +44,7 @@ jobs:
         cloud-url: file://${{ github.workspace }}/pulumi-github
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
         PULUMI_CONFIG_PASSPHRASE: ""
         TF_VAR_secret_values: ${{ secrets.TF_VAR_secret_values }}
   up:
@@ -83,6 +84,7 @@ jobs:
         cloud-url: file://${{ github.workspace }}/pulumi-github
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
         PULUMI_CONFIG_PASSPHRASE: ""
         TF_VAR_secret_values: ${{ secrets.TF_VAR_secret_values }}
   required-status-check:
