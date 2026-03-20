@@ -9,11 +9,11 @@ public class Repositories {
                     .homepage("https://arlol.github.io/abenteuer-irland/")
                     .githubPages(true)
                     .build(),
-            RepositoryConfig.builder("actions").archived(true).build(),
-            RepositoryConfig.builder("actions-checkout-fetch-depth-demo").archived(true).build(),
+            RepositoryConfig.archived("actions"),
+            RepositoryConfig.archived("actions-checkout-fetch-depth-demo"),
             RepositoryConfig.builder("advent-of-code", "My advent of code solutions")
                     .build(),
-            RepositoryConfig.builder("airmac").archived(true).build(),
+            RepositoryConfig.archived("airmac"),
             RepositoryConfig.builder("angular-playground", "A playground for the Angular framework")
                     .homepage("https://arlol.github.io/angular-playground/")
                     .githubPages(true)
@@ -37,8 +37,8 @@ public class Repositories {
             RepositoryConfig.builder("calver-tag-action",
                     "A GitHub Actions action that creates a new version using a CalVer-style derivative and pushes it")
                     .build(),
-            RepositoryConfig.builder("campuswoche-2018-webseiten-steuern").archived(true).build(),
-            RepositoryConfig.builder("chop-kata").archived(true).build(),
+            RepositoryConfig.archived("campuswoche-2018-webseiten-steuern"),
+            RepositoryConfig.archived("chop-kata"),
             RepositoryConfig.builder("chorito", "A tool that does some chores in your source code")
                     .actionsSecrets("PAT")
                     .requiredStatusChecks("main.required-status-check")
@@ -52,7 +52,7 @@ public class Repositories {
             RepositoryConfig.builder("dotfiles",
                     "My collection of dotfiles used to configure my command line environments")
                     .build(),
-            RepositoryConfig.builder("dotnet-http-client-reproduction").archived(true).build(),
+            RepositoryConfig.archived("dotnet-http-client-reproduction"),
             RepositoryConfig.builder("eclipse-projects", "Arlo's project catalog for the Eclipse Installer")
                     .homepage("https://arlol.github.io/eclipse-projects/")
                     .githubPages(true)
@@ -67,39 +67,39 @@ public class Repositories {
             RepositoryConfig.builder("git-presentation-2018-10",
                     "Git Präsentation für Vorlesung Industrielle Softwareentwicklung")
                     .build(),
-            RepositoryConfig.builder("gitfx").archived(true).build(),
-            RepositoryConfig.builder("graalfx").archived(true).build(),
-            RepositoryConfig.builder("gwt-dragula-test").archived(true).build(),
-            RepositoryConfig.builder("gwt-log-print-style-demo").archived(true).build(),
-            RepositoryConfig.builder("gwt-refresh-demo").archived(true).build(),
-            RepositoryConfig.builder("HalloJSX").archived(true).build(),
-            RepositoryConfig.builder("HelloCocoaHTTPServer").archived(true).build(),
-            RepositoryConfig.builder("HelloIntAirActServer").archived(true).build(),
-            RepositoryConfig.builder("HelloRoutingServer").archived(true).build(),
-            RepositoryConfig.builder("HelloServer").archived(true).build(),
+            RepositoryConfig.archived("gitfx"),
+            RepositoryConfig.archived("graalfx"),
+            RepositoryConfig.archived("gwt-dragula-test"),
+            RepositoryConfig.archived("gwt-log-print-style-demo"),
+            RepositoryConfig.archived("gwt-refresh-demo"),
+            RepositoryConfig.archived("HalloJSX"),
+            RepositoryConfig.archived("HelloCocoaHTTPServer"),
+            RepositoryConfig.archived("HelloIntAirActServer"),
+            RepositoryConfig.archived("HelloRoutingServer"),
+            RepositoryConfig.archived("HelloServer"),
             RepositoryConfig.builder("homebrew-tap", "A homebrew tap for my own formulas and casks")
                     .build(),
-            RepositoryConfig.builder("iebox").archived(true).build(),
-            RepositoryConfig.builder("ilabwebworkshop").archived(true).build(),
-            RepositoryConfig.builder("IntAirAct").archived(true).build(),
-            RepositoryConfig.builder("IntAirAct-Performance").archived(true).build(),
-            RepositoryConfig.builder("jBrowserDriver").archived(true).build(),
-            RepositoryConfig.builder("jbrowserdriver-cucumber-integration-tests").archived(true).build(),
-            RepositoryConfig.builder("jbrowserdriver-test").archived(true).build(),
-            RepositoryConfig.builder("jdk-newinstance-leak-demo").archived(true).build(),
-            RepositoryConfig.builder("jdk8u144-classloader-leak-demo-webapp").archived(true).build(),
-            RepositoryConfig.builder("jhipster-app").archived(true).build(),
-            RepositoryConfig.builder("json-smart-dependency-resolution-test").archived(true).build(),
+            RepositoryConfig.archived("iebox"),
+            RepositoryConfig.archived("ilabwebworkshop"),
+            RepositoryConfig.archived("IntAirAct"),
+            RepositoryConfig.archived("IntAirAct-Performance"),
+            RepositoryConfig.archived("jBrowserDriver"),
+            RepositoryConfig.archived("jbrowserdriver-cucumber-integration-tests"),
+            RepositoryConfig.archived("jbrowserdriver-test"),
+            RepositoryConfig.archived("jdk-newinstance-leak-demo"),
+            RepositoryConfig.archived("jdk8u144-classloader-leak-demo-webapp"),
+            RepositoryConfig.archived("jhipster-app"),
+            RepositoryConfig.archived("json-smart-dependency-resolution-test"),
             RepositoryConfig.builder("kafka-debugger", "A small jar utility to test kafka connections")
                     .build(),
-            RepositoryConfig.builder("m2e-wro4j-bug-demo").archived(true).build(),
-            RepositoryConfig.builder("m2e-wro4j-bug-demo2").archived(true).build(),
-            RepositoryConfig.builder("maven-quickstart-j2objc").archived(true).build(),
+            RepositoryConfig.archived("m2e-wro4j-bug-demo"),
+            RepositoryConfig.archived("m2e-wro4j-bug-demo2"),
+            RepositoryConfig.archived("maven-quickstart-j2objc"),
             RepositoryConfig.builder("menubar-scripts",
                     "A collection of scripts that can run in e.g. xbar, swiftbar, etc.")
                     .build(),
-            RepositoryConfig.builder("Mirror").archived(true).build(),
-            RepositoryConfig.builder("modern-ie-vagrant").archived(true).build(),
+            RepositoryConfig.archived("Mirror"),
+            RepositoryConfig.archived("modern-ie-vagrant"),
             RepositoryConfig.builder("music-stuff", "Some spotify and beatunes stuff")
                     .requiredStatusChecks("test.required-status-check")
                     .build(),
@@ -107,7 +107,7 @@ public class Repositories {
                     "An experiment with Maven dependencies and dynamic classloading")
                     .requiredStatusChecks("main.required-status-check")
                     .build(),
-            RepositoryConfig.builder("MWPhotoBrowser").archived(true).build(),
+            RepositoryConfig.archived("MWPhotoBrowser"),
             RepositoryConfig.builder("myprojects-cleaner",
                     "A java application that runs git clean in a bunch of directories")
                     .requiredStatusChecks("main.required-status-check")
@@ -119,20 +119,20 @@ public class Repositories {
             RepositoryConfig.builder("nope-amine",
                     "A firefox extension that slowly increases the time for things to load on reddit.com")
                     .build(),
-            RepositoryConfig.builder("npmrc-github-action").archived(true).build(),
+            RepositoryConfig.archived("npmrc-github-action"),
             RepositoryConfig.builder("open-webui-runner",
                     "A small repo to run open-webui locally and stop it after using it")
                     .build(),
-            RepositoryConfig.builder("packer-templates").archived(true).build(),
-            RepositoryConfig.builder("pico-playground").archived(true).build(),
-            RepositoryConfig.builder("postgres-query-error-demo").archived(true).build(),
+            RepositoryConfig.archived("packer-templates"),
+            RepositoryConfig.archived("pico-playground"),
+            RepositoryConfig.archived("postgres-query-error-demo"),
             RepositoryConfig.builder("postgres-sync-demo",
                     "A demo on how to use triggers, queues, etc. to sync the app's data somewhere else")
                     .build(),
             RepositoryConfig.builder("python-nc",
                     "A test to see if I can implement nc's proxy functionality with python")
                     .build(),
-            RepositoryConfig.builder("quickstart-buck-bazel-maven").archived(true).build(),
+            RepositoryConfig.archived("quickstart-buck-bazel-maven"),
             RepositoryConfig.builder("rss-to-mail",
                     "Read from RSS feeds and send an email for every new item")
                     .requiredStatusChecks("main.required-status-check")
@@ -140,27 +140,27 @@ public class Repositories {
             RepositoryConfig.builder("sci-fi-movies",
                     "an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them")
                     .build(),
-            RepositoryConfig.builder("selenium-xp-ie6").archived(true).build(),
-            RepositoryConfig.builder("self-hosted-gh-actions-runner").archived(true).build(),
-            RepositoryConfig.builder("spring-cloud-context-classloader-leak-demo").archived(true).build(),
-            RepositoryConfig.builder("spring-configuration-processor-metadata-bug-demo").archived(true).build(),
-            RepositoryConfig.builder("spring-security-drupal-password-encoder").archived(true).build(),
+            RepositoryConfig.archived("selenium-xp-ie6"),
+            RepositoryConfig.archived("self-hosted-gh-actions-runner"),
+            RepositoryConfig.archived("spring-cloud-context-classloader-leak-demo"),
+            RepositoryConfig.archived("spring-configuration-processor-metadata-bug-demo"),
+            RepositoryConfig.archived("spring-security-drupal-password-encoder"),
             RepositoryConfig.builder("terraform-github",
                     "A project to manage github settings with terraform")
                     .environments(List.of(
                             new EnvironmentConfig("production", List.of("TF_GITHUB_TOKEN"))))
                     .build(),
-            RepositoryConfig.builder("testcontainers-colima-github-actions").archived(true).build(),
-            RepositoryConfig.builder("toado").archived(true).build(),
+            RepositoryConfig.archived("testcontainers-colima-github-actions"),
+            RepositoryConfig.archived("toado"),
             RepositoryConfig.builder("tsaf-parser", "Binary format exploration")
                     .requiredStatusChecks("test.required-status-check")
                     .build(),
-            RepositoryConfig.builder("vagrant-1").archived(true).build(),
+            RepositoryConfig.archived("vagrant-1"),
             RepositoryConfig.builder("vagrant-ssh-config",
                     "A vagrant plugin that automatically creates ssh configs for vms")
                     .build(),
-            RepositoryConfig.builder("vitest-link-reproduction").archived(true).build(),
-            RepositoryConfig.builder("vitest-mocking-reproduction").archived(true).build(),
+            RepositoryConfig.archived("vitest-link-reproduction"),
+            RepositoryConfig.archived("vitest-mocking-reproduction"),
             RepositoryConfig.builder("wait-for-ports",
                     "A command-line utility that waits until a port is open")
                     .requiredStatusChecks("main.required-status-check")
@@ -173,7 +173,7 @@ public class Repositories {
                     "A set of tools that check websites for common misconfigurations or downtime")
                     .requiredStatusChecks("main.required-status-check")
                     .build(),
-            RepositoryConfig.builder("workflow-dispatch-input-defaults").archived(true).build()
+            RepositoryConfig.archived("workflow-dispatch-input-defaults")
     );
 
 }

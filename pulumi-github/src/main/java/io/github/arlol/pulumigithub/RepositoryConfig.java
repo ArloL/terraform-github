@@ -16,6 +16,10 @@ public record RepositoryConfig(
         List<EnvironmentConfig> environments
 ) {
 
+    public static RepositoryConfig archived(String name) {
+        return new Builder(name, "").archived(true).build();
+    }
+
     public static Builder builder(String name) {
         return new Builder(name, "");
     }
