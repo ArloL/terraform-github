@@ -41,3 +41,10 @@ terraform.rc
 
 .env
 /work_dir/
+
+### Pulumi ###
+# Pulumi state files — ephemeral, recreated on each CI run via pulumi-state-import.sh
+/pulumi-github/.pulumi/stacks/
+
+# Maven build output
+/pulumi-github/target/

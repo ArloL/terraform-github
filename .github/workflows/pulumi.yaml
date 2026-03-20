@@ -1,0 +1,86 @@
+name: Pulumi
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+permissions: {}
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: temurin
+        cache: maven
+    - uses: pulumi/actions@v6
+      with:
+        command: preview
+        stack-name: dev
+        work-dir: pulumi-github
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
+        PULUMI_CONFIG_PASSPHRASE: ""
+        TF_VAR_secret_values: ${{ secrets.TF_VAR_secret_values }}
+  up:
+    needs:
+    - preview
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: temurin
+        cache: maven
+    - uses: pulumi/actions@v6
+      with:
+        command: run
+        run: ./pulumi-state-import.sh
+        work-dir: pulumi-github
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
+        PULUMI_CONFIG_PASSPHRASE: ""
+    - uses: pulumi/actions@v6
+      with:
+        command: up
+        stack-name: dev
+        work-dir: pulumi-github
+      env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        PULUMI_BACKEND_URL: file://${{ github.workspace }}/pulumi-github
+        PULUMI_CONFIG_PASSPHRASE: ""
+        TF_VAR_secret_values: ${{ secrets.TF_VAR_secret_values }}
+  required-status-check:
+    name: pulumi.required-status-check
+    needs:
+    - preview
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Use this job as the required status check of this workflow"
+    - name: Check that all jobs were successful
+      env:
+        RESULTS: ${{ toJSON(needs) }}
+      run: |
+        echo "$RESULTS" | jq --exit-status 'all(.result == "success")' || exit 1

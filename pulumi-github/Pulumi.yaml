@@ -1,0 +1,8 @@
+name: pulumi-github
+description: GitHub organization management via Pulumi Java
+runtime:
+  name: java
+  options:
+    binary: mvn
+backend:
+  url: file://${PWD}
