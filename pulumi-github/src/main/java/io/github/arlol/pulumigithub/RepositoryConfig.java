@@ -16,6 +16,10 @@ public record RepositoryConfig(
         List<EnvironmentConfig> environments
 ) {
 
+    public static Builder builder(String name) {
+        return new Builder(name, "");
+    }
+
     public static Builder builder(String name, String description) {
         return new Builder(name, description);
     }

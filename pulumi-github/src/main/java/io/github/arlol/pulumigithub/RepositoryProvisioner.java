@@ -48,10 +48,10 @@ public class RepositoryProvisioner {
 
     /**
      * Returns true when branch protection should be created for this repo.
-     * Mirrors the Terraform condition: !archived && visibility == "public".
+     * Only public repos get branch protection.
      */
     public static boolean shouldHaveBranchProtection(RepositoryConfig config) {
-        return !config.archived() && "public".equals(config.visibility());
+        return "public".equals(config.visibility());
     }
 
     /**
