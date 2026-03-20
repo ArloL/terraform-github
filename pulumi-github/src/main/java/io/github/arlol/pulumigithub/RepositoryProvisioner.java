@@ -135,7 +135,7 @@ public class RepositoryProvisioner {
                         .branch(config.mainBranch())
                         .build());
 
-        // 3. github_branch_protection (only for non-archived public repos)
+        // 3. github_branch_protection (public repos only)
         if (shouldHaveBranchProtection(config)) {
             new BranchProtection(config.name() + "-protection",
                     BranchProtectionArgs.builder()
@@ -150,14 +150,12 @@ public class RepositoryProvisioner {
                             .build());
         }
 
-        // 4. github_repository_dependabot_security_updates (non-archived only)
-        if (!config.archived()) {
-            new RepositoryDependabotSecurityUpdates(config.name() + "-dependabot",
-                    RepositoryDependabotSecurityUpdatesArgs.builder()
-                            .repository(repo.id())
-                            .enabled(true)
-                            .build());
-        }
+        // 4. github_repository_dependabot_security_updates
+        new RepositoryDependabotSecurityUpdates(config.name() + "-dependabot",
+                RepositoryDependabotSecurityUpdatesArgs.builder()
+                        .repository(repo.id())
+                        .enabled(true)
+                        .build());
 
         // 5. github_repository_environment
         var createdEnvs = new HashMap<String, RepositoryEnvironment>();
@@ -205,8 +203,8 @@ public class RepositoryProvisioner {
             }
         }
 
-        // 8. github_workflow_repository_permissions (non-archived only)
-        if (!config.archived()) new WorkflowRepositoryPermissions(config.name() + "-workflow-perms",
+        // 8. github_workflow_repository_permissions
+        new WorkflowRepositoryPermissions(config.name() + "-workflow-perms",
                 WorkflowRepositoryPermissionsArgs.builder()
                         .repository(repo.id())
                         .defaultWorkflowPermissions("read")
