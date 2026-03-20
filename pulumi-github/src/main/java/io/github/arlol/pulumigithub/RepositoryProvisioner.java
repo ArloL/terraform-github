@@ -88,40 +88,6 @@ public class RepositoryProvisioner {
                     RepositoryArgs.builder()
                             .name(config.name())
                             .archived(true)
-                            .build(),
-                    CustomResourceOptions.builder()
-                            .ignoreChanges(List.of(
-                                    "allowAutoMerge",
-                                    "allowMergeCommit",
-                                    "allowRebaseMerge",
-                                    "allowSquashMerge",
-                                    "allowUpdateBranch",
-                                    "archiveOnDestroy",
-                                    "autoInit",
-                                    "deleteBranchOnMerge",
-                                    "description",
-                                    "gitignoreTemplate",
-                                    "hasDiscussions",
-                                    "hasDownloads",
-                                    "hasIssues",
-                                    "hasProjects",
-                                    "hasWiki",
-                                    "homepageUrl",
-                                    "ignoreVulnerabilityAlertsDuringRead",
-                                    "isTemplate",
-                                    "licenseTemplate",
-                                    "mergeCommitMessage",
-                                    "mergeCommitTitle",
-                                    "pages",
-                                    "securityAndAnalysis",
-                                    "squashMergeCommitMessage",
-                                    "squashMergeCommitTitle",
-                                    "template",
-                                    "topics",
-                                    "visibility",
-                                    "vulnerabilityAlerts",
-                                    "webCommitSignoffRequired"
-                            ))
                             .build());
             return;
         }
