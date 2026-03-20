@@ -23,7 +23,7 @@ jobs:
       run: |
         sudo apt-get install -y parallel
         mkdir -p ~/.parallel && touch ~/.parallel/will-cite
-    - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+    - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
     - name: Terraform Init
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
@@ -53,7 +53,7 @@ jobs:
       run: |
         sudo apt-get install -y parallel
         mkdir -p ~/.parallel && touch ~/.parallel/will-cite
-    - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+    - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
     - name: Terraform Init
       env:
         GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
