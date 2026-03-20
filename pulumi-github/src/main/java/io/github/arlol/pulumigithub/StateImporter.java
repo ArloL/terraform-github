@@ -57,9 +57,11 @@ public class StateImporter {
                     "github:index/repository:Repository",
                     config.name(), config.name());
 
-            addResource(resources,
-                    "github:index/branchDefault:BranchDefault",
-                    config.name() + "-default", config.name());
+            if (!config.archived()) {
+                addResource(resources,
+                        "github:index/branchDefault:BranchDefault",
+                        config.name() + "-default", config.name());
+            }
 
             if (!config.archived()) {
                 addResource(resources,
