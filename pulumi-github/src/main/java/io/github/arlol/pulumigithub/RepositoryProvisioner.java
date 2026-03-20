@@ -3,6 +3,8 @@ package io.github.arlol.pulumigithub;
 import com.pulumi.github.ActionsEnvironmentSecret;
 import com.pulumi.github.ActionsEnvironmentSecretArgs;
 import com.pulumi.github.ActionsSecret;
+import com.pulumi.github.WorkflowRepositoryPermissions;
+import com.pulumi.github.WorkflowRepositoryPermissionsArgs;
 import com.pulumi.github.ActionsSecretArgs;
 import com.pulumi.github.BranchDefault;
 import com.pulumi.github.BranchDefaultArgs;
@@ -77,8 +79,7 @@ public class RepositoryProvisioner {
      *   {name}-env-{envName}              — github_repository_environment
      *   {name}-secret-{secretName}        — github_actions_secret
      *   {name}-envsecret-{env}-{secret}   — github_actions_environment_secret
-     * Note: github_workflow_repository_permissions has no equivalent in
-     *       Pulumi GitHub provider 6.8.0 and is omitted.
+     *   {name}-workflow-perms             — github_workflow_repository_permissions
      */
     public static void provision(RepositoryConfig config, Map<String, String> secrets) {
         // 1. github_repository
@@ -198,6 +199,13 @@ public class RepositoryProvisioner {
             }
         }
 
+        // 8. github_workflow_repository_permissions
+        new WorkflowRepositoryPermissions(config.name() + "-workflow-perms",
+                WorkflowRepositoryPermissionsArgs.builder()
+                        .repository(repo.id())
+                        .defaultWorkflowPermissions("read")
+                        .canApprovePullRequestReviews(true)
+                        .build());
     }
 
 }

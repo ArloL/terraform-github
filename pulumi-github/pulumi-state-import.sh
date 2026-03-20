@@ -122,6 +122,12 @@ for repo in "${REPOS[@]}"; do
         "${repo}-default" \
         "${repo}"
 
+    # github_workflow_repository_permissions
+    add_resource \
+        "github:index/workflowRepositoryPermissions:WorkflowRepositoryPermissions" \
+        "${repo}-workflow-perms" \
+        "${repo}"
+
     if [ -z "${archived}" ]; then
         # github_repository_dependabot_security_updates
         add_resource \
