@@ -61,11 +61,11 @@ public class StateImporter {
                     "github:index/branchDefault:BranchDefault",
                     config.name() + "-default", config.name());
 
-            addResource(resources,
-                    "github:index/workflowRepositoryPermissions:WorkflowRepositoryPermissions",
-                    config.name() + "-workflow-perms", config.name());
-
             if (!config.archived()) {
+                addResource(resources,
+                        "github:index/workflowRepositoryPermissions:WorkflowRepositoryPermissions",
+                        config.name() + "-workflow-perms", config.name());
+
                 addResource(resources,
                         "github:index/repositoryDependabotSecurityUpdates:RepositoryDependabotSecurityUpdates",
                         config.name() + "-dependabot", config.name());

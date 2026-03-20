@@ -199,8 +199,8 @@ public class RepositoryProvisioner {
             }
         }
 
-        // 8. github_workflow_repository_permissions
-        new WorkflowRepositoryPermissions(config.name() + "-workflow-perms",
+        // 8. github_workflow_repository_permissions (non-archived only)
+        if (!config.archived()) new WorkflowRepositoryPermissions(config.name() + "-workflow-perms",
                 WorkflowRepositoryPermissionsArgs.builder()
                         .repository(repo.id())
                         .defaultWorkflowPermissions("read")
