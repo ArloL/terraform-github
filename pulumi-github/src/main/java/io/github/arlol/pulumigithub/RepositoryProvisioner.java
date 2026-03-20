@@ -120,7 +120,10 @@ public class RepositoryProvisioner {
                     .build());
         }
 
-        var repo = new Repository(config.name(), repoArgsBuilder.build());
+        var repo = new Repository(config.name(), repoArgsBuilder.build(),
+                CustomResourceOptions.builder()
+                        .ignoreChanges(List.of("defaultBranch"))
+                        .build());
 
         // 2. github_branch_default
         var branchDefault = new BranchDefault(config.name() + "-default",
