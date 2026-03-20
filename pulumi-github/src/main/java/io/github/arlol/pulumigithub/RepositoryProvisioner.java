@@ -96,7 +96,8 @@ public class RepositoryProvisioner {
                 .allowAutoMerge(true)
                 .autoInit(false)
                 .vulnerabilityAlerts(!config.archived())
-                .archived(config.archived());
+                .archived(config.archived())
+                .defaultBranch(config.mainBranch());
 
         if (config.homepage() != null) {
             repoArgsBuilder.homepageUrl(config.homepage());
@@ -120,10 +121,7 @@ public class RepositoryProvisioner {
                     .build());
         }
 
-        var repo = new Repository(config.name(), repoArgsBuilder.build(),
-                CustomResourceOptions.builder()
-                        .ignoreChanges(List.of("defaultBranch"))
-                        .build());
+        var repo = new Repository(config.name(), repoArgsBuilder.build());
 
         // 2. github_branch_default
         var branchDefault = new BranchDefault(config.name() + "-default",
