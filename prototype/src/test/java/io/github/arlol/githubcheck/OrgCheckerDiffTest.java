@@ -914,4 +914,44 @@ class OrgCheckerDiffTest {
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
 
+	@Test
+	void githubPages_expectsGithubPagesEnvironment() {
+		RepositoryArgs args = RepositoryArgs.builder().githubPages().build();
+		// Repo without the github-pages environment
+		List<String> diffs = checker
+				.computeDiffs(goodPublicState("repo"), args);
+		assertThat(diffs).contains("environments missing: [github-pages]");
+	}
+
+	@Test
+	void githubPages_noDrift_whenEnvironmentPresent() {
+		RepositoryArgs args = RepositoryArgs.builder().githubPages().build();
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				false,
+				false,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of("github-pages", List.of()),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -247,7 +248,12 @@ public class OrgChecker {
 		);
 
 		// Environments: check names
-		Set<String> wantEnvs = desired.environments().keySet();
+		Set<String> wantEnvs = new LinkedHashSet<>(
+				desired.environments().keySet()
+		);
+		if (desired.githubPages()) {
+			wantEnvs.add("github-pages");
+		}
 		Set<String> gotEnvs = actual.environmentSecretNames().keySet();
 		checkSets(diffs, "environments", wantEnvs, gotEnvs);
 
