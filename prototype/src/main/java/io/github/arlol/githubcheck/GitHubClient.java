@@ -70,9 +70,14 @@ public class GitHubClient {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
 		while (url != null) {
 			HttpResponse<String> resp = send(url);
+			if (resp.statusCode() == 404 && url.contains("/orgs/")) {
+				url = baseUrl + "/users/" + org
+						+ "/repos?per_page=100&type=all";
+				resp = send(url);
+			}
 			if (resp.statusCode() != 200) {
 				throw new RuntimeException(
-						"HTTP " + resp.statusCode() + " listing repos for org "
+						"HTTP " + resp.statusCode() + " listing repos for "
 								+ org + ": " + resp.body()
 				);
 			}
