@@ -71,8 +71,10 @@ public class GitHubClient {
 		while (url != null) {
 			HttpResponse<String> resp = send(url);
 			if (resp.statusCode() == 404 && url.contains("/orgs/")) {
-				url = baseUrl + "/users/" + org
-						+ "/repos?per_page=100&type=all";
+				// Not an org — personal account. /users/{name}/repos only
+				// returns public repos; /user/repos returns everything
+				// (public + private + archived) for the authenticated user.
+				url = baseUrl + "/user/repos?per_page=100&type=owner";
 				resp = send(url);
 			}
 			if (resp.statusCode() != 200) {
