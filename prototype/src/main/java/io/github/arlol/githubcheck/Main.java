@@ -33,7 +33,15 @@ public class Main {
 						"actions",
 						RepositoryArgs.builder().archived().build()
 				),
+				new Repository(
+						"actions-checkout-fetch-depth-demo",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("advent-of-code"),
+				new Repository(
+						"airmac",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository(
 						"angular-playground",
 						RepositoryArgs.builder()
@@ -48,6 +56,10 @@ public class Main {
 				new Repository("business-english"),
 				new Repository("calver-tag-action"),
 				new Repository(
+						"campuswoche-2018-webseiten-steuern",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
 						"chorito",
 						RepositoryArgs.builder()
 								.requiredStatusChecks(
@@ -55,6 +67,10 @@ public class Main {
 								)
 								.actionSecrets("PAT")
 								.build()
+				),
+				new Repository(
+						"chop-kata",
+						RepositoryArgs.builder().archived().build()
 				),
 				new Repository("corporate-python"),
 				new Repository("dependabot-dockerfile-test"),
@@ -82,9 +98,105 @@ public class Main {
 						"graalfx",
 						RepositoryArgs.builder().archived().build()
 				),
+				new Repository(
+						"gwt-dragula-test",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"gwt-log-print-style-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"gwt-refresh-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"HalloJSX",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"HelloCocoaHTTPServer",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"HelloIntAirActServer",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"HelloRoutingServer",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"HelloServer",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("homebrew-tap"),
+				new Repository(
+						"iebox",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"ilabwebworkshop",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"IntAirAct",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"IntAirAct-Performance",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jBrowserDriver",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jbrowserdriver-cucumber-integration-tests",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jbrowserdriver-test",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jdk-newinstance-leak-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jdk8u144-classloader-leak-demo-webapp",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"jhipster-app",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"json-smart-dependency-resolution-test",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("kafka-debugger"),
+				new Repository(
+						"m2e-wro4j-bug-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"m2e-wro4j-bug-demo2",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"maven-quickstart-j2objc",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("menubar-scripts"),
+				new Repository(
+						"Mirror",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"modern-ie-vagrant",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository(
 						"music-stuff",
 						RepositoryArgs.builder()
@@ -100,6 +212,10 @@ public class Main {
 										"main.required-status-check"
 								)
 								.build()
+				),
+				new Repository(
+						"MWPhotoBrowser",
+						RepositoryArgs.builder().archived().build()
 				),
 				new Repository(
 						"myprojects-cleaner",
@@ -118,13 +234,29 @@ public class Main {
 								.build()
 				),
 				new Repository("nope-amine"),
+				new Repository(
+						"npmrc-github-action",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("open-webui-runner"),
+				new Repository(
+						"packer-templates",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository(
 						"pico-playground",
 						RepositoryArgs.builder().archived().build()
 				),
+				new Repository(
+						"postgres-query-error-demo",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("postgres-sync-demo"),
 				new Repository("python-nc"),
+				new Repository(
+						"quickstart-buck-bazel-maven",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository(
 						"rss-to-mail",
 						RepositoryArgs.builder()
@@ -135,7 +267,23 @@ public class Main {
 				),
 				new Repository("sci-fi-movies"),
 				new Repository(
+						"selenium-xp-ie6",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
 						"self-hosted-gh-actions-runner",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"spring-cloud-context-classloader-leak-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"spring-configuration-processor-metadata-bug-demo",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"spring-security-drupal-password-encoder",
 						RepositoryArgs.builder().archived().build()
 				),
 				new Repository(
@@ -152,6 +300,10 @@ public class Main {
 						RepositoryArgs.builder().archived().build()
 				),
 				new Repository(
+						"toado",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
 						"tsaf-parser",
 						RepositoryArgs.builder()
 								.requiredStatusChecks(
@@ -159,9 +311,17 @@ public class Main {
 								)
 								.build()
 				),
+				new Repository(
+						"vagrant-1",
+						RepositoryArgs.builder().archived().build()
+				),
 				new Repository("vagrant-ssh-config"),
 				new Repository(
 						"vitest-link-reproduction",
+						RepositoryArgs.builder().archived().build()
+				),
+				new Repository(
+						"vitest-mocking-reproduction",
 						RepositoryArgs.builder().archived().build()
 				),
 				new Repository(
@@ -187,6 +347,10 @@ public class Main {
 										"main.required-status-check"
 								)
 								.build()
+				),
+				new Repository(
+						"workflow-dispatch-input-defaults",
+						RepositoryArgs.builder().archived().build()
 				)
 		);
 	}
