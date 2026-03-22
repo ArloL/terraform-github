@@ -15,3 +15,9 @@ end_of_line = lf
 [*.{tf,sh}]
 indent_style = space
 indent_size = 4
+
+[pom.xml]
+indent_style = tab
+
+[**.java]
+indent_style = tab

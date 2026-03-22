@@ -9,89 +9,93 @@ import java.util.function.Consumer;
 
 public final class RepositoryArgs {
 
-    private final boolean archived;
-    private final String visibility;
-    private final List<String> requiredStatusChecks;
-    private final List<String> actionSecrets;
-    private final Map<String, EnvironmentArgs> environments;
+	private final boolean archived;
+	private final String visibility;
+	private final List<String> requiredStatusChecks;
+	private final List<String> actionSecrets;
+	private final Map<String, EnvironmentArgs> environments;
 
-    private RepositoryArgs(Builder builder) {
-        this.archived = builder.archived;
-        this.visibility = builder.visibility;
-        this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
-        this.actionSecrets = List.copyOf(builder.actionSecrets);
-        this.environments = Collections.unmodifiableMap(
-                new LinkedHashMap<>(builder.environments));
-    }
+	private RepositoryArgs(Builder builder) {
+		this.archived = builder.archived;
+		this.visibility = builder.visibility;
+		this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
+		this.actionSecrets = List.copyOf(builder.actionSecrets);
+		this.environments = Collections
+				.unmodifiableMap(new LinkedHashMap<>(builder.environments));
+	}
 
-    public boolean archived() {
-        return archived;
-    }
+	public boolean archived() {
+		return archived;
+	}
 
-    public String visibility() {
-        return visibility;
-    }
+	public String visibility() {
+		return visibility;
+	}
 
-    /** Extra status checks beyond the four applied to all public repos. */
-    public List<String> requiredStatusChecks() {
-        return requiredStatusChecks;
-    }
+	/** Extra status checks beyond the four applied to all public repos. */
+	public List<String> requiredStatusChecks() {
+		return requiredStatusChecks;
+	}
 
-    public List<String> actionSecrets() {
-        return actionSecrets;
-    }
+	public List<String> actionSecrets() {
+		return actionSecrets;
+	}
 
-    public Map<String, EnvironmentArgs> environments() {
-        return environments;
-    }
+	public Map<String, EnvironmentArgs> environments() {
+		return environments;
+	}
 
-    public static Builder builder() {
-        return new Builder();
-    }
+	public static Builder builder() {
+		return new Builder();
+	}
 
-    public static final class Builder {
+	public static final class Builder {
 
-        private boolean archived = false;
-        private String visibility = "public";
-        private List<String> requiredStatusChecks = List.of();
-        private List<String> actionSecrets = List.of();
-        private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
+		private boolean archived = false;
+		private String visibility = "public";
+		private List<String> requiredStatusChecks = List.of();
+		private List<String> actionSecrets = List.of();
+		private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
 
-        public Builder archived() {
-            this.archived = true;
-            return this;
-        }
+		public Builder archived() {
+			this.archived = true;
+			return this;
+		}
 
-        public Builder visibility(String visibility) {
-            this.visibility = visibility;
-            return this;
-        }
+		public Builder visibility(String visibility) {
+			this.visibility = visibility;
+			return this;
+		}
 
-        public Builder requiredStatusChecks(String... checks) {
-            this.requiredStatusChecks = Arrays.asList(checks);
-            return this;
-        }
+		public Builder requiredStatusChecks(String... checks) {
+			this.requiredStatusChecks = Arrays.asList(checks);
+			return this;
+		}
 
-        public Builder actionSecrets(String... secrets) {
-            this.actionSecrets = Arrays.asList(secrets);
-            return this;
-        }
+		public Builder actionSecrets(String... secrets) {
+			this.actionSecrets = Arrays.asList(secrets);
+			return this;
+		}
 
-        public Builder environment(String name, EnvironmentArgs args) {
-            this.environments.put(name, args);
-            return this;
-        }
+		public Builder environment(String name, EnvironmentArgs args) {
+			this.environments.put(name, args);
+			return this;
+		}
 
-        public Builder environment(String name,
-                Consumer<EnvironmentArgs.Builder> configure) {
-            var envBuilder = EnvironmentArgs.builder();
-            configure.accept(envBuilder);
-            this.environments.put(name, envBuilder.build());
-            return this;
-        }
+		public Builder environment(
+				String name,
+				Consumer<EnvironmentArgs.Builder> configure
+		) {
+			var envBuilder = EnvironmentArgs.builder();
+			configure.accept(envBuilder);
+			this.environments.put(name, envBuilder.build());
+			return this;
+		}
 
-        public RepositoryArgs build() {
-            return new RepositoryArgs(this);
-        }
-    }
+		public RepositoryArgs build() {
+			return new RepositoryArgs(this);
+		}
+
+	}
+
 }
