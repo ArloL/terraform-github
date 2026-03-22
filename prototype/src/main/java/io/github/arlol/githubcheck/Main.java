@@ -28,7 +28,10 @@ public class Main {
 
 	static List<Repository> repositories() {
 		return List.of(
-				new Repository("abenteuer-irland"),
+				new Repository(
+						"abenteuer-irland",
+						RepositoryArgs.builder().githubPages().build()
+				),
 				new Repository(
 						"actions",
 						RepositoryArgs.builder().archived().build()
@@ -45,15 +48,25 @@ public class Main {
 				new Repository(
 						"angular-playground",
 						RepositoryArgs.builder()
+								.githubPages()
 								.requiredStatusChecks(
 										"pr-check.required-status-check"
 								)
 								.build()
 				),
-				new Repository("arlol.github.io"),
+				new Repository(
+						"arlol.github.io",
+						RepositoryArgs.builder().githubPages().build()
+				),
 				new Repository("beatunes-keytocomment"),
-				new Repository("bulma-playground"),
-				new Repository("business-english"),
+				new Repository(
+						"bulma-playground",
+						RepositoryArgs.builder().githubPages().build()
+				),
+				new Repository(
+						"business-english",
+						RepositoryArgs.builder().githubPages().build()
+				),
 				new Repository("calver-tag-action"),
 				new Repository(
 						"campuswoche-2018-webseiten-steuern",
@@ -79,7 +92,10 @@ public class Main {
 						"dotnet-http-client-reproduction",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("eclipse-projects"),
+				new Repository(
+						"eclipse-projects",
+						RepositoryArgs.builder().githubPages().build()
+				),
 				new Repository("effortful-retrieval-questions"),
 				new Repository(
 						"git-dora-lead-time-calculator",
@@ -245,7 +261,10 @@ public class Main {
 				),
 				new Repository(
 						"pico-playground",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.archived()
+								.githubPages()
+								.build()
 				),
 				new Repository(
 						"postgres-query-error-demo",
