@@ -160,6 +160,12 @@ class GitHubClientTest {
 	void getRepo_parsesAllFields() throws Exception {
 		stubFor(get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(okJson("""
 				{
+				  "description": "My repo",
+				  "homepage": "https://example.com",
+				  "has_issues": true,
+				  "has_projects": true,
+				  "has_wiki": true,
+				  "default_branch": "main",
 				  "allow_merge_commit": false,
 				  "allow_squash_merge": false,
 				  "allow_auto_merge": true,
@@ -173,6 +179,12 @@ class GitHubClientTest {
 
 		GitHubClient.RepoDetails details = client.getRepo("ArloL", "my-repo");
 
+		assertThat(details.description()).isEqualTo("My repo");
+		assertThat(details.homepageUrl()).isEqualTo("https://example.com");
+		assertThat(details.hasIssues()).isTrue();
+		assertThat(details.hasProjects()).isTrue();
+		assertThat(details.hasWiki()).isTrue();
+		assertThat(details.defaultBranch()).isEqualTo("main");
 		assertThat(details.allowMergeCommit()).isFalse();
 		assertThat(details.allowSquashMerge()).isFalse();
 		assertThat(details.allowAutoMerge()).isTrue();
@@ -234,6 +246,58 @@ class GitHubClientTest {
 
 		assertThatThrownBy(
 				() -> client.getVulnerabilityAlerts("ArloL", "my-repo")
+		).isInstanceOf(RuntimeException.class).hasMessageContaining("500");
+	}
+
+	// ─── getAutomatedSecurityFixes
+	// ──────────────────────────────────────────────────
+
+	@Test
+	void getAutomatedSecurityFixes_enabled_returnsTrue() throws Exception {
+		stubFor(
+				get(urlEqualTo("/repos/ArloL/my-repo/automated-security-fixes"))
+						.willReturn(okJson("""
+								{"enabled": true}
+								"""))
+		);
+
+		assertThat(client.getAutomatedSecurityFixes("ArloL", "my-repo"))
+				.isTrue();
+	}
+
+	@Test
+	void getAutomatedSecurityFixes_disabled_returnsFalse() throws Exception {
+		stubFor(
+				get(urlEqualTo("/repos/ArloL/my-repo/automated-security-fixes"))
+						.willReturn(okJson("""
+								{"enabled": false}
+								"""))
+		);
+
+		assertThat(client.getAutomatedSecurityFixes("ArloL", "my-repo"))
+				.isFalse();
+	}
+
+	@Test
+	void getAutomatedSecurityFixes_404_returnsFalse() throws Exception {
+		stubFor(
+				get(urlEqualTo("/repos/ArloL/my-repo/automated-security-fixes"))
+						.willReturn(aResponse().withStatus(404))
+		);
+
+		assertThat(client.getAutomatedSecurityFixes("ArloL", "my-repo"))
+				.isFalse();
+	}
+
+	@Test
+	void getAutomatedSecurityFixes_unexpectedStatus_throws() {
+		stubFor(
+				get(urlEqualTo("/repos/ArloL/my-repo/automated-security-fixes"))
+						.willReturn(aResponse().withStatus(500))
+		);
+
+		assertThatThrownBy(
+				() -> client.getAutomatedSecurityFixes("ArloL", "my-repo")
 		).isInstanceOf(RuntimeException.class).hasMessageContaining("500");
 	}
 

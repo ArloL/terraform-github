@@ -25,11 +25,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
 				true, // deleteBranchOnMerge
 				true, // vulnerabilityAlerts
+				true, // automatedSecurityFixes
 				true, // secretScanning
 				true, // secretScanningPushProtection
 				true, // branchProtectionExists
@@ -56,11 +61,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
 				true, // deleteBranchOnMerge
 				false, // vulnerabilityAlerts — not checked for archived
+				true, // automatedSecurityFixes
 				false, // secretScanning — not checked for archived
 				false, // secretScanningPushProtection — not checked for
 					   // archived
@@ -102,11 +112,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				true, // allowMergeCommit — should be false
 				false,
 				false,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -135,11 +150,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				true, // allowSquashMerge — should be false
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -168,11 +188,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				false, // allowAutoMerge — should be true
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -201,11 +226,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				false, // deleteBranchOnMerge — should be true
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -234,11 +264,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				false, // vulnerabilityAlerts — should be true
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -267,11 +302,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				false, // secretScanning — should be true
 				true,
 				true,
@@ -300,11 +340,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				false, // secretScanningPushProtection — should be true
 				true,
@@ -336,11 +381,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				false,
+				true, // automatedSecurityFixes
 				false,
 				false, // security all false — should be ignored for archived
 				false,
@@ -368,11 +418,16 @@ class OrgCheckerDiffTest {
 				"private",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				false,
@@ -396,11 +451,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				false, // branchProtectionExists — should exist for public repos
@@ -424,11 +484,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -458,11 +523,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -492,11 +562,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -529,11 +604,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -566,11 +646,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -605,11 +690,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -640,11 +730,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -678,11 +773,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -719,11 +819,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -762,11 +867,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -800,11 +910,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -833,11 +948,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -873,11 +993,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -908,11 +1033,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -943,11 +1073,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -986,11 +1121,16 @@ class OrgCheckerDiffTest {
 				"public",
 				"", // description
 				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
 				false,
 				false,
 				true,
 				true,
 				true,
+				true, // automatedSecurityFixes
 				true,
 				true,
 				true,
@@ -1008,6 +1148,196 @@ class OrgCheckerDiffTest {
 				true
 		);
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void drift_hasIssues_isFalse() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				false, // hasIssues — should be true
+				true,
+				true,
+				"main",
+				false,
+				false,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("has_issues: want=true got=false");
+	}
+
+	@Test
+	void drift_hasProjects_isFalse() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true,
+				false, // hasProjects — should be true
+				true,
+				"main",
+				false,
+				false,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("has_projects: want=true got=false");
+	}
+
+	@Test
+	void drift_hasWiki_isFalse() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true,
+				true,
+				false, // hasWiki — should be true
+				"main",
+				false,
+				false,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("has_wiki: want=true got=false");
+	}
+
+	@Test
+	void drift_defaultBranch_notMain() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true,
+				true,
+				true,
+				"master", // defaultBranch — should be main
+				false,
+				false,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("default_branch: want=main got=master");
+	}
+
+	@Test
+	void drift_automatedSecurityFixes_isFalse() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true,
+				true,
+				true,
+				"main",
+				false,
+				false,
+				true,
+				true,
+				true,
+				false, // automatedSecurityFixes — should be true
+				true,
+				true,
+				true,
+				true,
+				true,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("automated_security_fixes: want=true got=false");
 	}
 
 }
