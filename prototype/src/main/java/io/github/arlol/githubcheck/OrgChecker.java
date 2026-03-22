@@ -145,6 +145,8 @@ public class OrgChecker {
 				name,
 				archived,
 				summary.visibility(),
+				details.description(),
+				details.homepageUrl(),
 				details.allowMergeCommit(),
 				details.allowSquashMerge(),
 				details.allowAutoMerge(),
@@ -171,6 +173,18 @@ public class OrgChecker {
 		boolean archived = actual.archived();
 		boolean isPublic = "public".equals(actual.visibility());
 
+		check(
+				diffs,
+				"description",
+				desired.description(),
+				actual.description()
+		);
+		check(
+				diffs,
+				"homepage_url",
+				desired.homepageUrl(),
+				actual.homepageUrl()
+		);
 		check(diffs, "allow_merge_commit", false, actual.allowMergeCommit());
 		check(diffs, "allow_squash_merge", false, actual.allowSquashMerge());
 		check(diffs, "allow_auto_merge", true, actual.allowAutoMerge());
