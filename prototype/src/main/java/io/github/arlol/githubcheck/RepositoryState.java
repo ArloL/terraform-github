@@ -7,6 +7,8 @@ public record RepositoryState(
 		String name,
 		boolean archived,
 		String visibility,
+		String description,
+		String homepageUrl,
 		boolean allowMergeCommit,
 		boolean allowSquashMerge,
 		boolean allowAutoMerge,

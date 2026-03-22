@@ -11,6 +11,8 @@ public final class RepositoryArgs {
 
 	private final boolean archived;
 	private final boolean githubPages;
+	private final String description;
+	private final String homepageUrl;
 	private final String visibility;
 	private final List<String> requiredStatusChecks;
 	private final List<String> actionSecrets;
@@ -19,6 +21,8 @@ public final class RepositoryArgs {
 	private RepositoryArgs(Builder builder) {
 		this.archived = builder.archived;
 		this.githubPages = builder.githubPages;
+		this.description = builder.description;
+		this.homepageUrl = builder.homepageUrl;
 		this.visibility = builder.visibility;
 		this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
 		this.actionSecrets = List.copyOf(builder.actionSecrets);
@@ -32,6 +36,14 @@ public final class RepositoryArgs {
 
 	public boolean githubPages() {
 		return githubPages;
+	}
+
+	public String description() {
+		return description;
+	}
+
+	public String homepageUrl() {
+		return homepageUrl;
 	}
 
 	public String visibility() {
@@ -59,6 +71,8 @@ public final class RepositoryArgs {
 
 		private boolean archived = false;
 		private boolean githubPages = false;
+		private String description = "";
+		private String homepageUrl = "";
 		private String visibility = "public";
 		private List<String> requiredStatusChecks = List.of();
 		private List<String> actionSecrets = List.of();
@@ -71,6 +85,16 @@ public final class RepositoryArgs {
 
 		public Builder githubPages() {
 			this.githubPages = true;
+			return this;
+		}
+
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+
+		public Builder homepageUrl(String homepageUrl) {
+			this.homepageUrl = homepageUrl;
 			return this;
 		}
 

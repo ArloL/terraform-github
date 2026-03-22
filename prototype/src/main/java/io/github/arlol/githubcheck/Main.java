@@ -30,17 +30,35 @@ public class Main {
 		return List.of(
 				new Repository(
 						"abenteuer-irland",
-						RepositoryArgs.builder().githubPages().build()
+						RepositoryArgs.builder()
+								.description(
+										"Mum's website for Abenteuer Irland"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/abenteuer-irland/"
+								)
+								.githubPages()
+								.build()
 				),
 				new Repository(
 						"actions",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"A demonstration of an automated release workflow for shared workflows and actions"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"actions-checkout-fetch-depth-demo",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("advent-of-code"),
+				new Repository(
+						"advent-of-code",
+						RepositoryArgs.builder()
+								.description("My advent of code solutions")
+								.build()
+				),
 				new Repository(
 						"airmac",
 						RepositoryArgs.builder().archived().build()
@@ -48,6 +66,12 @@ public class Main {
 				new Repository(
 						"angular-playground",
 						RepositoryArgs.builder()
+								.description(
+										"A playground for the Angular framework"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/angular-playground/"
+								)
 								.githubPages()
 								.requiredStatusChecks(
 										"pr-check.required-status-check"
@@ -56,18 +80,54 @@ public class Main {
 				),
 				new Repository(
 						"arlol.github.io",
-						RepositoryArgs.builder().githubPages().build()
+						RepositoryArgs.builder()
+								.description(
+										"This is the source of my GitHub page"
+								)
+								.homepageUrl("https://arlol.github.io/")
+								.githubPages()
+								.build()
 				),
-				new Repository("beatunes-keytocomment"),
+				new Repository(
+						"beatunes-keytocomment",
+						RepositoryArgs.builder()
+								.description(
+										"A beatunes plugin that writes the key to the comment"
+								)
+								.build()
+				),
 				new Repository(
 						"bulma-playground",
-						RepositoryArgs.builder().githubPages().build()
+						RepositoryArgs.builder()
+								.description(
+										"A playground for the Bulma CSS framework"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/bulma-playground/"
+								)
+								.githubPages()
+								.build()
 				),
 				new Repository(
 						"business-english",
-						RepositoryArgs.builder().githubPages().build()
+						RepositoryArgs.builder()
+								.description(
+										"Mum's website for Business English"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/business-english/"
+								)
+								.githubPages()
+								.build()
 				),
-				new Repository("calver-tag-action"),
+				new Repository(
+						"calver-tag-action",
+						RepositoryArgs.builder()
+								.description(
+										"A GitHub Actions action that creates a new version using a CalVer-style derivative and pushes it"
+								)
+								.build()
+				),
 				new Repository(
 						"campuswoche-2018-webseiten-steuern",
 						RepositoryArgs.builder().archived().build()
@@ -75,6 +135,9 @@ public class Main {
 				new Repository(
 						"chorito",
 						RepositoryArgs.builder()
+								.description(
+										"A tool that does some chores in your source code"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
@@ -85,34 +148,95 @@ public class Main {
 						"chop-kata",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("corporate-python"),
-				new Repository("dependabot-dockerfile-test"),
-				new Repository("dotfiles"),
+				new Repository(
+						"corporate-python",
+						RepositoryArgs.builder()
+								.description(
+										"A container for executing python in corporate environments"
+								)
+								.build()
+				),
+				new Repository(
+						"dependabot-dockerfile-test",
+						RepositoryArgs.builder()
+								.description(
+										"A test to see whether dependabot updates dockerfiles with args"
+								)
+								.build()
+				),
+				new Repository(
+						"dotfiles",
+						RepositoryArgs.builder()
+								.description(
+										"My collection of dotfiles used to configure my command line environments"
+								)
+								.build()
+				),
 				new Repository(
 						"dotnet-http-client-reproduction",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"A reproduction of an issue with the dotnet http client"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"eclipse-projects",
-						RepositoryArgs.builder().githubPages().build()
+						RepositoryArgs.builder()
+								.description(
+										"Arlo's project catalog for the Eclipse Installer"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/eclipse-projects/"
+								)
+								.githubPages()
+								.build()
 				),
-				new Repository("effortful-retrieval-questions"),
+				new Repository(
+						"effortful-retrieval-questions",
+						RepositoryArgs.builder()
+								.description(
+										"A collection of effortful retrieval questions of a number of articles I've read"
+								)
+								.build()
+				),
 				new Repository(
 						"git-dora-lead-time-calculator",
 						RepositoryArgs.builder()
+								.description(
+										"A project to calculate the DORA metric lead time with the info from a git repo"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
 								.build()
 				),
-				new Repository("git-presentation-2018-10"),
+				new Repository(
+						"git-presentation-2018-10",
+						RepositoryArgs.builder()
+								.description(
+										"Git Präsentation für Vorlesung Industrielle Softwareentwicklung"
+								)
+								.build()
+				),
 				new Repository(
 						"gitfx",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"A simple git client with Java 11+, JavaFX 15+ and GraalVM"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"graalfx",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"A simple desktop app with JavaFX and GraalVM"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"gwt-dragula-test",
@@ -146,7 +270,14 @@ public class Main {
 						"HelloServer",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("homebrew-tap"),
+				new Repository(
+						"homebrew-tap",
+						RepositoryArgs.builder()
+								.description(
+										"A homebrew tap for my own formulas and casks"
+								)
+								.build()
+				),
 				new Repository(
 						"iebox",
 						RepositoryArgs.builder().archived().build()
@@ -191,7 +322,14 @@ public class Main {
 						"json-smart-dependency-resolution-test",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("kafka-debugger"),
+				new Repository(
+						"kafka-debugger",
+						RepositoryArgs.builder()
+								.description(
+										"A small jar utility to test kafka connections"
+								)
+								.build()
+				),
 				new Repository(
 						"m2e-wro4j-bug-demo",
 						RepositoryArgs.builder().archived().build()
@@ -204,7 +342,14 @@ public class Main {
 						"maven-quickstart-j2objc",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("menubar-scripts"),
+				new Repository(
+						"menubar-scripts",
+						RepositoryArgs.builder()
+								.description(
+										"A collection of scripts that can run in e.g. xbar, swiftbar, etc."
+								)
+								.build()
+				),
 				new Repository(
 						"Mirror",
 						RepositoryArgs.builder().archived().build()
@@ -216,6 +361,7 @@ public class Main {
 				new Repository(
 						"music-stuff",
 						RepositoryArgs.builder()
+								.description("Some spotify and beatunes stuff")
 								.requiredStatusChecks(
 										"test.required-status-check"
 								)
@@ -224,6 +370,9 @@ public class Main {
 				new Repository(
 						"mvnx",
 						RepositoryArgs.builder()
+								.description(
+										"An experiment with Maven dependencies and dynamic classloading"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
@@ -236,6 +385,9 @@ public class Main {
 				new Repository(
 						"myprojects-cleaner",
 						RepositoryArgs.builder()
+								.description(
+										"A java application that runs git clean in a bunch of directories"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
@@ -244,17 +396,34 @@ public class Main {
 				new Repository(
 						"newlinechecker",
 						RepositoryArgs.builder()
+								.description(
+										"A sample project to play with GraalVM builds on GitHub Actions"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
 								.build()
 				),
-				new Repository("nope-amine"),
+				new Repository(
+						"nope-amine",
+						RepositoryArgs.builder()
+								.description(
+										"A firefox extension that slowly increases the time for things to load on reddit.com"
+								)
+								.build()
+				),
 				new Repository(
 						"npmrc-github-action",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("open-webui-runner"),
+				new Repository(
+						"open-webui-runner",
+						RepositoryArgs.builder()
+								.description(
+										"A small repo to run open-webui locally and stop it after using it"
+								)
+								.build()
+				),
 				new Repository(
 						"packer-templates",
 						RepositoryArgs.builder().archived().build()
@@ -262,6 +431,12 @@ public class Main {
 				new Repository(
 						"pico-playground",
 						RepositoryArgs.builder()
+								.description(
+										"A playground for the Pico CSS framework"
+								)
+								.homepageUrl(
+										"https://arlol.github.io/pico-playground/"
+								)
 								.archived()
 								.githubPages()
 								.build()
@@ -270,8 +445,22 @@ public class Main {
 						"postgres-query-error-demo",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("postgres-sync-demo"),
-				new Repository("python-nc"),
+				new Repository(
+						"postgres-sync-demo",
+						RepositoryArgs.builder()
+								.description(
+										"A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
+								)
+								.build()
+				),
+				new Repository(
+						"python-nc",
+						RepositoryArgs.builder()
+								.description(
+										"A test to see if I can implement nc's proxy functionality with python"
+								)
+								.build()
+				),
 				new Repository(
 						"quickstart-buck-bazel-maven",
 						RepositoryArgs.builder().archived().build()
@@ -279,19 +468,34 @@ public class Main {
 				new Repository(
 						"rss-to-mail",
 						RepositoryArgs.builder()
+								.description(
+										"Read from RSS feeds and send an email for every new item"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
 								.build()
 				),
-				new Repository("sci-fi-movies"),
+				new Repository(
+						"sci-fi-movies",
+						RepositoryArgs.builder()
+								.description(
+										"an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
+								)
+								.build()
+				),
 				new Repository(
 						"selenium-xp-ie6",
 						RepositoryArgs.builder().archived().build()
 				),
 				new Repository(
 						"self-hosted-gh-actions-runner",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"An experiment to test docker-based builds inside a GitHub Actions Runner that is a running container itself"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"spring-cloud-context-classloader-leak-demo",
@@ -308,6 +512,9 @@ public class Main {
 				new Repository(
 						"terraform-github",
 						RepositoryArgs.builder()
+								.description(
+										"A project to manage github settings with terraform"
+								)
 								.environment(
 										"production",
 										env -> env.secrets("TF_GITHUB_TOKEN")
@@ -316,7 +523,12 @@ public class Main {
 				),
 				new Repository(
 						"testcontainers-colima-github-actions",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"A demo project of running testcontainers with colima on GitHub Actions"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"toado",
@@ -325,6 +537,7 @@ public class Main {
 				new Repository(
 						"tsaf-parser",
 						RepositoryArgs.builder()
+								.description("Binary format exploration")
 								.requiredStatusChecks(
 										"test.required-status-check"
 								)
@@ -334,10 +547,22 @@ public class Main {
 						"vagrant-1",
 						RepositoryArgs.builder().archived().build()
 				),
-				new Repository("vagrant-ssh-config"),
+				new Repository(
+						"vagrant-ssh-config",
+						RepositoryArgs.builder()
+								.description(
+										"A vagrant plugin that automatically creates ssh configs for vms"
+								)
+								.build()
+				),
 				new Repository(
 						"vitest-link-reproduction",
-						RepositoryArgs.builder().archived().build()
+						RepositoryArgs.builder()
+								.description(
+										"This project demonstrates an issue where vitest runs fail when a dependency is included via a link"
+								)
+								.archived()
+								.build()
 				),
 				new Repository(
 						"vitest-mocking-reproduction",
@@ -346,6 +571,9 @@ public class Main {
 				new Repository(
 						"wait-for-ports",
 						RepositoryArgs.builder()
+								.description(
+										"A command-line utility that waits until a port is open"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
@@ -354,6 +582,9 @@ public class Main {
 				new Repository(
 						"webapp-classloader-test",
 						RepositoryArgs.builder()
+								.description(
+										"This is a test that can be used during integration testing to check for classloader leaks"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)
@@ -362,6 +593,9 @@ public class Main {
 				new Repository(
 						"website-janitor",
 						RepositoryArgs.builder()
+								.description(
+										"A set of tools that check websites for common misconfigurations or downtime"
+								)
 								.requiredStatusChecks(
 										"main.required-status-check"
 								)

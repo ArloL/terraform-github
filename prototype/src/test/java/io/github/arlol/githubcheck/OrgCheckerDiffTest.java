@@ -23,6 +23,8 @@ class OrgCheckerDiffTest {
 				name,
 				false, // archived
 				"public",
+				"", // description
+				"", // homepageUrl
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
@@ -52,6 +54,8 @@ class OrgCheckerDiffTest {
 				name,
 				true, // archived
 				"public",
+				"", // description
+				"", // homepageUrl
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
@@ -96,6 +100,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				true, // allowMergeCommit — should be false
 				false,
 				false,
@@ -127,6 +133,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				true, // allowSquashMerge — should be false
 				true,
@@ -158,6 +166,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				false, // allowAutoMerge — should be true
@@ -189,6 +199,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -220,6 +232,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -251,6 +265,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -282,6 +298,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -316,6 +334,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				true,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -346,6 +366,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"private",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -372,6 +394,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -398,6 +422,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -430,6 +456,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -462,6 +490,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -497,6 +527,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -532,6 +564,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -569,6 +603,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -602,6 +638,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -638,6 +676,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -677,6 +717,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -718,6 +760,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -754,6 +798,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -785,6 +831,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -823,6 +871,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -856,6 +906,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -889,6 +941,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,
@@ -930,6 +984,8 @@ class OrgCheckerDiffTest {
 				"repo",
 				false,
 				"public",
+				"", // description
+				"", // homepageUrl
 				false,
 				false,
 				true,

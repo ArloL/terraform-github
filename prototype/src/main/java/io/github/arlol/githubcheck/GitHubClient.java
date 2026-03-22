@@ -24,6 +24,8 @@ public class GitHubClient {
 	}
 
 	record RepoDetails(
+			String description,
+			String homepageUrl,
 			boolean allowMergeCommit,
 			boolean allowSquashMerge,
 			boolean allowAutoMerge,
@@ -110,6 +112,8 @@ public class GitHubClient {
 						.asText()
 		);
 		return new RepoDetails(
+				node.path("description").asText(""),
+				node.path("homepage").asText(""),
 				node.path("allow_merge_commit").asBoolean(true),
 				node.path("allow_squash_merge").asBoolean(true),
 				node.path("allow_auto_merge").asBoolean(false),
