@@ -26,6 +26,10 @@ public class GitHubClient {
 	record RepoDetails(
 			String description,
 			String homepageUrl,
+			boolean hasIssues,
+			boolean hasProjects,
+			boolean hasWiki,
+			String defaultBranch,
 			boolean allowMergeCommit,
 			boolean allowSquashMerge,
 			boolean allowAutoMerge,
@@ -114,6 +118,10 @@ public class GitHubClient {
 		return new RepoDetails(
 				node.path("description").asText(""),
 				node.path("homepage").asText(""),
+				node.path("has_issues").asBoolean(false),
+				node.path("has_projects").asBoolean(false),
+				node.path("has_wiki").asBoolean(false),
+				node.path("default_branch").asText(""),
 				node.path("allow_merge_commit").asBoolean(true),
 				node.path("allow_squash_merge").asBoolean(true),
 				node.path("allow_auto_merge").asBoolean(false),
@@ -137,6 +145,26 @@ public class GitHubClient {
 		throw new RuntimeException(
 				"Unexpected HTTP " + resp.statusCode()
 						+ " for vulnerability-alerts on " + repo
+		);
+	}
+
+	public boolean getAutomatedSecurityFixes(String org, String repo)
+			throws Exception {
+		HttpResponse<String> resp = send(
+				baseUrl + "/repos/" + org + "/" + repo
+						+ "/automated-security-fixes"
+		);
+		if (resp.statusCode() == 200) {
+			return mapper.readTree(resp.body())
+					.path("enabled")
+					.asBoolean(false);
+		}
+		if (resp.statusCode() == 404) {
+			return false;
+		}
+		throw new RuntimeException(
+				"Unexpected HTTP " + resp.statusCode()
+						+ " for automated-security-fixes on " + repo
 		);
 	}
 

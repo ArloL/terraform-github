@@ -108,8 +108,11 @@ public class OrgChecker {
 		GitHubClient.RepoDetails details = client.getRepo(org, name);
 
 		boolean vulnAlerts = false;
+		boolean automatedSecurityFixes = false;
 		if (!archived) {
 			vulnAlerts = client.getVulnerabilityAlerts(org, name);
+			automatedSecurityFixes = client
+					.getAutomatedSecurityFixes(org, name);
 		}
 
 		boolean protectionExists = false;
@@ -147,11 +150,16 @@ public class OrgChecker {
 				summary.visibility(),
 				details.description(),
 				details.homepageUrl(),
+				details.hasIssues(),
+				details.hasProjects(),
+				details.hasWiki(),
+				details.defaultBranch(),
 				details.allowMergeCommit(),
 				details.allowSquashMerge(),
 				details.allowAutoMerge(),
 				details.deleteBranchOnMerge(),
 				vulnAlerts,
+				automatedSecurityFixes,
 				details.secretScanning(),
 				details.secretScanningPushProtection(),
 				protectionExists,
@@ -185,6 +193,10 @@ public class OrgChecker {
 				desired.homepageUrl(),
 				actual.homepageUrl()
 		);
+		check(diffs, "has_issues", true, actual.hasIssues());
+		check(diffs, "has_projects", true, actual.hasProjects());
+		check(diffs, "has_wiki", true, actual.hasWiki());
+		check(diffs, "default_branch", "main", actual.defaultBranch());
 		check(diffs, "allow_merge_commit", false, actual.allowMergeCommit());
 		check(diffs, "allow_squash_merge", false, actual.allowSquashMerge());
 		check(diffs, "allow_auto_merge", true, actual.allowAutoMerge());
@@ -201,6 +213,12 @@ public class OrgChecker {
 					"vulnerability_alerts",
 					true,
 					actual.vulnerabilityAlerts()
+			);
+			check(
+					diffs,
+					"automated_security_fixes",
+					true,
+					actual.automatedSecurityFixes()
 			);
 			check(diffs, "secret_scanning", true, actual.secretScanning());
 			check(
