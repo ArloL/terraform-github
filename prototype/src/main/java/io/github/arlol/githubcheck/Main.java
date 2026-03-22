@@ -151,6 +151,10 @@ public class Main {
 				new Repository(
 						"corporate-python",
 						RepositoryArgs.builder()
+								.actionSecrets(
+										"DOCKER_HUB_ACCESS_TOKEN",
+										"DOCKER_HUB_USERNAME"
+								)
 								.description(
 										"A container for executing python in corporate environments"
 								)
