@@ -70,6 +70,12 @@ public class GitHubClient {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
 		while (url != null) {
 			HttpResponse<String> resp = send(url);
+			if (resp.statusCode() != 200) {
+				throw new RuntimeException(
+						"HTTP " + resp.statusCode() + " listing repos for org "
+								+ org + ": " + resp.body()
+				);
+			}
 			JsonNode page = mapper.readTree(resp.body());
 			for (JsonNode node : page) {
 				all.add(
