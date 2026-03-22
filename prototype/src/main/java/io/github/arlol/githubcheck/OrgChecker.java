@@ -163,6 +163,9 @@ public class OrgChecker {
 	}
 
 	List<String> computeDiffs(RepositoryState actual, RepositoryArgs desired) {
+		if (desired.archived()) {
+			return List.of();
+		}
 		List<String> diffs = new ArrayList<>();
 		boolean archived = actual.archived();
 		boolean isPublic = "public".equals(actual.visibility());
