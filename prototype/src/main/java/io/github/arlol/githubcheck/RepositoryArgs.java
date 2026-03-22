@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 public final class RepositoryArgs {
 
 	private final boolean archived;
+	private final boolean githubPages;
 	private final String visibility;
 	private final List<String> requiredStatusChecks;
 	private final List<String> actionSecrets;
@@ -17,6 +18,7 @@ public final class RepositoryArgs {
 
 	private RepositoryArgs(Builder builder) {
 		this.archived = builder.archived;
+		this.githubPages = builder.githubPages;
 		this.visibility = builder.visibility;
 		this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
 		this.actionSecrets = List.copyOf(builder.actionSecrets);
@@ -26,6 +28,10 @@ public final class RepositoryArgs {
 
 	public boolean archived() {
 		return archived;
+	}
+
+	public boolean githubPages() {
+		return githubPages;
 	}
 
 	public String visibility() {
@@ -52,6 +58,7 @@ public final class RepositoryArgs {
 	public static final class Builder {
 
 		private boolean archived = false;
+		private boolean githubPages = false;
 		private String visibility = "public";
 		private List<String> requiredStatusChecks = List.of();
 		private List<String> actionSecrets = List.of();
@@ -59,6 +66,11 @@ public final class RepositoryArgs {
 
 		public Builder archived() {
 			this.archived = true;
+			return this;
+		}
+
+		public Builder githubPages() {
+			this.githubPages = true;
 			return this;
 		}
 
