@@ -98,6 +98,29 @@ class GitHubClientTest {
 	}
 
 	@Test
+	void listOrgRepos_fallsBackToUsersEndpointOn404() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/orgs/ArloL/repos")).willReturn(
+						aResponse().withStatus(404)
+								.withHeader("Content-Type", "application/json")
+								.withBody(
+										"""
+												{"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}
+												"""
+								)
+				)
+		);
+		stubFor(get(urlPathEqualTo("/users/ArloL/repos")).willReturn(okJson("""
+				[{"name": "repo-a", "archived": false, "visibility": "public"}]
+				""")));
+
+		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+
+		assertThat(repos).hasSize(1);
+		assertThat(repos.get(0).name()).isEqualTo("repo-a");
+	}
+
+	@Test
 	void listOrgRepos_errorThrows() {
 		stubFor(
 				get(urlPathEqualTo("/orgs/ArloL/repos")).willReturn(
@@ -110,10 +133,19 @@ class GitHubClientTest {
 								)
 				)
 		);
+		stubFor(
+				get(urlPathEqualTo("/users/ArloL/repos")).willReturn(
+						aResponse().withStatus(403)
+								.withHeader("Content-Type", "application/json")
+								.withBody("""
+										{"message":"Forbidden"}
+										""")
+				)
+		);
 
 		assertThatThrownBy(() -> client.listOrgRepos("ArloL"))
 				.isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("HTTP 404");
+				.hasMessageContaining("HTTP 403");
 	}
 
 	// ─── getRepo
