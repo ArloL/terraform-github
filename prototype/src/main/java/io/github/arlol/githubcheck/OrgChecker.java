@@ -118,7 +118,7 @@ public class OrgChecker {
 		if (!archived && "public".equals(summary.visibility())) {
 			var protection = client.getBranchProtection(org, name);
 			if (protection.isPresent()) {
-				var bp = protection.get();
+				var bp = protection.orElseThrow();
 				protectionExists = true;
 				enforceAdmins = bp.enforceAdmins();
 				linearHistory = bp.requiredLinearHistory();

@@ -97,6 +97,25 @@ class GitHubClientTest {
 		assertThat(repos).isEmpty();
 	}
 
+	@Test
+	void listOrgRepos_errorThrows() {
+		stubFor(
+				get(urlPathEqualTo("/orgs/ArloL/repos")).willReturn(
+						aResponse().withStatus(404)
+								.withHeader("Content-Type", "application/json")
+								.withBody(
+										"""
+												{"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}
+												"""
+								)
+				)
+		);
+
+		assertThatThrownBy(() -> client.listOrgRepos("ArloL"))
+				.isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("HTTP 404");
+	}
+
 	// ─── getRepo
 	// ────────────────────────────────────────────────────────────────
 
@@ -210,7 +229,7 @@ class GitHubClientTest {
 				.getBranchProtection("ArloL", "my-repo");
 
 		assertThat(opt).isPresent();
-		GitHubClient.BranchProtection bp = opt.get();
+		GitHubClient.BranchProtection bp = opt.orElseThrow();
 		assertThat(bp.enforceAdmins()).isTrue();
 		assertThat(bp.requiredLinearHistory()).isTrue();
 		assertThat(bp.requiredStatusCheckContexts()).containsExactlyInAnyOrder(
@@ -242,7 +261,7 @@ class GitHubClientTest {
 				.getBranchProtection("ArloL", "my-repo");
 
 		assertThat(opt).isPresent();
-		assertThat(opt.get().requiredStatusCheckContexts())
+		assertThat(opt.orElseThrow().requiredStatusCheckContexts())
 				.containsExactlyInAnyOrder("legacy-check-1", "legacy-check-2");
 	}
 
