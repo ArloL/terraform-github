@@ -98,7 +98,7 @@ class GitHubClientTest {
 	}
 
 	@Test
-	void listOrgRepos_fallsBackToUsersEndpointOn404() throws Exception {
+	void listOrgRepos_fallsBackToUserEndpointOn404() throws Exception {
 		stubFor(
 				get(urlPathEqualTo("/orgs/ArloL/repos")).willReturn(
 						aResponse().withStatus(404)
@@ -110,14 +110,19 @@ class GitHubClientTest {
 								)
 				)
 		);
-		stubFor(get(urlPathEqualTo("/users/ArloL/repos")).willReturn(okJson("""
-				[{"name": "repo-a", "archived": false, "visibility": "public"}]
+		stubFor(get(urlPathEqualTo("/user/repos")).willReturn(okJson("""
+				[
+				  {"name": "repo-a", "archived": false, "visibility": "public"},
+				  {"name": "repo-b", "archived": true,  "visibility": "private"}
+				]
 				""")));
 
 		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
 
-		assertThat(repos).hasSize(1);
+		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
+		assertThat(repos.get(1).name()).isEqualTo("repo-b");
+		assertThat(repos.get(1).archived()).isTrue();
 	}
 
 	@Test
@@ -134,7 +139,7 @@ class GitHubClientTest {
 				)
 		);
 		stubFor(
-				get(urlPathEqualTo("/users/ArloL/repos")).willReturn(
+				get(urlPathEqualTo("/user/repos")).willReturn(
 						aResponse().withStatus(403)
 								.withHeader("Content-Type", "application/json")
 								.withBody("""
