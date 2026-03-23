@@ -1,4 +1,4 @@
-package io.github.arlol.githubcheck;
+package io.github.arlol.githubcheck.config;
 
 import java.util.Arrays;
 import java.util.Collections;

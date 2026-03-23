@@ -2,6 +2,8 @@ package io.github.arlol.githubcheck;
 
 import java.util.List;
 
+import io.github.arlol.githubcheck.config.RepositoryArgs;
+
 public class GitHubCheck {
 
 	static void main() throws Exception {
