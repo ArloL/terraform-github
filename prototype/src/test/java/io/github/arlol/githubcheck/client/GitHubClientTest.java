@@ -166,20 +166,76 @@ class GitHubClientTest {
 	// ─── getRepo
 	// ────────────────────────────────────────────────────────────────
 
+	/** Full real-shaped JSON for a repo response. Reused across tests. */
+	private static final String REPO_BASE_JSON = """
+			{
+			  "id": 1,
+			  "node_id": "R_1",
+			  "name": "my-repo",
+			  "full_name": "ArloL/my-repo",
+			  "private": false,
+			  "fork": false,
+			  "archived": false,
+			  "disabled": false,
+			  "is_template": false,
+			  "visibility": "public",
+			  "default_branch": "main",
+			  "topics": [],
+			  "has_issues": true,
+			  "has_projects": true,
+			  "has_wiki": true,
+			  "has_discussions": false,
+			  "has_pages": false,
+			  "allow_forking": true,
+			  "web_commit_signoff_required": false,
+			  "allow_squash_merge": true,
+			  "allow_merge_commit": true,
+			  "allow_rebase_merge": true,
+			  "allow_auto_merge": false,
+			  "delete_branch_on_merge": false,
+			  "allow_update_branch": false,
+			  "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+			  "squash_merge_commit_message": "COMMIT_MESSAGES",
+			  "merge_commit_title": "MERGE_MESSAGE",
+			  "merge_commit_message": "PR_TITLE"
+			}
+			""";
+
 	@Test
 	void getRepo_parsesAllFields() throws Exception {
 		stubFor(get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(okJson("""
 				{
+				  "id": 1,
+				  "node_id": "R_1",
+				  "name": "my-repo",
+				  "full_name": "ArloL/my-repo",
+				  "private": false,
+				  "fork": false,
+				  "archived": false,
+				  "disabled": false,
+				  "is_template": false,
+				  "visibility": "public",
+				  "default_branch": "main",
 				  "description": "My repo",
 				  "homepage": "https://example.com",
+				  "topics": ["java", "github"],
 				  "has_issues": true,
 				  "has_projects": true,
 				  "has_wiki": true,
-				  "default_branch": "main",
-				  "allow_merge_commit": false,
+				  "has_discussions": false,
+				  "has_pages": false,
+				  "allow_forking": true,
+				  "web_commit_signoff_required": false,
 				  "allow_squash_merge": false,
+				  "allow_merge_commit": false,
+				  "allow_rebase_merge": true,
 				  "allow_auto_merge": true,
 				  "delete_branch_on_merge": true,
+				  "allow_update_branch": false,
+				  "squash_merge_commit_title": "PR_TITLE",
+				  "squash_merge_commit_message": "PR_BODY",
+				  "merge_commit_title": "PR_TITLE",
+				  "merge_commit_message": "PR_BODY",
 				  "security_and_analysis": {
 				    "secret_scanning": {"status": "enabled"},
 				    "secret_scanning_push_protection": {"status": "enabled"}
@@ -190,7 +246,7 @@ class GitHubClientTest {
 		GitHubClient.RepoDetails details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.description()).isEqualTo("My repo");
-		assertThat(details.homepageUrl()).isEqualTo("https://example.com");
+		assertThat(details.homepage()).isEqualTo("https://example.com");
 		assertThat(details.hasIssues()).isTrue();
 		assertThat(details.hasProjects()).isTrue();
 		assertThat(details.hasWiki()).isTrue();
@@ -199,24 +255,57 @@ class GitHubClientTest {
 		assertThat(details.allowSquashMerge()).isFalse();
 		assertThat(details.allowAutoMerge()).isTrue();
 		assertThat(details.deleteBranchOnMerge()).isTrue();
-		assertThat(details.secretScanning()).isTrue();
-		assertThat(details.secretScanningPushProtection()).isTrue();
+		assertThat(details.allowRebaseMerge()).isTrue();
+		assertThat(details.allowUpdateBranch()).isFalse();
+		assertThat(details.webCommitSignoffRequired()).isFalse();
+		assertThat(details.squashMergeCommitTitle()).isEqualTo("PR_TITLE");
+		assertThat(details.mergeCommitTitle()).isEqualTo("PR_TITLE");
+		assertThat(details.topics())
+				.containsExactlyInAnyOrder("java", "github");
+		assertThat(details.securityAndAnalysis().secretScanning().status())
+				.isEqualTo("enabled");
+		assertThat(
+				details.securityAndAnalysis()
+						.secretScanningPushProtection()
+						.status()
+		).isEqualTo("enabled");
 	}
 
 	@Test
 	void getRepo_disabledSecurityAnalysis() throws Exception {
 		stubFor(get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(okJson("""
 				{
+				  "id": 1,
+				  "node_id": "R_1",
+				  "name": "my-repo",
+				  "full_name": "ArloL/my-repo",
+				  "private": false,
+				  "fork": false,
+				  "archived": false,
+				  "disabled": false,
+				  "is_template": false,
+				  "visibility": "public",
+				  "default_branch": "main",
 				  "description": null,
 				  "homepage": null,
+				  "topics": [],
 				  "has_issues": true,
 				  "has_projects": true,
 				  "has_wiki": true,
-				  "default_branch": "main",
-				  "allow_merge_commit": true,
+				  "has_discussions": false,
+				  "has_pages": false,
+				  "allow_forking": true,
+				  "web_commit_signoff_required": false,
 				  "allow_squash_merge": true,
+				  "allow_merge_commit": true,
+				  "allow_rebase_merge": true,
 				  "allow_auto_merge": false,
 				  "delete_branch_on_merge": false,
+				  "allow_update_branch": false,
+				  "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+				  "squash_merge_commit_message": "COMMIT_MESSAGES",
+				  "merge_commit_title": "MERGE_MESSAGE",
+				  "merge_commit_message": "PR_TITLE",
 				  "security_and_analysis": {
 				    "secret_scanning": {"status": "disabled"},
 				    "secret_scanning_push_protection": {"status": "disabled"}
@@ -226,8 +315,13 @@ class GitHubClientTest {
 
 		GitHubClient.RepoDetails details = client.getRepo("ArloL", "my-repo");
 
-		assertThat(details.secretScanning()).isFalse();
-		assertThat(details.secretScanningPushProtection()).isFalse();
+		assertThat(details.securityAndAnalysis().secretScanning().status())
+				.isEqualTo("disabled");
+		assertThat(
+				details.securityAndAnalysis()
+						.secretScanningPushProtection()
+						.status()
+		).isEqualTo("disabled");
 	}
 
 	// ─── getVulnerabilityAlerts
@@ -349,12 +443,17 @@ class GitHubClientTest {
 
 		assertThat(opt).isPresent();
 		GitHubClient.BranchProtection bp = opt.orElseThrow();
-		assertThat(bp.enforceAdmins()).isTrue();
-		assertThat(bp.requiredLinearHistory()).isTrue();
-		assertThat(bp.requiredStatusCheckContexts()).containsExactlyInAnyOrder(
-				"check-actions.required-status-check",
-				"CodeQL"
-		);
+		assertThat(bp.enforceAdmins().enabled()).isTrue();
+		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
+		assertThat(bp.allowForcePushes().enabled()).isFalse();
+		assertThat(bp.requiredStatusChecks().strict()).isFalse();
+		assertThat(bp.requiredStatusChecks().checks()).extracting(
+				GitHubClient.BranchProtection.RequiredStatusChecks.StatusCheck::context
+		)
+				.containsExactlyInAnyOrder(
+						"check-actions.required-status-check",
+						"CodeQL"
+				);
 	}
 
 	@Test
@@ -382,7 +481,7 @@ class GitHubClientTest {
 				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
-		assertThat(opt.orElseThrow().requiredStatusCheckContexts())
+		assertThat(opt.orElseThrow().requiredStatusChecks().contexts())
 				.containsExactlyInAnyOrder("legacy-check-1", "legacy-check-2");
 	}
 
@@ -611,7 +710,7 @@ class GitHubClientTest {
 
 		GitHubClient.WorkflowPermissions perms = client
 				.getWorkflowPermissions("ArloL", "my-repo");
-		assertThat(perms.defaultPermissions()).isEqualTo("read");
+		assertThat(perms.defaultWorkflowPermissions()).isEqualTo("read");
 		assertThat(perms.canApprovePullRequestReviews()).isTrue();
 	}
 
@@ -695,8 +794,7 @@ class GitHubClientTest {
 		var pages = client.getPages("github", "developer.github.com")
 				.orElseThrow();
 
-		assertThat(pages.buildType())
-				.isEqualTo(GitHubClient.Pages.BuildType.NULL);
+		assertThat(pages.buildType()).isNull();
 	}
 
 	@Test
