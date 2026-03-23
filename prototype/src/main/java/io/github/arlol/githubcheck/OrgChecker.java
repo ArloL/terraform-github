@@ -14,7 +14,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.Pages;
+import io.github.arlol.githubcheck.client.RepoDetails;
+import io.github.arlol.githubcheck.client.RepoSummary;
+import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public class OrgChecker {
 
@@ -39,7 +44,7 @@ public class OrgChecker {
 
 	public CheckResult check(List<Repository> repositories) throws Exception {
 		System.out.println("Fetching repo list for org: " + org);
-		List<GitHubClient.RepoSummary> summaries = client.listOrgRepos(org);
+		List<RepoSummary> summaries = client.listOrgRepos(org);
 		System.out.printf(
 				"Found %d repos. Fetching details in parallel...%n",
 				summaries.size()
@@ -69,7 +74,7 @@ public class OrgChecker {
 
 		// Repos declared in config but not found in the org
 		Set<String> foundNames = summaries.stream()
-				.map(GitHubClient.RepoSummary::name)
+				.map(RepoSummary::name)
 				.collect(Collectors.toSet());
 		repositories.stream()
 				.filter(r -> !foundNames.contains(r.name()))
@@ -84,7 +89,7 @@ public class OrgChecker {
 	}
 
 	private CheckResult.RepoCheckResult checkOne(
-			GitHubClient.RepoSummary summary,
+			RepoSummary summary,
 			Map<String, Repository> desiredByName
 	) {
 		String name = summary.name();
@@ -102,12 +107,11 @@ public class OrgChecker {
 		}
 	}
 
-	RepositoryState fetchState(GitHubClient.RepoSummary summary)
-			throws Exception {
+	RepositoryState fetchState(RepoSummary summary) throws Exception {
 		String name = summary.name();
 		boolean archived = summary.archived();
 
-		GitHubClient.RepoDetails details = client.getRepo(org, name);
+		RepoDetails details = client.getRepo(org, name);
 
 		boolean vulnAlerts = false;
 		boolean automatedSecurityFixes = false;
@@ -144,7 +148,7 @@ public class OrgChecker {
 					if (checks != null && !checks.isEmpty()) {
 						statusContexts = checks.stream()
 								.map(
-										GitHubClient.BranchProtection.RequiredStatusChecks.StatusCheck::context
+										BranchProtection.RequiredStatusChecks.StatusCheck::context
 								)
 								.toList();
 					} else {
@@ -167,8 +171,7 @@ public class OrgChecker {
 			);
 		}
 
-		GitHubClient.WorkflowPermissions wfPerms = client
-				.getWorkflowPermissions(org, name);
+		WorkflowPermissions wfPerms = client.getWorkflowPermissions(org, name);
 
 		return new RepositoryState(
 				name,

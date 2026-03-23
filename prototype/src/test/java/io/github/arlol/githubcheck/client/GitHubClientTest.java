@@ -46,7 +46,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -89,7 +89,7 @@ class GitHubClientTest {
 						)
 		);
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-page1");
@@ -103,7 +103,7 @@ class GitHubClientTest {
 						.willReturn(okJson("[]"))
 		);
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 		assertThat(repos).isEmpty();
 	}
 
@@ -127,7 +127,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -243,7 +243,7 @@ class GitHubClientTest {
 				}
 				""")));
 
-		GitHubClient.RepoDetails details = client.getRepo("ArloL", "my-repo");
+		RepoDetails details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.description()).isEqualTo("My repo");
 		assertThat(details.homepage()).isEqualTo("https://example.com");
@@ -313,7 +313,7 @@ class GitHubClientTest {
 				}
 				""")));
 
-		GitHubClient.RepoDetails details = client.getRepo("ArloL", "my-repo");
+		RepoDetails details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.securityAndAnalysis().secretScanning().status())
 				.isEqualTo("disabled");
@@ -438,17 +438,17 @@ class GitHubClientTest {
 						)
 		);
 
-		Optional<GitHubClient.BranchProtection> opt = client
+		Optional<BranchProtection> opt = client
 				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
-		GitHubClient.BranchProtection bp = opt.orElseThrow();
+		BranchProtection bp = opt.orElseThrow();
 		assertThat(bp.enforceAdmins().enabled()).isTrue();
 		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
 		assertThat(bp.allowForcePushes().enabled()).isFalse();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
 		assertThat(bp.requiredStatusChecks().checks()).extracting(
-				GitHubClient.BranchProtection.RequiredStatusChecks.StatusCheck::context
+				BranchProtection.RequiredStatusChecks.StatusCheck::context
 		)
 				.containsExactlyInAnyOrder(
 						"check-actions.required-status-check",
@@ -477,7 +477,7 @@ class GitHubClientTest {
 						)
 		);
 
-		Optional<GitHubClient.BranchProtection> opt = client
+		Optional<BranchProtection> opt = client
 				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
@@ -708,7 +708,7 @@ class GitHubClientTest {
 						"""))
 		);
 
-		GitHubClient.WorkflowPermissions perms = client
+		WorkflowPermissions perms = client
 				.getWorkflowPermissions("ArloL", "my-repo");
 		assertThat(perms.defaultWorkflowPermissions()).isEqualTo("read");
 		assertThat(perms.canApprovePullRequestReviews()).isTrue();
@@ -850,8 +850,7 @@ class GitHubClientTest {
 
 		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
 
-		assertThat(pages.buildType())
-				.isEqualTo(GitHubClient.Pages.BuildType.WORKFLOW);
+		assertThat(pages.buildType()).isEqualTo(Pages.BuildType.WORKFLOW);
 	}
 
 }
