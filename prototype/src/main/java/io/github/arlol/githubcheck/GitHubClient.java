@@ -16,14 +16,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GitHubClient {
 
 	// Response records — the parsed shapes of GitHub API responses
-	record RepoSummary(
+	public record RepoSummary(
 			String name,
 			boolean archived,
 			String visibility
 	) {
 	}
 
-	record RepoDetails(
+	public record RepoDetails(
 			String description,
 			String homepageUrl,
 			boolean hasIssues,
@@ -39,17 +39,36 @@ public class GitHubClient {
 	) {
 	}
 
-	record BranchProtection(
+	public record BranchProtection(
 			boolean enforceAdmins,
 			boolean requiredLinearHistory,
 			List<String> requiredStatusCheckContexts
 	) {
 	}
 
-	record WorkflowPermissions(
+	public record WorkflowPermissions(
 			String defaultPermissions,
 			boolean canApprovePullRequestReviews
 	) {
+	}
+
+	public record Pages(
+			BuildType buildType
+	) {
+
+		public enum BuildType {
+
+			WORKFLOW, LEGACY, NULL;
+
+			public static BuildType fromRaw(String buildType) {
+				if (buildType == null || buildType.isBlank()) {
+					return BuildType.NULL;
+				}
+				return valueOf(buildType.toUpperCase());
+			}
+
+		}
+
 	}
 
 	private final String baseUrl;
@@ -295,6 +314,35 @@ public class GitHubClient {
 		return new WorkflowPermissions(
 				node.path("default_workflow_permissions").asText("read"),
 				node.path("can_approve_pull_request_reviews").asBoolean(false)
+		);
+	}
+
+	public Optional<Pages> getPages(String owner, String repo)
+			throws Exception {
+		HttpResponse<String> resp = send(
+				baseUrl + "/repos/" + owner + "/" + repo + "/pages"
+		);
+		if (resp.statusCode() == 403) {
+			throw new RuntimeException(
+					"HTTP 403 for workflow permissions on " + repo
+							+ " — token may lack admin scope"
+			);
+		}
+		if (resp.statusCode() == 404) {
+			return Optional.empty();
+		}
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"Unexpected HTTP " + resp.statusCode()
+							+ " for workflow permissions on " + repo
+			);
+		}
+		JsonNode node = mapper.readTree(resp.body());
+		return Optional.of(
+				new Pages(
+						Pages.BuildType
+								.fromRaw(node.path("build_type").asText())
+				)
 		);
 	}
 
