@@ -40,19 +40,4 @@ public record RepoDetails(
 		// are not available (e.g. private repos without GHAS).
 		SecurityAndAnalysis securityAndAnalysis
 ) {
-
-	public record SecurityAndAnalysis(
-			StatusObject secretScanning,
-			StatusObject secretScanningPushProtection,
-			StatusObject advancedSecurity,
-			StatusObject dependabotSecurityUpdates
-	) {
-
-		public record StatusObject(
-				String status
-		) {
-		}
-
-	}
-
 }

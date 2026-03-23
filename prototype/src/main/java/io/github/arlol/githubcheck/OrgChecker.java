@@ -19,6 +19,7 @@ import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.Pages;
 import io.github.arlol.githubcheck.client.RepoDetails;
 import io.github.arlol.githubcheck.client.RepoSummary;
+import io.github.arlol.githubcheck.client.StatusCheck;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public class OrgChecker {
@@ -147,9 +148,7 @@ public class OrgChecker {
 					var checks = rsc.checks();
 					if (checks != null && !checks.isEmpty()) {
 						statusContexts = checks.stream()
-								.map(
-										BranchProtection.RequiredStatusChecks.StatusCheck::context
-								)
+								.map(StatusCheck::context)
 								.toList();
 					} else {
 						var contexts = rsc.contexts();
