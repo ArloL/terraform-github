@@ -208,12 +208,13 @@ public class GitHubClient {
 	}
 
 	public Optional<BranchProtection> getBranchProtection(
-			String org,
-			String repo
+			String owner,
+			String repo,
+			String branch
 	) throws Exception {
 		HttpResponse<String> resp = send(
-				baseUrl + "/repos/" + org + "/" + repo
-						+ "/branches/main/protection"
+				baseUrl + "/repos/" + owner + "/" + repo + "/branches/" + branch
+						+ "/protection"
 		);
 		if (resp.statusCode() == 404) {
 			return Optional.empty();

@@ -122,7 +122,7 @@ public class OrgChecker {
 		boolean linearHistory = false;
 		List<String> statusContexts = List.of();
 		if (!archived && "public".equals(summary.visibility())) {
-			var protection = client.getBranchProtection(org, name);
+			var protection = client.getBranchProtection(org, name, "main");
 			if (protection.isPresent()) {
 				var bp = protection.orElseThrow();
 				protectionExists = true;
