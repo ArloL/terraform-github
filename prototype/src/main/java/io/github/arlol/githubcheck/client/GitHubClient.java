@@ -114,9 +114,9 @@ public class GitHubClient {
 			for (JsonNode node : page) {
 				all.add(
 						new RepoSummary(
-								node.path("name").asText(),
-								node.path("archived").asBoolean(false),
-								node.path("visibility").asText("public")
+								requireText(node, "name"),
+								requireBoolean(node, "archived"),
+								requireText(node, "visibility")
 						)
 				);
 			}
@@ -129,24 +129,29 @@ public class GitHubClient {
 		JsonNode node = mapper
 				.readTree(send(baseUrl + "/repos/" + org + "/" + repo).body());
 		JsonNode sa = node.path("security_and_analysis");
-		boolean secretScanning = "enabled"
-				.equals(sa.path("secret_scanning").path("status").asText());
-		boolean secretScanningPush = "enabled".equals(
-				sa.path("secret_scanning_push_protection")
-						.path("status")
-						.asText()
-		);
+		boolean secretScanning = false;
+		boolean secretScanningPush = false;
+		if (!sa.isMissingNode() && !sa.isNull()) {
+			secretScanning = "enabled"
+					.equals(requireText(sa.path("secret_scanning"), "status"));
+			secretScanningPush = "enabled".equals(
+					requireText(
+							sa.path("secret_scanning_push_protection"),
+							"status"
+					)
+			);
+		}
 		return new RepoDetails(
-				node.path("description").asText(""),
-				node.path("homepage").asText(""),
-				node.path("has_issues").asBoolean(false),
-				node.path("has_projects").asBoolean(false),
-				node.path("has_wiki").asBoolean(false),
-				node.path("default_branch").asText(""),
-				node.path("allow_merge_commit").asBoolean(true),
-				node.path("allow_squash_merge").asBoolean(true),
-				node.path("allow_auto_merge").asBoolean(false),
-				node.path("delete_branch_on_merge").asBoolean(false),
+				requireText(node, "description"),
+				requireText(node, "homepage"),
+				requireBoolean(node, "has_issues"),
+				requireBoolean(node, "has_projects"),
+				requireBoolean(node, "has_wiki"),
+				requireText(node, "default_branch"),
+				requireBoolean(node, "allow_merge_commit"),
+				requireBoolean(node, "allow_squash_merge"),
+				requireBoolean(node, "allow_auto_merge"),
+				requireBoolean(node, "delete_branch_on_merge"),
 				secretScanning,
 				secretScanningPush
 		);
@@ -177,9 +182,7 @@ public class GitHubClient {
 						+ "/automated-security-fixes"
 		);
 		if (resp.statusCode() == 200) {
-			return mapper.readTree(resp.body())
-					.path("enabled")
-					.asBoolean(false);
+			return requireBoolean(mapper.readTree(resp.body()), "enabled");
 		}
 		if (resp.statusCode() == 404) {
 			return false;
@@ -196,16 +199,14 @@ public class GitHubClient {
 				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
 		);
 		if (resp.statusCode() == 200) {
-			return mapper.readTree(resp.body())
-					.path("enabled")
-					.asBoolean(false);
+			return requireBoolean(mapper.readTree(resp.body()), "enabled");
 		}
 		if (resp.statusCode() == 404) {
 			return false;
 		}
 		throw new RuntimeException(
 				"Unexpected HTTP " + resp.statusCode()
-						+ " for automated-security-fixes on " + repo
+						+ " for immutable-releases on " + repo
 		);
 	}
 
@@ -228,29 +229,36 @@ public class GitHubClient {
 			);
 		}
 		JsonNode node = mapper.readTree(resp.body());
-		boolean enforceAdmins = node.path("enforce_admins")
-				.path("enabled")
-				.asBoolean(false);
-		boolean linearHistory = node.path("required_linear_history")
-				.path("enabled")
-				.asBoolean(false);
-		boolean allowForcePushes = node.path("allow_force_pushes")
-				.path("enabled")
-				.asBoolean(false);
+		boolean enforceAdmins = requireBoolean(
+				node.path("enforce_admins"),
+				"enabled"
+		);
+		boolean linearHistory = requireBoolean(
+				node.path("required_linear_history"),
+				"enabled"
+		);
+		boolean allowForcePushes = requireBoolean(
+				node.path("allow_force_pushes"),
+				"enabled"
+		);
 		JsonNode rsc = node.path("required_status_checks");
-		boolean strict = rsc.path("strict").asBoolean(false);
-		List<String> contexts;
-		// Modern API returns checks[].context; legacy returns contexts[]
-		JsonNode checks = rsc.path("checks");
-		if (!checks.isMissingNode() && checks.isArray() && checks.size() > 0) {
-			contexts = StreamSupport.stream(checks.spliterator(), false)
-					.map(c -> c.path("context").asText())
-					.toList();
-		} else {
-			JsonNode ctxArray = rsc.path("contexts");
-			contexts = StreamSupport.stream(ctxArray.spliterator(), false)
-					.map(JsonNode::asText)
-					.toList();
+		boolean strict = false;
+		List<String> contexts = List.of();
+		if (!rsc.isMissingNode() && !rsc.isNull()) {
+			strict = requireBoolean(rsc, "strict");
+			// Modern API returns checks[].context; legacy returns contexts[]
+			JsonNode checks = rsc.path("checks");
+			if (!checks.isMissingNode() && checks.isArray()
+					&& checks.size() > 0) {
+				contexts = StreamSupport.stream(checks.spliterator(), false)
+						.map(c -> requireText(c, "context"))
+						.toList();
+			} else {
+				JsonNode ctxArray = rsc.path("contexts");
+				contexts = StreamSupport.stream(ctxArray.spliterator(), false)
+						.map(JsonNode::asText)
+						.toList();
+			}
 		}
 		return Optional.of(
 				new BranchProtection(
@@ -325,8 +333,8 @@ public class GitHubClient {
 		}
 		JsonNode node = mapper.readTree(resp.body());
 		return new WorkflowPermissions(
-				node.path("default_workflow_permissions").asText("read"),
-				node.path("can_approve_pull_request_reviews").asBoolean(false)
+				requireText(node, "default_workflow_permissions"),
+				requireBoolean(node, "can_approve_pull_request_reviews")
 		);
 	}
 
@@ -357,6 +365,45 @@ public class GitHubClient {
 								.valueOfRaw(node.path("build_type").asText())
 				)
 		);
+	}
+
+	private static boolean requireBoolean(JsonNode node, String field) {
+		JsonNode n = node.path(field);
+		if (n.isMissingNode()) {
+			throw new RuntimeException(
+					"Expected field '" + field
+							+ "' to be present in response but was missing"
+			);
+		}
+		if (!n.isBoolean()) {
+			throw new RuntimeException(
+					"Expected field '" + field + "' to be a boolean but was: "
+							+ n
+			);
+		}
+		return n.booleanValue();
+	}
+
+	private static String requireText(JsonNode node, String field) {
+		JsonNode n = node.path(field);
+		if (n.isMissingNode()) {
+			throw new RuntimeException(
+					"Expected field '" + field
+							+ "' to be present in response but was missing"
+			);
+		}
+		if (n.isNull()) {
+			// GitHub treats null and empty string as equivalent for optional
+			// text fields (description, homepage, etc.)
+			return "";
+		}
+		if (!n.isTextual()) {
+			throw new RuntimeException(
+					"Expected field '" + field + "' to be a string but was: "
+							+ n
+			);
+		}
+		return n.textValue();
 	}
 
 	private HttpResponse<String> send(String url) throws Exception {
