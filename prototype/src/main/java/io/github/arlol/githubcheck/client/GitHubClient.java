@@ -1,4 +1,4 @@
-package io.github.arlol.githubcheck;
+package io.github.arlol.githubcheck.client;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -60,7 +60,7 @@ public class GitHubClient {
 
 			WORKFLOW, LEGACY, NULL;
 
-			public static BuildType fromRaw(String buildType) {
+			public static BuildType valueOfRaw(String buildType) {
 				if (buildType == null || buildType.isBlank()) {
 					return BuildType.NULL;
 				}
@@ -341,7 +341,7 @@ public class GitHubClient {
 		return Optional.of(
 				new Pages(
 						Pages.BuildType
-								.fromRaw(node.path("build_type").asText())
+								.valueOfRaw(node.path("build_type").asText())
 				)
 		);
 	}

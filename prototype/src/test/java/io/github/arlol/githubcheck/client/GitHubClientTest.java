@@ -1,4 +1,4 @@
-package io.github.arlol.githubcheck;
+package io.github.arlol.githubcheck.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
