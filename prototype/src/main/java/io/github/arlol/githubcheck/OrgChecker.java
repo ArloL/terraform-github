@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import io.github.arlol.githubcheck.client.GitHubClient;
+
 public class OrgChecker {
 
 	static final List<String> BASE_STATUS_CHECKS = List.of(

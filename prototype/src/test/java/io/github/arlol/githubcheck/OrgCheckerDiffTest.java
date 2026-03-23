@@ -8,6 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.github.arlol.githubcheck.client.GitHubClient;
+
 class OrgCheckerDiffTest {
 
 	private OrgChecker checker;
