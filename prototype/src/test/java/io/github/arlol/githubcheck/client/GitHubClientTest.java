@@ -794,7 +794,24 @@ class GitHubClientTest {
 		var pages = client.getPages("github", "developer.github.com")
 				.orElseThrow();
 
+		assertThat(pages.url()).isEqualTo(
+				"https://api.github.com/repos/github/developer.github.com/pages"
+		);
+		assertThat(pages.status()).isEqualTo("built");
+		assertThat(pages.cname()).isEqualTo("developer.github.com");
+		assertThat(pages.custom404()).isFalse();
+		assertThat(pages.htmlUrl()).isEqualTo("https://developer.github.com");
 		assertThat(pages.buildType()).isNull();
+		assertThat(pages.source().branch()).isEqualTo("master");
+		assertThat(pages.source().path()).isEqualTo("/");
+		assertThat(pages.isPublic()).isTrue();
+		assertThat(pages.pendingDomainUnverifiedAt())
+				.isEqualTo("2024-04-30T19:33:31Z");
+		assertThat(pages.protectedDomainState()).isEqualTo("verified");
+		assertThat(pages.httpsCertificate().state()).isEqualTo("approved");
+		assertThat(pages.httpsCertificate().domains())
+				.containsExactly("developer.github.com");
+		assertThat(pages.httpsEnforced()).isTrue();
 	}
 
 	@Test
@@ -851,6 +868,11 @@ class GitHubClientTest {
 		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
 
 		assertThat(pages.buildType()).isEqualTo(Pages.BuildType.WORKFLOW);
+		assertThat(pages.cname()).isNull();
+		assertThat(pages.protectedDomainState()).isNull();
+		assertThat(pages.pendingDomainUnverifiedAt()).isNull();
+		assertThat(pages.httpsCertificate()).isNull();
+		assertThat(pages.httpsEnforced()).isTrue();
 	}
 
 }
