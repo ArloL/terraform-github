@@ -3,14 +3,24 @@ package io.github.arlol.githubcheck.client;
 import java.util.List;
 
 public record BranchProtection(
-		Enabled enforceAdmins,
-		Enabled requiredLinearHistory,
-		Enabled allowForcePushes,
+		EnforceAdmins enforceAdmins,
+		RequiredLinearHistory requiredLinearHistory,
+		AllowForcePushes allowForcePushes,
 		// Absent when no status-check rules are configured.
 		RequiredStatusChecks requiredStatusChecks
 ) {
 
-	public record Enabled(
+	public record EnforceAdmins(
+			boolean enabled
+	) {
+	}
+
+	public record RequiredLinearHistory(
+			boolean enabled
+	) {
+	}
+
+	public record AllowForcePushes(
 			boolean enabled
 	) {
 	}
