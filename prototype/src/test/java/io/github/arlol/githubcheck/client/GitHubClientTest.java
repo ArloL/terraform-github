@@ -46,7 +46,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepositoryMinimal> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -89,7 +89,7 @@ class GitHubClientTest {
 						)
 		);
 
-		List<RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepositoryMinimal> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-page1");
@@ -103,7 +103,7 @@ class GitHubClientTest {
 						.willReturn(okJson("[]"))
 		);
 
-		List<RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepositoryMinimal> repos = client.listOrgRepos("ArloL");
 		assertThat(repos).isEmpty();
 	}
 
@@ -127,7 +127,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepositoryMinimal> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -293,7 +293,7 @@ class GitHubClientTest {
 				)
 		);
 
-		RepoDetails details = client.getRepo("ArloL", "my-repo");
+		RepositoryFull details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.owner().login()).isEqualTo("ArloL");
 		assertThat(details.owner().id()).isEqualTo(123L);
@@ -393,7 +393,7 @@ class GitHubClientTest {
 				}
 				""")));
 
-		RepoDetails details = client.getRepo("ArloL", "my-repo");
+		RepositoryFull details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.securityAndAnalysis().secretScanning().status())
 				.isEqualTo(SecurityAndAnalysis.StatusObject.Status.DISABLED);

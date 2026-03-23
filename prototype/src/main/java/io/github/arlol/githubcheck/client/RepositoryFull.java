@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record RepoDetails(
+public record RepositoryFull(
 		long id,
 		String nodeId,
 		String name,
