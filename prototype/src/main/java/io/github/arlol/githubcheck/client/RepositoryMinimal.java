@@ -47,7 +47,7 @@ public record RepositoryMinimal(
 		String pushedAt, // nullable, optional
 		String createdAt, // nullable, optional
 		String updatedAt, // nullable, optional
-		RepoPermissions permissions, // optional
+		RepositoryPermissions permissions, // optional
 		String roleName, // optional
 		String tempCloneToken, // optional
 		Boolean deleteBranchOnMerge, // optional
