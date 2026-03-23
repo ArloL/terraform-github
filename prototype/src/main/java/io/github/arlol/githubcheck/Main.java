@@ -34,9 +34,7 @@ public class Main {
 								"https://arlol.github.io/abenteuer-irland/"
 						)
 						.githubPages(),
-				new Repository("actions").description(
-						"A demonstration of an automated release workflow for shared workflows and actions"
-				).archived(),
+				new Repository("actions").archived(),
 				new Repository("actions-checkout-fetch-depth-demo").archived(),
 				new Repository("advent-of-code")
 						.description("My advent of code solutions"),
@@ -79,20 +77,18 @@ public class Main {
 				new Repository("chop-kata").archived(),
 				new Repository("corporate-python").description(
 						"A container for executing python in corporate environments"
-)
+				)
 						.actionSecrets(
 								"DOCKER_HUB_ACCESS_TOKEN",
 								"DOCKER_HUB_USERNAME"
-				),
+						),
 				new Repository("dependabot-dockerfile-test").description(
 						"A test to see whether dependabot updates dockerfiles with args"
 				),
 				new Repository("dotfiles").description(
 						"My collection of dotfiles used to configure my command line environments"
 				),
-				new Repository("dotnet-http-client-reproduction").description(
-						"A reproduction of an issue with the dotnet http client"
-				).archived(),
+				new Repository("dotnet-http-client-reproduction").archived(),
 				new Repository("eclipse-projects").description(
 						"Arlo's project catalog for the Eclipse Installer"
 				)
@@ -109,14 +105,8 @@ public class Main {
 				new Repository("git-presentation-2018-10").description(
 						"Git Präsentation für Vorlesung Industrielle Softwareentwicklung"
 				),
-				new Repository("gitfx").description(
-						"A simple git client with Java 11+, JavaFX 15+ and GraalVM"
-				).archived(),
-				new Repository("graalfx")
-						.description(
-								"A simple desktop app with JavaFX and GraalVM"
-						)
-						.archived(),
+				new Repository("gitfx").archived(),
+				new Repository("graalfx").archived(),
 				new Repository("gwt-dragula-test").archived(),
 				new Repository("gwt-log-print-style-demo").archived(),
 				new Repository("gwt-refresh-demo").archived(),
@@ -174,11 +164,7 @@ public class Main {
 						"A small repo to run open-webui locally and stop it after using it"
 				),
 				new Repository("packer-templates").archived(),
-				new Repository("pico-playground")
-						.description("A playground for the Pico CSS framework")
-						.homepageUrl("https://arlol.github.io/pico-playground/")
-						.githubPages()
-						.archived(),
+				new Repository("pico-playground").archived(),
 				new Repository("postgres-query-error-demo").archived(),
 				new Repository("postgres-sync-demo").description(
 						"A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
@@ -194,9 +180,7 @@ public class Main {
 						"an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
 				),
 				new Repository("selenium-xp-ie6").archived(),
-				new Repository("self-hosted-gh-actions-runner").description(
-						"An experiment to test docker-based builds inside a GitHub Actions Runner that is a running container itself"
-				).archived(),
+				new Repository("self-hosted-gh-actions-runner").archived(),
 				new Repository("spring-cloud-context-classloader-leak-demo")
 						.archived(),
 				new Repository(
@@ -211,11 +195,8 @@ public class Main {
 								"production",
 								env -> env.secrets("TF_GITHUB_TOKEN")
 						),
-				new Repository(
-						"testcontainers-colima-github-actions"
-				).description(
-						"A demo project of running testcontainers with colima on GitHub Actions"
-				).archived(),
+				new Repository("testcontainers-colima-github-actions")
+						.archived(),
 				new Repository("toado").archived(),
 				new Repository("tsaf-parser")
 						.description("Binary format exploration")
@@ -224,9 +205,7 @@ public class Main {
 				new Repository("vagrant-ssh-config").description(
 						"A vagrant plugin that automatically creates ssh configs for vms"
 				),
-				new Repository("vitest-link-reproduction").description(
-						"This project demonstrates an issue where vitest runs fail when a dependency is included via a link"
-				).archived(),
+				new Repository("vitest-link-reproduction").archived(),
 				new Repository("vitest-mocking-reproduction").archived(),
 				new Repository("wait-for-ports").description(
 						"A command-line utility that waits until a port is open"
