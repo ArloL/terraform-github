@@ -841,7 +841,8 @@ class GitHubClientTest {
 
 		WorkflowPermissions perms = client
 				.getWorkflowPermissions("ArloL", "my-repo");
-		assertThat(perms.defaultWorkflowPermissions()).isEqualTo("read");
+		assertThat(perms.defaultWorkflowPermissions())
+				.isEqualTo(WorkflowPermissions.DefaultWorkflowPermissions.READ);
 		assertThat(perms.canApprovePullRequestReviews()).isTrue();
 	}
 

@@ -3,6 +3,8 @@ package io.github.arlol.githubcheck;
 import java.util.List;
 import java.util.Map;
 
+import io.github.arlol.githubcheck.client.WorkflowPermissions;
+
 public record RepositoryState(
 		String name,
 		boolean archived,
@@ -29,7 +31,6 @@ public record RepositoryState(
 		List<String> requiredStatusCheckContexts,
 		List<String> actionSecretNames,
 		Map<String, List<String>> environmentSecretNames,
-		String workflowPermissionsDefault,
-		boolean canApprovePullRequestReviews
+		WorkflowPermissions workflowPermissions
 ) {
 }
