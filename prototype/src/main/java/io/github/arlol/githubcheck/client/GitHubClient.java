@@ -93,36 +93,30 @@ public class GitHubClient {
 	}
 
 	public List<RepoSummary> listOrgRepos(String org) throws Exception {
-		List<RepoSummary> all = new ArrayList<>();
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
-		while (url != null) {
-			HttpResponse<String> resp = send(url);
-			if (resp.statusCode() == 404 && url.contains("/orgs/")) {
-				// Not an org — personal account. /users/{name}/repos only
-				// returns public repos; /user/repos returns everything
-				// (public + private + archived) for the authenticated user.
-				url = baseUrl + "/user/repos?per_page=100&type=owner";
-				resp = send(url);
-			}
-			if (resp.statusCode() != 200) {
-				throw new RuntimeException(
-						"HTTP " + resp.statusCode() + " listing repos for "
-								+ org + ": " + resp.body()
-				);
-			}
-			JsonNode page = mapper.readTree(resp.body());
-			for (JsonNode node : page) {
-				all.add(
-						new RepoSummary(
+		HttpResponse<String> resp = send(url);
+		if (resp.statusCode() == 404) {
+			// Not an org — personal account. /users/{name}/repos only
+			// returns public repos; /user/repos returns everything
+			// (public + private + archived) for the authenticated user.
+			url = baseUrl + "/user/repos?per_page=100&type=owner";
+			resp = send(url);
+		}
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " listing repos for " + org
+							+ ": " + resp.body()
+			);
+		}
+		return collectPaginatedArrayItems(resp, null).stream()
+				.map(
+						node -> new RepoSummary(
 								requireText(node, "name"),
 								requireBoolean(node, "archived"),
 								requireText(node, "visibility")
 						)
-				);
-			}
-			url = extractNextLink(resp.headers().firstValue("Link").orElse(""));
-		}
-		return all;
+				)
+				.toList();
 	}
 
 	public RepoDetails getRepo(String org, String repo) throws Exception {
@@ -273,26 +267,33 @@ public class GitHubClient {
 
 	public List<String> getActionSecretNames(String org, String repo)
 			throws Exception {
-		JsonNode node = mapper.readTree(
-				send(
-						baseUrl + "/repos/" + org + "/" + repo
-								+ "/actions/secrets?per_page=100"
-				).body()
-		);
-		return StreamSupport.stream(node.path("secrets").spliterator(), false)
-				.map(s -> s.path("name").asText())
+		String url = baseUrl + "/repos/" + org + "/" + repo
+				+ "/actions/secrets?per_page=100";
+		HttpResponse<String> resp = send(url);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " for action secrets on "
+							+ repo + ": " + resp.body()
+			);
+		}
+		return collectPaginatedArrayItems(resp, "secrets").stream()
+				.map(s -> requireText(s, "name"))
 				.toList();
 	}
 
 	public List<String> getEnvironmentNames(String org, String repo)
 			throws Exception {
-		JsonNode node = mapper.readTree(
-				send(baseUrl + "/repos/" + org + "/" + repo + "/environments")
-						.body()
-		);
-		return StreamSupport
-				.stream(node.path("environments").spliterator(), false)
-				.map(e -> e.path("name").asText())
+		String url = baseUrl + "/repos/" + org + "/" + repo
+				+ "/environments?per_page=100";
+		HttpResponse<String> resp = send(url);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " for environments on " + repo
+							+ ": " + resp.body()
+			);
+		}
+		return collectPaginatedArrayItems(resp, "environments").stream()
+				.map(e -> requireText(e, "name"))
 				.toList();
 	}
 
@@ -301,15 +302,17 @@ public class GitHubClient {
 			String repo,
 			String env
 	) throws Exception {
-		JsonNode node = mapper.readTree(
-				send(
-						baseUrl + "/repos/" + org + "/" + repo
-								+ "/environments/" + env
-								+ "/secrets?per_page=100"
-				).body()
-		);
-		return StreamSupport.stream(node.path("secrets").spliterator(), false)
-				.map(s -> s.path("name").asText())
+		String url = baseUrl + "/repos/" + org + "/" + repo + "/environments/"
+				+ env + "/secrets?per_page=100";
+		HttpResponse<String> resp = send(url);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " for environment secrets on "
+							+ repo + "/" + env + ": " + resp.body()
+			);
+		}
+		return collectPaginatedArrayItems(resp, "secrets").stream()
+				.map(s -> requireText(s, "name"))
 				.toList();
 	}
 
@@ -365,6 +368,44 @@ public class GitHubClient {
 								.valueOfRaw(node.path("build_type").asText())
 				)
 		);
+	}
+
+	/**
+	 * Collects all items from a paginated API response, following Link headers.
+	 * The caller is responsible for validating the status of {@code firstResp}
+	 * before calling this method. {@code arrayField} names the JSON field that
+	 * holds the array on each page; pass {@code null} when the page body is
+	 * itself the array (e.g. the repos list endpoint).
+	 */
+	private List<JsonNode> collectPaginatedArrayItems(
+			HttpResponse<String> firstResp,
+			String arrayField
+	) throws Exception {
+		List<JsonNode> items = new ArrayList<>();
+		HttpResponse<String> resp = firstResp;
+		while (true) {
+			JsonNode page = mapper.readTree(resp.body());
+			Iterable<JsonNode> array = arrayField != null
+					? page.path(arrayField)
+					: page;
+			for (JsonNode item : array) {
+				items.add(item);
+			}
+			String next = extractNextLink(
+					resp.headers().firstValue("Link").orElse("")
+			);
+			if (next == null) {
+				break;
+			}
+			resp = send(next);
+			if (resp.statusCode() != 200) {
+				throw new RuntimeException(
+						"HTTP " + resp.statusCode() + " fetching next page: "
+								+ resp.body()
+				);
+			}
+		}
+		return items;
 	}
 
 	private static boolean requireBoolean(JsonNode node, String field) {
