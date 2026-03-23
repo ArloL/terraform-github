@@ -337,7 +337,7 @@ class GitHubClientTest {
 		);
 
 		Optional<GitHubClient.BranchProtection> opt = client
-				.getBranchProtection("ArloL", "my-repo");
+				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
 		GitHubClient.BranchProtection bp = opt.orElseThrow();
@@ -369,7 +369,7 @@ class GitHubClientTest {
 		);
 
 		Optional<GitHubClient.BranchProtection> opt = client
-				.getBranchProtection("ArloL", "my-repo");
+				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
 		assertThat(opt.orElseThrow().requiredStatusCheckContexts())
@@ -383,7 +383,8 @@ class GitHubClientTest {
 						.willReturn(aResponse().withStatus(404))
 		);
 
-		assertThat(client.getBranchProtection("ArloL", "my-repo")).isEmpty();
+		assertThat(client.getBranchProtection("ArloL", "my-repo", "main"))
+				.isEmpty();
 	}
 
 	// ─── getActionSecretNames
