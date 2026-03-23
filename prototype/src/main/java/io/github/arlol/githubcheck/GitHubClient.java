@@ -1,8 +1,5 @@
 package io.github.arlol.githubcheck;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GitHubClient {
 
@@ -135,7 +135,7 @@ public class GitHubClient {
 			throws Exception {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo
-+ "/vulnerability-alerts"
+						+ "/vulnerability-alerts"
 		);
 		if (resp.statusCode() == 204) {
 			return true;
