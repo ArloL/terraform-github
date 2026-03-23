@@ -18,6 +18,7 @@ import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
+import io.github.arlol.githubcheck.config.RepositoryArgs;
 
 public class OrgChecker {
 
