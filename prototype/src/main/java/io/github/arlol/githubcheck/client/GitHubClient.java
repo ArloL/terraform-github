@@ -38,14 +38,17 @@ public class GitHubClient {
 			String nodeId,
 			String name,
 			String fullName,
-			@JsonProperty("private") boolean isPrivate,
+			@JsonProperty("private")
+
+			boolean isPrivate,
 			boolean fork,
 			boolean archived,
 			boolean disabled,
 			boolean isTemplate,
 			String visibility,
 			String defaultBranch,
-			String description, // nullable — GitHub returns null for unset
+			String description, // nullable — GitHub returns null for
+								// unset
 			String homepage, // nullable — GitHub returns null for unset
 			List<String> topics,
 			boolean hasIssues,
@@ -67,9 +70,7 @@ public class GitHubClient {
 			String mergeCommitMessage,
 			// May be absent for archived repos or repos where security features
 			// are not available (e.g. private repos without GHAS).
-			@JsonProperty(
-					required = false
-			) SecurityAndAnalysis securityAndAnalysis
+			SecurityAndAnalysis securityAndAnalysis
 	) {
 
 		public record SecurityAndAnalysis(
@@ -93,9 +94,7 @@ public class GitHubClient {
 			EnabledObject requiredLinearHistory,
 			EnabledObject allowForcePushes,
 			// Absent when no status-check rules are configured.
-			@JsonProperty(
-					required = false
-			) RequiredStatusChecks requiredStatusChecks
+			RequiredStatusChecks requiredStatusChecks
 	) {
 
 		public record EnabledObject(
@@ -128,7 +127,8 @@ public class GitHubClient {
 
 	public record Pages(
 			String status,
-			// Absent in legacy Pages responses that predate the build_type
+			// Absent in legacy Pages responses that predate the
+			// build_type
 			// field.
 			BuildType buildType
 	) {
@@ -146,7 +146,8 @@ public class GitHubClient {
 
 	}
 
-	// ─── Private deserialization helpers ─────────────────────────────────────
+	// ─── Private deserialization helpers
+	// ─────────────────────────────────────
 
 	private record EnabledResponse(
 			boolean enabled
@@ -158,7 +159,8 @@ public class GitHubClient {
 	) {
 	}
 
-	// ─── Client ──────────────────────────────────────────────────────────────
+	// ─── Client
+	// ──────────────────────────────────────────────────────────────
 
 	private final String baseUrl;
 	private final String token;
@@ -188,7 +190,8 @@ public class GitHubClient {
 				);
 	}
 
-	// ─── Public API ──────────────────────────────────────────────────────────
+	// ─── Public API
+	// ──────────────────────────────────────────────────────────
 
 	public List<RepoSummary> listOrgRepos(String org) throws Exception {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
@@ -396,7 +399,8 @@ public class GitHubClient {
 		return Optional.of(mapper.readValue(resp.body(), Pages.class));
 	}
 
-	// ─── Pagination ──────────────────────────────────────────────────────────
+	// ─── Pagination
+	// ──────────────────────────────────────────────────────────
 
 	/**
 	 * Collects all items from a paginated API response, following Link headers.
