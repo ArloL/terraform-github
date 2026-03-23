@@ -79,6 +79,10 @@ public class Main {
 				new Repository("chop-kata").archived(),
 				new Repository("corporate-python").description(
 						"A container for executing python in corporate environments"
+)
+						.actionSecrets(
+								"DOCKER_HUB_ACCESS_TOKEN",
+								"DOCKER_HUB_USERNAME"
 				),
 				new Repository("dependabot-dockerfile-test").description(
 						"A test to see whether dependabot updates dockerfiles with args"
