@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 
 class OrgCheckerDiffTest {
@@ -53,8 +54,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(), // actionSecretNames
 				Map.of(), // environmentSecretNames
-				"read", // workflowPermissionsDefault
-				true // canApprovePullRequestReviews
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ, // workflowPermissionsDefault
+						true // canApprovePullRequestReviews
+				)
 		);
 	}
 
@@ -87,8 +90,11 @@ class OrgCheckerDiffTest {
 				List.of(),
 				List.of(),
 				Map.of(),
-				"read",
-				false // canApprovePullRequestReviews — not checked for archived
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						false // canApprovePullRequestReviews — not checked for
+							  // archived
+				)
 		);
 	}
 
@@ -145,8 +151,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("allow_merge_commit: want=false got=true");
@@ -185,8 +193,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("allow_squash_merge: want=false got=true");
@@ -225,8 +235,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("allow_auto_merge: want=true got=false");
@@ -265,8 +277,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("delete_branch_on_merge: want=true got=false");
@@ -305,8 +319,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("vulnerability_alerts: want=true got=false");
@@ -345,8 +361,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("secret_scanning: want=true got=false");
@@ -385,8 +403,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"secret_scanning_push_protection: want=true got=false"
@@ -424,8 +444,10 @@ class OrgCheckerDiffTest {
 				List.of(),
 				List.of(),
 				Map.of(),
-				"read",
-				false
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						false
+				)
 		);
 		List<String> diffs = checker.computeDiffs(
 				state,
@@ -464,8 +486,10 @@ class OrgCheckerDiffTest {
 				List.of(),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		List<String> diffs = checker.computeDiffs(state, defaultArgs());
 		assertThat(diffs).isEmpty();
@@ -499,8 +523,10 @@ class OrgCheckerDiffTest {
 				List.of(),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("branch_protection: missing");
@@ -539,8 +565,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"branch_protection.enforce_admins: want=true got=false"
@@ -580,8 +608,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"branch_protection.required_linear_history: want=true got=false"
@@ -621,8 +651,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"branch_protection.allow_force_pushes: want=false got=true"
@@ -662,8 +694,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"branch_protection.required_status_checks.strict: want=false got=true"
@@ -702,8 +736,10 @@ class OrgCheckerDiffTest {
 				), // missing "zizmor"
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).anyMatch(
 				d -> d.contains("branch_protection.required_status_checks")
@@ -748,8 +784,10 @@ class OrgCheckerDiffTest {
 				// missing "main.required-status-check"
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("branch_protection.required_status_checks")
@@ -792,8 +830,10 @@ class OrgCheckerDiffTest {
 				), // extra check
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).anyMatch(
 				d -> d.contains("branch_protection.required_status_checks")
@@ -835,8 +875,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(), // missing PAT secret
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("action_secrets") && d.contains("missing")
@@ -877,8 +919,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of("UNEXPECTED_SECRET"), // unexpected secret
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).anyMatch(
 				d -> d.contains("action_secrets") && d.contains("extra")
@@ -922,8 +966,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(), // missing "production" environment
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("environments") && d.contains("missing")
@@ -971,8 +1017,10 @@ class OrgCheckerDiffTest {
 				List.of(),
 				Map.of("production", List.of()), // production exists but no
 												 // secrets
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("environment.production.secrets")
@@ -1023,8 +1071,10 @@ class OrgCheckerDiffTest {
 						"production",
 						List.of("TF_GITHUB_TOKEN", "EXTRA_SECRET")
 				),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("environment.production.secrets")
@@ -1065,11 +1115,14 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"write", // should be "read"
-				true
+				new WorkflowPermissions(
+						// should be READ
+						WorkflowPermissions.DefaultWorkflowPermissions.WRITE,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
-				.contains("workflow_permissions.default: want=read got=write");
+				.contains("workflow_permissions.default: want=READ got=WRITE");
 	}
 
 	@Test
@@ -1105,8 +1158,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				false
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						false
+				)
 		); // should be true
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"workflow_permissions.can_approve_prs: want=true got=false"
@@ -1152,8 +1207,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of("production", List.of("TF_GITHUB_TOKEN")),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
@@ -1192,8 +1249,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of("PAT"),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
@@ -1235,8 +1294,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
@@ -1284,8 +1345,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of("github-pages", List.of()),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
@@ -1323,8 +1386,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("has_issues: want=true got=false");
@@ -1363,8 +1428,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("has_projects: want=true got=false");
@@ -1403,8 +1470,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("has_wiki: want=true got=false");
@@ -1443,8 +1512,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("default_branch: want=main got=master");
@@ -1483,8 +1554,10 @@ class OrgCheckerDiffTest {
 				),
 				List.of(),
 				Map.of(),
-				"read",
-				true
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("automated_security_fixes: want=true got=false");

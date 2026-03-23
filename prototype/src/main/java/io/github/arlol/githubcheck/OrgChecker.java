@@ -199,8 +199,7 @@ public class OrgChecker {
 				statusContexts,
 				secretNames,
 				envSecrets,
-				wfPerms.defaultWorkflowPermissions(),
-				wfPerms.canApprovePullRequestReviews()
+				wfPerms
 		);
 	}
 
@@ -267,14 +266,14 @@ public class OrgChecker {
 		check(
 				diffs,
 				"workflow_permissions.default",
-				"read",
-				actual.workflowPermissionsDefault()
+				WorkflowPermissions.DefaultWorkflowPermissions.READ,
+				actual.workflowPermissions().defaultWorkflowPermissions()
 		);
 		check(
 				diffs,
 				"workflow_permissions.can_approve_prs",
 				true,
-				actual.canApprovePullRequestReviews()
+				actual.workflowPermissions().canApprovePullRequestReviews()
 		);
 
 		if (isPublic) {
