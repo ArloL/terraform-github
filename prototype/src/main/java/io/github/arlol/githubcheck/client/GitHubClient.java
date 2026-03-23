@@ -42,6 +42,8 @@ public class GitHubClient {
 	public record BranchProtection(
 			boolean enforceAdmins,
 			boolean requiredLinearHistory,
+			boolean allowForcePushes,
+			boolean requiredStatusChecksStrict,
 			List<String> requiredStatusCheckContexts
 	) {
 	}
@@ -232,7 +234,11 @@ public class GitHubClient {
 		boolean linearHistory = node.path("required_linear_history")
 				.path("enabled")
 				.asBoolean(false);
+		boolean allowForcePushes = node.path("allow_force_pushes")
+				.path("enabled")
+				.asBoolean(false);
 		JsonNode rsc = node.path("required_status_checks");
+		boolean strict = rsc.path("strict").asBoolean(false);
 		List<String> contexts;
 		// Modern API returns checks[].context; legacy returns contexts[]
 		JsonNode checks = rsc.path("checks");
@@ -247,7 +253,13 @@ public class GitHubClient {
 					.toList();
 		}
 		return Optional.of(
-				new BranchProtection(enforceAdmins, linearHistory, contexts)
+				new BranchProtection(
+						enforceAdmins,
+						linearHistory,
+						allowForcePushes,
+						strict,
+						contexts
+				)
 		);
 	}
 

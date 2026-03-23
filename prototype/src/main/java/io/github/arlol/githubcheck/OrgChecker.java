@@ -120,6 +120,8 @@ public class OrgChecker {
 		boolean protectionExists = false;
 		boolean enforceAdmins = false;
 		boolean linearHistory = false;
+		boolean allowForcePushes = false;
+		boolean strict = false;
 		List<String> statusContexts = List.of();
 		if (!archived && "public".equals(summary.visibility())) {
 			var protection = client.getBranchProtection(org, name, "main");
@@ -128,6 +130,8 @@ public class OrgChecker {
 				protectionExists = true;
 				enforceAdmins = bp.enforceAdmins();
 				linearHistory = bp.requiredLinearHistory();
+				allowForcePushes = bp.allowForcePushes();
+				strict = bp.requiredStatusChecksStrict();
 				statusContexts = bp.requiredStatusCheckContexts();
 			}
 		}
@@ -167,6 +171,8 @@ public class OrgChecker {
 				protectionExists,
 				enforceAdmins,
 				linearHistory,
+				allowForcePushes,
+				strict,
 				statusContexts,
 				secretNames,
 				envSecrets,
@@ -258,6 +264,18 @@ public class OrgChecker {
 						"branch_protection.required_linear_history",
 						true,
 						actual.requiredLinearHistory()
+				);
+				check(
+						diffs,
+						"branch_protection.allow_force_pushes",
+						false,
+						actual.allowForcePushes()
+				);
+				check(
+						diffs,
+						"branch_protection.required_status_checks.strict",
+						false,
+						actual.requiredStatusChecksStrict()
 				);
 
 				Set<String> wantContexts = new HashSet<>(BASE_STATUS_CHECKS);

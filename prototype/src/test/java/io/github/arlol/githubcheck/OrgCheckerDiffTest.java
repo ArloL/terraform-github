@@ -42,6 +42,8 @@ class OrgCheckerDiffTest {
 				true, // branchProtectionExists
 				true, // enforceAdmins
 				true, // requiredLinearHistory
+				false, // allowForcePushes
+				false, // requiredStatusChecksStrict
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -79,6 +81,8 @@ class OrgCheckerDiffTest {
 				false, // branchProtectionExists — not checked for archived
 				false, // enforceAdmins — not checked for archived
 				false, // requiredLinearHistory — not checked for archived
+				false, // allowForcePushes — not checked for archived
+				false, // requiredStatusChecksStrict — not checked for archived
 				List.of(),
 				List.of(),
 				Map.of(),
@@ -129,6 +133,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -167,6 +173,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -205,6 +213,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -243,6 +253,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -281,6 +293,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -319,6 +333,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -357,6 +373,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -399,6 +417,8 @@ class OrgCheckerDiffTest {
 				false,
 				false, // branch protection all false — should be ignored for
 					   // archived
+				false,
+				false,
 				List.of(),
 				List.of(),
 				Map.of(),
@@ -435,6 +455,8 @@ class OrgCheckerDiffTest {
 				false,
 				false,
 				false, // no branch protection — ok for private
+				false,
+				false,
 				List.of(),
 				List.of(),
 				Map.of(),
@@ -466,6 +488,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				false, // branchProtectionExists — should exist for public repos
+				false,
+				false,
 				false,
 				false,
 				List.of(),
@@ -501,6 +525,8 @@ class OrgCheckerDiffTest {
 				true,
 				false, // enforceAdmins — should be true
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -540,6 +566,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				false, // requiredLinearHistory — should be true
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -553,6 +581,88 @@ class OrgCheckerDiffTest {
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
 				"branch_protection.required_linear_history: want=true got=false"
+		);
+	}
+
+	@Test
+	void drift_allowForcePushes_isTrue() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
+				false,
+				false,
+				true,
+				true,
+				true,
+				true, // automatedSecurityFixes
+				true,
+				true,
+				true,
+				true,
+				true,
+				true, // allowForcePushes — should be false
+				false,
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
+				"branch_protection.allow_force_pushes: want=false got=true"
+		);
+	}
+
+	@Test
+	void drift_requiredStatusChecksStrict_isTrue() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
+				false,
+				false,
+				true,
+				true,
+				true,
+				true, // automatedSecurityFixes
+				true,
+				true,
+				true,
+				true,
+				true,
+				false,
+				true, // requiredStatusChecksStrict — should be false
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				"read",
+				true
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs())).contains(
+				"branch_protection.required_status_checks.strict: want=false got=true"
 		);
 	}
 
@@ -579,6 +689,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -621,6 +733,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -663,6 +777,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -707,6 +823,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -747,6 +865,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -790,6 +910,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -836,6 +958,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -884,6 +1008,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -927,6 +1053,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -965,6 +1093,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1010,6 +1140,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1050,6 +1182,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1090,6 +1224,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1138,6 +1274,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1175,6 +1313,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1213,6 +1353,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1251,6 +1393,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1289,6 +1433,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",
@@ -1327,6 +1473,8 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				true,
+				false,
+				false,
 				List.of(
 						"check-actions.required-status-check",
 						"codeql-analysis.required-status-check",

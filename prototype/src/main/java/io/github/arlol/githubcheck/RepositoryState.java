@@ -24,6 +24,8 @@ public record RepositoryState(
 		boolean branchProtectionExists,
 		boolean enforceAdmins,
 		boolean requiredLinearHistory,
+		boolean allowForcePushes,
+		boolean requiredStatusChecksStrict,
 		List<String> requiredStatusCheckContexts,
 		List<String> actionSecretNames,
 		Map<String, List<String>> environmentSecretNames,
