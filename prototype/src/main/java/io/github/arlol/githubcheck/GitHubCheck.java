@@ -2,7 +2,7 @@ package io.github.arlol.githubcheck;
 
 import java.util.List;
 
-public class Main {
+public class GitHubCheck {
 
 	public static void main(String[] args) throws Exception {
 		String token = System.getenv("GITHUB_TOKEN");

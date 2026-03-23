@@ -19,7 +19,7 @@
 		<sha1>HEAD</sha1>
 		<revision>0.0.1-SNAPSHOT</revision>
 		<platform>unknown</platform>
-		<start-class>io.github.arlol.githubcheck.Main</start-class>
+		<start-class>io.github.arlol.githubcheck.GitHubCheck</start-class>
 		<project.build.outputTimestamp>2023-01-01T00:00:00Z</project.build.outputTimestamp>
 	</properties>
 
