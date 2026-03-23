@@ -23,8 +23,8 @@ public class GitHubClient {
 	// follow Java convention; the SNAKE_CASE ObjectMapper strategy maps
 	// e.g. has_issues → hasIssues automatically. Use @JsonProperty only when
 	// the API name cannot be derived from the Java name (e.g. "private").
-	// Nested objects use nested records. Optional absent fields are annotated
-	// with @JsonProperty(required = false) and will be null when absent.
+	// Nested objects use nested records. Optional absent fields will be null
+	// when absent from the API response.
 
 	public record RepoSummary(
 			String name,
@@ -75,10 +75,8 @@ public class GitHubClient {
 		public record SecurityAndAnalysis(
 				StatusObject secretScanning,
 				StatusObject secretScanningPushProtection,
-				@JsonProperty(required = false) StatusObject advancedSecurity,
-				@JsonProperty(
-						required = false
-				) StatusObject dependabotSecurityUpdates
+				StatusObject advancedSecurity,
+				StatusObject dependabotSecurityUpdates
 		) {
 
 			public record StatusObject(
@@ -109,8 +107,8 @@ public class GitHubClient {
 				boolean strict,
 				// Modern API returns checks[].context; legacy returns
 				// contexts[].
-				@JsonProperty(required = false) List<StatusCheck> checks,
-				@JsonProperty(required = false) List<String> contexts
+				List<StatusCheck> checks,
+				List<String> contexts
 		) {
 
 			public record StatusCheck(
@@ -132,7 +130,7 @@ public class GitHubClient {
 			String status,
 			// Absent in legacy Pages responses that predate the build_type
 			// field.
-			@JsonProperty(required = false) BuildType buildType
+			BuildType buildType
 	) {
 
 		public enum BuildType {
