@@ -437,7 +437,7 @@ class GitHubClientTest {
 	@Test
 	void getEnvironmentNames_parsesNames() throws Exception {
 		stubFor(
-				get(urlEqualTo("/repos/ArloL/my-repo/environments"))
+				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.willReturn(okJson("""
 								{
 								  "total_count": 2,
@@ -456,13 +456,81 @@ class GitHubClientTest {
 	@Test
 	void getEnvironmentNames_empty() throws Exception {
 		stubFor(
-				get(urlEqualTo("/repos/ArloL/my-repo/environments"))
+				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.willReturn(okJson("""
 								{"total_count": 0, "environments": []}
 								"""))
 		);
 
 		assertThat(client.getEnvironmentNames("ArloL", "my-repo")).isEmpty();
+	}
+
+	@Test
+	void getActionSecretNames_multiPage() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/my-repo/actions/secrets"))
+						.withQueryParam("page", absent())
+						.willReturn(
+								okJson(
+										"""
+												{"total_count": 3, "secrets": [{"name": "SECRET_1"}, {"name": "SECRET_2"}]}
+												"""
+								).withHeader(
+										"Link",
+										"<" + baseUrl
+												+ "/repos/ArloL/my-repo/actions/secrets?page=2>; rel=\"next\""
+								)
+						)
+		);
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/my-repo/actions/secrets"))
+						.withQueryParam("page", equalTo("2"))
+						.willReturn(
+								okJson(
+										"""
+												{"total_count": 3, "secrets": [{"name": "SECRET_3"}]}
+												"""
+								)
+						)
+		);
+
+		List<String> names = client.getActionSecretNames("ArloL", "my-repo");
+		assertThat(names)
+				.containsExactlyInAnyOrder("SECRET_1", "SECRET_2", "SECRET_3");
+	}
+
+	@Test
+	void getEnvironmentNames_multiPage() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
+						.withQueryParam("page", absent())
+						.willReturn(
+								okJson(
+										"""
+												{"total_count": 3, "environments": [{"name": "production"}, {"name": "staging"}]}
+												"""
+								).withHeader(
+										"Link",
+										"<" + baseUrl
+												+ "/repos/ArloL/my-repo/environments?page=2>; rel=\"next\""
+								)
+						)
+		);
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
+						.withQueryParam("page", equalTo("2"))
+						.willReturn(
+								okJson(
+										"""
+												{"total_count": 3, "environments": [{"name": "dev"}]}
+												"""
+								)
+						)
+		);
+
+		List<String> names = client.getEnvironmentNames("ArloL", "my-repo");
+		assertThat(names)
+				.containsExactlyInAnyOrder("production", "staging", "dev");
 	}
 
 	// ─── getEnvironmentSecretNames
@@ -486,6 +554,41 @@ class GitHubClientTest {
 		List<String> names = client
 				.getEnvironmentSecretNames("ArloL", "my-repo", "production");
 		assertThat(names).containsExactly("TF_GITHUB_TOKEN");
+	}
+
+	@Test
+	void getEnvironmentSecretNames_multiPage() throws Exception {
+		stubFor(
+				get(
+						urlPathEqualTo(
+								"/repos/ArloL/my-repo/environments/production/secrets"
+						)
+				).withQueryParam("page", absent())
+						.willReturn(
+								okJson(
+										"""
+												{"total_count": 2, "secrets": [{"name": "SECRET_A"}]}
+												"""
+								).withHeader(
+										"Link",
+										"<" + baseUrl
+												+ "/repos/ArloL/my-repo/environments/production/secrets?page=2>; rel=\"next\""
+								)
+						)
+		);
+		stubFor(
+				get(
+						urlPathEqualTo(
+								"/repos/ArloL/my-repo/environments/production/secrets"
+						)
+				).withQueryParam("page", equalTo("2")).willReturn(okJson("""
+						{"total_count": 2, "secrets": [{"name": "SECRET_B"}]}
+						"""))
+		);
+
+		List<String> names = client
+				.getEnvironmentSecretNames("ArloL", "my-repo", "production");
+		assertThat(names).containsExactlyInAnyOrder("SECRET_A", "SECRET_B");
 	}
 
 	// ─── getWorkflowPermissions
@@ -533,7 +636,7 @@ class GitHubClientTest {
 	@Test
 	void sendsAuthorizationHeader() throws Exception {
 		stubFor(
-				get(urlEqualTo("/repos/ArloL/my-repo/environments"))
+				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.withHeader(
 								"Authorization",
 								equalTo("Bearer test-token")
@@ -548,11 +651,9 @@ class GitHubClientTest {
 		client.getEnvironmentNames("ArloL", "my-repo");
 
 		verify(
-				getRequestedFor(urlEqualTo("/repos/ArloL/my-repo/environments"))
-						.withHeader(
-								"Authorization",
-								equalTo("Bearer test-token")
-						)
+				getRequestedFor(
+						urlPathEqualTo("/repos/ArloL/my-repo/environments")
+				).withHeader("Authorization", equalTo("Bearer test-token"))
 		);
 	}
 
