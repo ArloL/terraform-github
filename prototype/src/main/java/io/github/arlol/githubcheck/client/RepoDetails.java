@@ -9,21 +9,39 @@ public record RepoDetails(
 		String nodeId,
 		String name,
 		String fullName,
+		SimpleUser owner,
 		@JsonProperty("private") boolean isPrivate,
+		String htmlUrl,
+		String description, // nullable
 		boolean fork,
+		String url,
+		String gitUrl,
+		String sshUrl,
+		String cloneUrl,
+		String svnUrl,
+		String mirrorUrl, // nullable
+		String hooksUrl,
+		String homepage, // nullable
+		String language, // nullable
 		boolean archived,
 		boolean disabled,
 		boolean isTemplate,
 		String visibility,
 		String defaultBranch,
-		String description, // nullable — GitHub returns null for unset
-		String homepage, // nullable — GitHub returns null for unset
 		List<String> topics,
+		Integer forksCount,
+		Integer stargazersCount,
+		Integer watchersCount,
+		Integer size,
+		Integer openIssuesCount,
 		boolean hasIssues,
 		boolean hasProjects,
 		boolean hasWiki,
 		boolean hasDiscussions,
 		boolean hasPages,
+		Boolean hasPullRequests, // optional
+		String pullRequestCreationPolicy, // optional
+		Boolean hasCommitComments, // optional
 		boolean allowForking,
 		boolean webCommitSignoffRequired,
 		boolean allowSquashMerge,
@@ -36,23 +54,21 @@ public record RepoDetails(
 		String squashMergeCommitMessage,
 		String mergeCommitTitle,
 		String mergeCommitMessage,
+		String pushedAt,
+		String createdAt,
+		String updatedAt,
+		RepoPermissions permissions, // optional
+		String tempCloneToken, // nullable, optional
+		Integer subscribersCount,
+		Integer networkCount,
+		License license, // nullable
+		SimpleUser organization, // nullable, optional
+		Integer forks,
+		Integer openIssues,
+		Integer watchers,
+		Boolean anonymousAccessEnabled, // optional
 		// May be absent for archived repos or repos where security features
 		// are not available (e.g. private repos without GHAS).
 		SecurityAndAnalysis securityAndAnalysis
 ) {
-
-	public record SecurityAndAnalysis(
-			StatusObject secretScanning,
-			StatusObject secretScanningPushProtection,
-			StatusObject advancedSecurity,
-			StatusObject dependabotSecurityUpdates
-	) {
-
-		public record StatusObject(
-				String status
-		) {
-		}
-
-	}
-
 }

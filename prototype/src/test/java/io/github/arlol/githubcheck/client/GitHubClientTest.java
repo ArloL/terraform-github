@@ -203,54 +203,122 @@ class GitHubClientTest {
 
 	@Test
 	void getRepo_parsesAllFields() throws Exception {
-		stubFor(get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(okJson("""
-				{
-				  "id": 1,
-				  "node_id": "R_1",
-				  "name": "my-repo",
-				  "full_name": "ArloL/my-repo",
-				  "private": false,
-				  "fork": false,
-				  "archived": false,
-				  "disabled": false,
-				  "is_template": false,
-				  "visibility": "public",
-				  "default_branch": "main",
-				  "description": "My repo",
-				  "homepage": "https://example.com",
-				  "topics": ["java", "github"],
-				  "has_issues": true,
-				  "has_projects": true,
-				  "has_wiki": true,
-				  "has_discussions": false,
-				  "has_pages": false,
-				  "allow_forking": true,
-				  "web_commit_signoff_required": false,
-				  "allow_squash_merge": false,
-				  "allow_merge_commit": false,
-				  "allow_rebase_merge": true,
-				  "allow_auto_merge": true,
-				  "delete_branch_on_merge": true,
-				  "allow_update_branch": false,
-				  "squash_merge_commit_title": "PR_TITLE",
-				  "squash_merge_commit_message": "PR_BODY",
-				  "merge_commit_title": "PR_TITLE",
-				  "merge_commit_message": "PR_BODY",
-				  "security_and_analysis": {
-				    "secret_scanning": {"status": "enabled"},
-				    "secret_scanning_push_protection": {"status": "enabled"}
-				  }
-				}
-				""")));
+		stubFor(
+				get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(
+						okJson(
+								"""
+										{
+										  "id": 1,
+										  "node_id": "R_1",
+										  "name": "my-repo",
+										  "full_name": "ArloL/my-repo",
+										  "owner": {
+										    "login": "ArloL",
+										    "id": 123,
+										    "node_id": "U_123",
+										    "avatar_url": "https://avatars.githubusercontent.com/u/123?v=4",
+										    "gravatar_id": "",
+										    "url": "https://api.github.com/users/ArloL",
+										    "html_url": "https://github.com/ArloL",
+										    "type": "User",
+										    "site_admin": false
+										  },
+										  "private": false,
+										  "html_url": "https://github.com/ArloL/my-repo",
+										  "description": "My repo",
+										  "fork": false,
+										  "url": "https://api.github.com/repos/ArloL/my-repo",
+										  "git_url": "git://github.com/ArloL/my-repo.git",
+										  "ssh_url": "git@github.com:ArloL/my-repo.git",
+										  "clone_url": "https://github.com/ArloL/my-repo.git",
+										  "svn_url": "https://svn.github.com/ArloL/my-repo",
+										  "mirror_url": null,
+										  "hooks_url": "https://api.github.com/repos/ArloL/my-repo/hooks",
+										  "homepage": "https://example.com",
+										  "language": "Java",
+										  "archived": false,
+										  "disabled": false,
+										  "is_template": false,
+										  "visibility": "public",
+										  "default_branch": "main",
+										  "topics": ["java", "github"],
+										  "forks_count": 5,
+										  "stargazers_count": 10,
+										  "watchers_count": 10,
+										  "size": 100,
+										  "open_issues_count": 3,
+										  "has_issues": true,
+										  "has_projects": true,
+										  "has_wiki": true,
+										  "has_discussions": false,
+										  "has_pages": false,
+										  "allow_forking": true,
+										  "web_commit_signoff_required": false,
+										  "allow_squash_merge": false,
+										  "allow_merge_commit": false,
+										  "allow_rebase_merge": true,
+										  "allow_auto_merge": true,
+										  "delete_branch_on_merge": true,
+										  "allow_update_branch": false,
+										  "squash_merge_commit_title": "PR_TITLE",
+										  "squash_merge_commit_message": "PR_BODY",
+										  "merge_commit_title": "PR_TITLE",
+										  "merge_commit_message": "PR_BODY",
+										  "pushed_at": "2024-01-15T10:00:00Z",
+										  "created_at": "2020-06-01T00:00:00Z",
+										  "updated_at": "2024-01-15T10:00:00Z",
+										  "permissions": {"admin": true, "maintain": true, "push": true, "triage": true, "pull": true},
+										  "subscribers_count": 5,
+										  "network_count": 1,
+										  "license": {
+										    "key": "mit",
+										    "name": "MIT License",
+										    "url": "https://api.github.com/licenses/mit",
+										    "spdx_id": "MIT",
+										    "node_id": "MDc6TGljZW5zZTEz"
+										  },
+										  "forks": 5,
+										  "open_issues": 3,
+										  "watchers": 10,
+										  "security_and_analysis": {
+										    "secret_scanning": {"status": "enabled"},
+										    "secret_scanning_push_protection": {"status": "enabled"},
+										    "advanced_security": {"status": "enabled"},
+										    "dependabot_security_updates": {"status": "enabled"},
+										    "code_security": {"status": "enabled"}
+										  }
+										}
+										"""
+						)
+				)
+		);
 
 		RepoDetails details = client.getRepo("ArloL", "my-repo");
 
+		assertThat(details.owner().login()).isEqualTo("ArloL");
+		assertThat(details.owner().id()).isEqualTo(123L);
+		assertThat(details.owner().type()).isEqualTo("User");
+		assertThat(details.htmlUrl())
+				.isEqualTo("https://github.com/ArloL/my-repo");
 		assertThat(details.description()).isEqualTo("My repo");
+		assertThat(details.url())
+				.isEqualTo("https://api.github.com/repos/ArloL/my-repo");
+		assertThat(details.gitUrl())
+				.isEqualTo("git://github.com/ArloL/my-repo.git");
+		assertThat(details.sshUrl())
+				.isEqualTo("git@github.com:ArloL/my-repo.git");
+		assertThat(details.cloneUrl())
+				.isEqualTo("https://github.com/ArloL/my-repo.git");
+		assertThat(details.mirrorUrl()).isNull();
+		assertThat(details.language()).isEqualTo("Java");
 		assertThat(details.homepage()).isEqualTo("https://example.com");
 		assertThat(details.hasIssues()).isTrue();
 		assertThat(details.hasProjects()).isTrue();
 		assertThat(details.hasWiki()).isTrue();
 		assertThat(details.defaultBranch()).isEqualTo("main");
+		assertThat(details.forksCount()).isEqualTo(5);
+		assertThat(details.stargazersCount()).isEqualTo(10);
+		assertThat(details.openIssuesCount()).isEqualTo(3);
 		assertThat(details.allowMergeCommit()).isFalse();
 		assertThat(details.allowSquashMerge()).isFalse();
 		assertThat(details.allowAutoMerge()).isTrue();
@@ -262,6 +330,14 @@ class GitHubClientTest {
 		assertThat(details.mergeCommitTitle()).isEqualTo("PR_TITLE");
 		assertThat(details.topics())
 				.containsExactlyInAnyOrder("java", "github");
+		assertThat(details.pushedAt()).isEqualTo("2024-01-15T10:00:00Z");
+		assertThat(details.createdAt()).isEqualTo("2020-06-01T00:00:00Z");
+		assertThat(details.permissions().admin()).isTrue();
+		assertThat(details.subscribersCount()).isEqualTo(5);
+		assertThat(details.networkCount()).isEqualTo(1);
+		assertThat(details.license().key()).isEqualTo("mit");
+		assertThat(details.license().spdxId()).isEqualTo("MIT");
+		assertThat(details.forks()).isEqualTo(5);
 		assertThat(details.securityAndAnalysis().secretScanning().status())
 				.isEqualTo("enabled");
 		assertThat(
@@ -269,6 +345,10 @@ class GitHubClientTest {
 						.secretScanningPushProtection()
 						.status()
 		).isEqualTo("enabled");
+		assertThat(details.securityAndAnalysis().advancedSecurity().status())
+				.isEqualTo("enabled");
+		assertThat(details.securityAndAnalysis().codeSecurity().status())
+				.isEqualTo("enabled");
 	}
 
 	@Test
@@ -422,16 +502,39 @@ class GitHubClientTest {
 								okJson(
 										"""
 												{
-												  "enforce_admins": {"enabled": true},
+												  "url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection",
+												  "enforce_admins": {
+												    "url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection/enforce_admins",
+												    "enabled": true
+												  },
 												  "required_linear_history": {"enabled": true},
 												  "allow_force_pushes": {"enabled": false},
+												  "allow_deletions": {"enabled": false},
+												  "block_creations": {"enabled": false},
+												  "required_conversation_resolution": {"enabled": true},
 												  "required_status_checks": {
+												    "url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection/required_status_checks",
+												    "enforcement_level": "non_admins",
 												    "strict": false,
 												    "checks": [
-												      {"context": "check-actions.required-status-check"},
-												      {"context": "CodeQL"}
-												    ]
-												  }
+												      {"context": "check-actions.required-status-check", "app_id": 42},
+												      {"context": "CodeQL", "app_id": null}
+												    ],
+												    "contexts_url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection/required_status_checks/contexts"
+												  },
+												  "required_pull_request_reviews": {
+												    "url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection/required_pull_request_reviews",
+												    "dismiss_stale_reviews": true,
+												    "require_code_owner_reviews": true,
+												    "required_approving_review_count": 2,
+												    "require_last_push_approval": false
+												  },
+												  "required_signatures": {
+												    "url": "https://api.github.com/repos/ArloL/my-repo/branches/main/protection/required_signatures",
+												    "enabled": false
+												  },
+												  "lock_branch": {"enabled": false},
+												  "allow_fork_syncing": {"enabled": true}
 												}
 												"""
 								)
@@ -443,10 +546,21 @@ class GitHubClientTest {
 
 		assertThat(opt).isPresent();
 		BranchProtection bp = opt.orElseThrow();
+		assertThat(bp.url()).isEqualTo(
+				"https://api.github.com/repos/ArloL/my-repo/branches/main/protection"
+		);
 		assertThat(bp.enforceAdmins().enabled()).isTrue();
+		assertThat(bp.enforceAdmins().url()).isEqualTo(
+				"https://api.github.com/repos/ArloL/my-repo/branches/main/protection/enforce_admins"
+		);
 		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
 		assertThat(bp.allowForcePushes().enabled()).isFalse();
+		assertThat(bp.allowDeletions().enabled()).isFalse();
+		assertThat(bp.blockCreations().enabled()).isFalse();
+		assertThat(bp.requiredConversationResolution().enabled()).isTrue();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
+		assertThat(bp.requiredStatusChecks().enforcementLevel())
+				.isEqualTo("non_admins");
 		assertThat(bp.requiredStatusChecks().checks()).extracting(
 				BranchProtection.RequiredStatusChecks.StatusCheck::context
 		)
@@ -454,6 +568,19 @@ class GitHubClientTest {
 						"check-actions.required-status-check",
 						"CodeQL"
 				);
+		assertThat(bp.requiredStatusChecks().checks().get(0).appId())
+				.isEqualTo(42);
+		assertThat(bp.requiredStatusChecks().checks().get(1).appId()).isNull();
+		assertThat(bp.requiredPullRequestReviews().dismissStaleReviews())
+				.isTrue();
+		assertThat(bp.requiredPullRequestReviews().requireCodeOwnerReviews())
+				.isTrue();
+		assertThat(
+				bp.requiredPullRequestReviews().requiredApprovingReviewCount()
+		).isEqualTo(2);
+		assertThat(bp.requiredSignatures().enabled()).isFalse();
+		assertThat(bp.lockBranch().enabled()).isFalse();
+		assertThat(bp.allowForkSyncing().enabled()).isTrue();
 	}
 
 	@Test
@@ -503,15 +630,19 @@ class GitHubClientTest {
 	void getActionSecretNames_parsesNames() throws Exception {
 		stubFor(
 				get(urlPathEqualTo("/repos/ArloL/my-repo/actions/secrets"))
-						.willReturn(okJson("""
-								{
-								  "total_count": 2,
-								  "secrets": [
-								    {"name": "PAT"},
-								    {"name": "DEPLOY_KEY"}
-								  ]
-								}
-								"""))
+						.willReturn(
+								okJson(
+										"""
+												{
+												  "total_count": 2,
+												  "secrets": [
+												    {"name": "PAT", "created_at": "2023-01-01T00:00:00Z", "updated_at": "2024-01-01T00:00:00Z"},
+												    {"name": "DEPLOY_KEY", "created_at": "2023-02-01T00:00:00Z", "updated_at": "2024-02-01T00:00:00Z"}
+												  ]
+												}
+												"""
+								)
+						)
 		);
 
 		List<String> names = client.getActionSecretNames("ArloL", "my-repo");
