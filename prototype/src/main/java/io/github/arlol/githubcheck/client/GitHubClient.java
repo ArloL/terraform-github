@@ -9,46 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 public class GitHubClient {
-
-	public record RepoSummary(
-			String name,
-			boolean archived,
-			String visibility
-	) {
-	}
-
-	public record WorkflowPermissions(
-			String defaultWorkflowPermissions,
-			boolean canApprovePullRequestReviews
-	) {
-	}
-
-	public record Pages(
-			String status,
-			// Absent in legacy Pages responses that predate the build_type
-			// field.
-			BuildType buildType
-	) {
-
-		public enum BuildType {
-
-			WORKFLOW, LEGACY;
-
-			@JsonCreator
-			public static BuildType fromValue(String value) {
-				return valueOf(value.toUpperCase());
-			}
-
-		}
-
-	}
 
 	// ─── Private deserialization helpers
 	// ─────────────────────────────────────
