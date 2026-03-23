@@ -46,7 +46,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -89,7 +89,7 @@ class GitHubClientTest {
 						)
 		);
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-page1");
@@ -103,7 +103,7 @@ class GitHubClientTest {
 						.willReturn(okJson("[]"))
 		);
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 		assertThat(repos).isEmpty();
 	}
 
@@ -127,7 +127,7 @@ class GitHubClientTest {
 				]
 				""")));
 
-		List<GitHubClient.RepoSummary> repos = client.listOrgRepos("ArloL");
+		List<RepoSummary> repos = client.listOrgRepos("ArloL");
 
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
@@ -708,7 +708,7 @@ class GitHubClientTest {
 						"""))
 		);
 
-		GitHubClient.WorkflowPermissions perms = client
+		WorkflowPermissions perms = client
 				.getWorkflowPermissions("ArloL", "my-repo");
 		assertThat(perms.defaultWorkflowPermissions()).isEqualTo("read");
 		assertThat(perms.canApprovePullRequestReviews()).isTrue();
@@ -850,8 +850,7 @@ class GitHubClientTest {
 
 		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
 
-		assertThat(pages.buildType())
-				.isEqualTo(GitHubClient.Pages.BuildType.WORKFLOW);
+		assertThat(pages.buildType()).isEqualTo(Pages.BuildType.WORKFLOW);
 	}
 
 }
