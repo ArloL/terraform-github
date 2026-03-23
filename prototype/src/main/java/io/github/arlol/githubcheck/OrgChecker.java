@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 
 import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
-import io.github.arlol.githubcheck.client.Pages;
-import io.github.arlol.githubcheck.client.RepoDetails;
-import io.github.arlol.githubcheck.client.RepoSummary;
+import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public class OrgChecker {
@@ -42,9 +40,10 @@ public class OrgChecker {
 		this.org = org;
 	}
 
-	public CheckResult check(List<Repository> repositories) throws Exception {
+	public CheckResult check(List<RepositoryArgs> repositories)
+			throws Exception {
 		System.out.println("Fetching repo list for org: " + org);
-		List<RepoSummary> summaries = client.listOrgRepos(org);
+		List<RepositoryMinimal> summaries = client.listOrgRepos(org);
 		System.out.printf(
 				"Found %d repos. Fetching details in parallel...%n",
 				summaries.size()
@@ -52,8 +51,8 @@ public class OrgChecker {
 
 		long startFetch = System.currentTimeMillis();
 
-		Map<String, Repository> desiredByName = repositories.stream()
-				.collect(Collectors.toMap(Repository::name, r -> r));
+		Map<String, RepositoryArgs> desiredByName = repositories.stream()
+				.collect(Collectors.toMap(RepositoryArgs::name, r -> r));
 
 		List<CheckResult.RepoCheckResult> results = new ArrayList<>();
 
@@ -74,7 +73,7 @@ public class OrgChecker {
 
 		// Repos declared in config but not found in the org
 		Set<String> foundNames = summaries.stream()
-				.map(RepoSummary::name)
+				.map(RepositoryMinimal::name)
 				.collect(Collectors.toSet());
 		repositories.stream()
 				.filter(r -> !foundNames.contains(r.name()))
@@ -89,17 +88,17 @@ public class OrgChecker {
 	}
 
 	private CheckResult.RepoCheckResult checkOne(
-			RepoSummary summary,
-			Map<String, Repository> desiredByName
+			RepositoryMinimal summary,
+			Map<String, RepositoryArgs> desiredByName
 	) {
 		String name = summary.name();
-		Repository desired = desiredByName.get(name);
+		RepositoryArgs desired = desiredByName.get(name);
 		if (desired == null) {
 			return CheckResult.RepoCheckResult.unknown(name);
 		}
 		try {
 			RepositoryState state = fetchState(summary);
-			List<String> diffs = computeDiffs(state, desired.args());
+			List<String> diffs = computeDiffs(state, desired);
 			return diffs.isEmpty() ? CheckResult.RepoCheckResult.ok(name)
 					: CheckResult.RepoCheckResult.drift(name, diffs);
 		} catch (Exception e) {
@@ -107,11 +106,11 @@ public class OrgChecker {
 		}
 	}
 
-	RepositoryState fetchState(RepoSummary summary) throws Exception {
+	RepositoryState fetchState(RepositoryMinimal summary) throws Exception {
 		String name = summary.name();
 		boolean archived = summary.archived();
 
-		RepoDetails details = client.getRepo(org, name);
+		var details = client.getRepo(org, name);
 
 		boolean vulnAlerts = false;
 		boolean automatedSecurityFixes = false;
@@ -205,11 +204,18 @@ public class OrgChecker {
 	}
 
 	List<String> computeDiffs(RepositoryState actual, RepositoryArgs desired) {
-		if (desired.archived()) {
-			return List.of();
-		}
 		List<String> diffs = new ArrayList<>();
-		boolean archived = actual.archived();
+
+		if (desired.archived()) {
+			if (actual.archived()) {
+				return List.of();
+			} else {
+				return List.of("archived");
+			}
+		} else {
+			check(diffs, "archived", desired.archived(), actual.archived());
+		}
+
 		boolean isPublic = "public".equals(actual.visibility());
 
 		check(
@@ -238,41 +244,39 @@ public class OrgChecker {
 				actual.deleteBranchOnMerge()
 		);
 
-		if (!archived) {
-			check(
-					diffs,
-					"vulnerability_alerts",
-					true,
-					actual.vulnerabilityAlerts()
-			);
-			check(
-					diffs,
-					"automated_security_fixes",
-					true,
-					actual.automatedSecurityFixes()
-			);
-			check(diffs, "secret_scanning", true, actual.secretScanning());
-			check(
-					diffs,
-					"secret_scanning_push_protection",
-					true,
-					actual.secretScanningPushProtection()
-			);
-			check(
-					diffs,
-					"workflow_permissions.default",
-					"read",
-					actual.workflowPermissionsDefault()
-			);
-			check(
-					diffs,
-					"workflow_permissions.can_approve_prs",
-					true,
-					actual.canApprovePullRequestReviews()
-			);
-		}
+		check(
+				diffs,
+				"vulnerability_alerts",
+				true,
+				actual.vulnerabilityAlerts()
+		);
+		check(
+				diffs,
+				"automated_security_fixes",
+				true,
+				actual.automatedSecurityFixes()
+		);
+		check(diffs, "secret_scanning", true, actual.secretScanning());
+		check(
+				diffs,
+				"secret_scanning_push_protection",
+				true,
+				actual.secretScanningPushProtection()
+		);
+		check(
+				diffs,
+				"workflow_permissions.default",
+				"read",
+				actual.workflowPermissionsDefault()
+		);
+		check(
+				diffs,
+				"workflow_permissions.can_approve_prs",
+				true,
+				actual.canApprovePullRequestReviews()
+		);
 
-		if (!archived && isPublic) {
+		if (isPublic) {
 			if (!actual.branchProtectionExists()) {
 				diffs.add("branch_protection: missing");
 			} else {
@@ -318,7 +322,7 @@ public class OrgChecker {
 		checkSets(
 				diffs,
 				"action_secrets",
-				new HashSet<>(desired.actionSecrets()),
+				new HashSet<>(desired.actionsSecrets()),
 				new HashSet<>(actual.actionSecretNames())
 		);
 
@@ -333,8 +337,7 @@ public class OrgChecker {
 		checkSets(diffs, "environments", wantEnvs, gotEnvs);
 
 		// Environment secrets: for each desired env that exists, check secrets
-		for (Map.Entry<String, EnvironmentArgs> entry : desired.environments()
-				.entrySet()) {
+		for (var entry : desired.environments().entrySet()) {
 			String envName = entry.getKey();
 			List<String> wantSecrets = entry.getValue().secrets();
 			List<String> gotSecrets = actual.environmentSecretNames()

@@ -9,25 +9,31 @@ import java.util.function.Consumer;
 
 public final class RepositoryArgs {
 
+	private final String name;
 	private final boolean archived;
 	private final boolean pages;
 	private final String description;
 	private final String homepageUrl;
 	private final String visibility;
 	private final List<String> requiredStatusChecks;
-	private final List<String> actionSecrets;
+	private final List<String> actionsSecrets;
 	private final Map<String, EnvironmentArgs> environments;
 
 	private RepositoryArgs(Builder builder) {
+		this.name = builder.name;
 		this.archived = builder.archived;
 		this.pages = builder.pages;
 		this.description = builder.description;
 		this.homepageUrl = builder.homepageUrl;
 		this.visibility = builder.visibility;
 		this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
-		this.actionSecrets = List.copyOf(builder.actionSecrets);
+		this.actionsSecrets = List.copyOf(builder.actionsSecrets);
 		this.environments = Collections
 				.unmodifiableMap(new LinkedHashMap<>(builder.environments));
+	}
+
+	public String name() {
+		return name;
 	}
 
 	public boolean archived() {
@@ -50,33 +56,60 @@ public final class RepositoryArgs {
 		return visibility;
 	}
 
-	/** Extra status checks beyond the four applied to all public repos. */
+	/**
+	 * Extra status checks beyond the four applied to all public repos.
+	 */
 	public List<String> requiredStatusChecks() {
 		return requiredStatusChecks;
 	}
 
-	public List<String> actionSecrets() {
-		return actionSecrets;
+	public List<String> actionsSecrets() {
+		return actionsSecrets;
 	}
 
 	public Map<String, EnvironmentArgs> environments() {
 		return environments;
 	}
 
-	public static Builder builder() {
-		return new Builder();
+	public Builder toBuilder() {
+		return new Builder(this);
+	}
+
+	public static Builder create(String name) {
+		return new Builder(name);
+	}
+
+	public static RepositoryArgs archived(String name) {
+		return new Builder(name).archived().build();
 	}
 
 	public static final class Builder {
 
+		private final String name;
 		private boolean archived = false;
 		private boolean pages = false;
 		private String description = "";
 		private String homepageUrl = "";
 		private String visibility = "public";
 		private List<String> requiredStatusChecks = List.of();
-		private List<String> actionSecrets = List.of();
+		private List<String> actionsSecrets = List.of();
 		private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
+
+		public Builder(String name) {
+			this.name = name;
+		}
+
+		public Builder(RepositoryArgs repositoryArgs) {
+			this.name = repositoryArgs.name;
+			this.archived = repositoryArgs.archived;
+			this.pages = repositoryArgs.pages;
+			this.description = repositoryArgs.description;
+			this.homepageUrl = repositoryArgs.homepageUrl;
+			this.visibility = repositoryArgs.visibility;
+			this.requiredStatusChecks = repositoryArgs.requiredStatusChecks;
+			this.actionsSecrets = repositoryArgs.actionsSecrets;
+			this.environments.putAll(repositoryArgs.environments);
+		}
 
 		public Builder archived() {
 			this.archived = true;
@@ -108,8 +141,8 @@ public final class RepositoryArgs {
 			return this;
 		}
 
-		public Builder actionSecrets(String... secrets) {
-			this.actionSecrets = Arrays.asList(secrets);
+		public Builder actionsSecrets(String... secrets) {
+			this.actionsSecrets = Arrays.asList(secrets);
 			return this;
 		}
 
@@ -122,7 +155,7 @@ public final class RepositoryArgs {
 				String name,
 				Consumer<EnvironmentArgs.Builder> configure
 		) {
-			var envBuilder = EnvironmentArgs.builder();
+			var envBuilder = EnvironmentArgs.builder(name);
 			configure.accept(envBuilder);
 			this.environments.put(name, envBuilder.build());
 			return this;

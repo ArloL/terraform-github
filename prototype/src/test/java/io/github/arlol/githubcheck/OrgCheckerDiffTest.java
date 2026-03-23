@@ -92,7 +92,7 @@ class OrgCheckerDiffTest {
 	}
 
 	private static RepositoryArgs defaultArgs() {
-		return RepositoryArgs.builder().build();
+		return RepositoryArgs.create("repo").build();
 	}
 
 	@Test
@@ -104,9 +104,10 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void noDrift_forCorrectArchivedRepo() {
-		RepositoryArgs args = RepositoryArgs.builder().archived().build();
-		List<String> diffs = checker
-				.computeDiffs(goodArchivedState("repo"), args);
+		List<String> diffs = checker.computeDiffs(
+				goodArchivedState("repo"),
+				defaultArgs().toBuilder().archived().build()
+		);
 		assertThat(diffs).isEmpty();
 	}
 
@@ -425,8 +426,10 @@ class OrgCheckerDiffTest {
 				"read",
 				false
 		);
-		RepositoryArgs args = RepositoryArgs.builder().archived().build();
-		List<String> diffs = checker.computeDiffs(state, args);
+		List<String> diffs = checker.computeDiffs(
+				state,
+				defaultArgs().toBuilder().archived().build()
+		);
 		assertThat(diffs).isEmpty();
 	}
 
@@ -709,7 +712,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void drift_missingExtraStatusCheck() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.requiredStatusChecks("main.required-status-check")
 				.build();
 		RepositoryState state = new RepositoryState(
@@ -799,9 +802,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void drift_missingActionSecret() {
-		RepositoryArgs args = RepositoryArgs.builder()
-				.actionSecrets("PAT")
-				.build();
+		var args = defaultArgs().toBuilder().actionsSecrets("PAT").build();
 		RepositoryState state = new RepositoryState(
 				"repo",
 				false,
@@ -886,7 +887,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void drift_missingEnvironment() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.environment("production", env -> env.secrets("TF_TOKEN"))
 				.build();
 		RepositoryState state = new RepositoryState(
@@ -931,7 +932,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void drift_missingEnvironmentSecret() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.environment(
 						"production",
 						env -> env.secrets("TF_GITHUB_TOKEN")
@@ -981,7 +982,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void drift_extraEnvironmentSecret() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.environment(
 						"production",
 						env -> env.secrets("TF_GITHUB_TOKEN")
@@ -1113,7 +1114,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void noDrift_correctEnvironmentWithSecret() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.environment(
 						"production",
 						env -> env.secrets("TF_GITHUB_TOKEN")
@@ -1158,9 +1159,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void noDrift_correctActionSecret() {
-		RepositoryArgs args = RepositoryArgs.builder()
-				.actionSecrets("PAT")
-				.build();
+		var args = defaultArgs().toBuilder().actionsSecrets("PAT").build();
 		RepositoryState state = new RepositoryState(
 				"repo",
 				false,
@@ -1200,7 +1199,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void noDrift_correctExtraStatusCheck() {
-		RepositoryArgs args = RepositoryArgs.builder()
+		var args = defaultArgs().toBuilder()
 				.requiredStatusChecks("main.required-status-check")
 				.build();
 		RepositoryState state = new RepositoryState(
@@ -1243,7 +1242,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void pages_expectsGithubPagesEnvironment() {
-		RepositoryArgs args = RepositoryArgs.builder().pages().build();
+		var args = defaultArgs().toBuilder().pages().build();
 		// Repo without the github-pages environment
 		List<String> diffs = checker
 				.computeDiffs(goodPublicState("repo"), args);
@@ -1252,7 +1251,7 @@ class OrgCheckerDiffTest {
 
 	@Test
 	void pages_noDrift_whenEnvironmentPresent() {
-		RepositoryArgs args = RepositoryArgs.builder().pages().build();
+		var args = defaultArgs().toBuilder().pages().build();
 		RepositoryState state = new RepositoryState(
 				"repo",
 				false,

@@ -50,7 +50,7 @@ public class GitHubClient {
 	// ─── Public API
 	// ──────────────────────────────────────────────────────────
 
-	public List<RepoSummary> listOrgRepos(String org) throws Exception {
+	public List<RepositoryMinimal> listOrgRepos(String org) throws Exception {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() == 404) {
@@ -67,11 +67,11 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, null).stream()
-				.map(node -> mapper.convertValue(node, RepoSummary.class))
+				.map(node -> mapper.convertValue(node, RepositoryMinimal.class))
 				.toList();
 	}
 
-	public RepoDetails getRepo(String org, String repo) throws Exception {
+	public RepositoryFull getRepo(String org, String repo) throws Exception {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + org + "/" + repo
 		);
@@ -81,7 +81,7 @@ public class GitHubClient {
 							+ repo + ": " + resp.body()
 			);
 		}
-		return mapper.readValue(resp.body(), RepoDetails.class);
+		return mapper.readValue(resp.body(), RepositoryFull.class);
 	}
 
 	public boolean getVulnerabilityAlerts(String owner, String repo)
@@ -121,17 +121,19 @@ public class GitHubClient {
 		);
 	}
 
-	public boolean getImmutableReleases(String owner, String repo)
-			throws Exception {
+	public Optional<ImmutableReleases> getImmutableReleases(
+			String owner,
+			String repo
+	) throws Exception {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
 		);
 		if (resp.statusCode() == 200) {
-			return mapper.readValue(resp.body(), ImmutableReleases.class)
-					.enabled();
+			return Optional
+					.of(mapper.readValue(resp.body(), ImmutableReleases.class));
 		}
 		if (resp.statusCode() == 404) {
-			return false;
+			return Optional.empty();
 		}
 		throw new RuntimeException(
 				"Unexpected HTTP " + resp.statusCode()
