@@ -58,7 +58,12 @@ public class GitHubClient {
 	) {
 	}
 
-	private record NamedItem(
+	private record Secret(
+			String name
+	) {
+	}
+
+	private record Environment(
 			String name
 	) {
 	}
@@ -220,7 +225,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "secrets").stream()
-				.map(s -> mapper.convertValue(s, NamedItem.class).name())
+				.map(s -> mapper.convertValue(s, Secret.class).name())
 				.toList();
 	}
 
@@ -236,7 +241,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "environments").stream()
-				.map(e -> mapper.convertValue(e, NamedItem.class).name())
+				.map(e -> mapper.convertValue(e, Environment.class).name())
 				.toList();
 	}
 
@@ -255,7 +260,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "secrets").stream()
-				.map(s -> mapper.convertValue(s, NamedItem.class).name())
+				.map(s -> mapper.convertValue(s, Secret.class).name())
 				.toList();
 	}
 
