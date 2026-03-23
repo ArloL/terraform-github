@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
+import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 
@@ -122,10 +123,10 @@ public class OrgChecker {
 		}
 
 		var sa = details.securityAndAnalysis();
-		boolean secretScanning = sa != null
-				&& "enabled".equals(sa.secretScanning().status());
-		boolean secretScanningPush = sa != null
-				&& "enabled".equals(sa.secretScanningPushProtection().status());
+		boolean secretScanning = SecurityAndAnalysis.StatusObject.Status.ENABLED
+				.equals(sa.secretScanning().status());
+		boolean secretScanningPush = SecurityAndAnalysis.StatusObject.Status.ENABLED
+				.equals(sa.secretScanningPushProtection().status());
 
 		boolean protectionExists = false;
 		boolean enforceAdmins = false;
