@@ -16,24 +16,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 public class GitHubClient {
 
-	// ─── Private deserialization helpers
-	// ─────────────────────────────────────
-
-	private record EnabledResponse(
-			boolean enabled
-	) {
-	}
-
-	private record Secret(
-			String name
-	) {
-	}
-
-	private record Environment(
-			String name
-	) {
-	}
-
 	// ─── Client
 	// ──────────────────────────────────────────────────────────────
 
@@ -127,7 +109,7 @@ public class GitHubClient {
 						+ "/automated-security-fixes"
 		);
 		if (resp.statusCode() == 200) {
-			return mapper.readValue(resp.body(), EnabledResponse.class)
+			return mapper.readValue(resp.body(), AutomatedSecurityFixes.class)
 					.enabled();
 		}
 		if (resp.statusCode() == 404) {
@@ -145,7 +127,7 @@ public class GitHubClient {
 				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
 		);
 		if (resp.statusCode() == 200) {
-			return mapper.readValue(resp.body(), EnabledResponse.class)
+			return mapper.readValue(resp.body(), ImmutableReleases.class)
 					.enabled();
 		}
 		if (resp.statusCode() == 404) {
