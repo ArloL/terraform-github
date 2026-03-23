@@ -8,14 +8,24 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 public class GitHubClient {
 
-	// Response records — the parsed shapes of GitHub API responses
+	// ─── Response records ────────────────────────────────────────────────────
+	// Each record maps directly to its GitHub API response shape. Field names
+	// follow Java convention; the SNAKE_CASE ObjectMapper strategy maps
+	// e.g. has_issues → hasIssues automatically. Use @JsonProperty only when
+	// the API name cannot be derived from the Java name (e.g. "private").
+	// Nested objects use nested records. Optional absent fields are annotated
+	// with @JsonProperty(required = false) and will be null when absent.
+
 	public record RepoSummary(
 			String name,
 			boolean archived,
@@ -24,54 +34,133 @@ public class GitHubClient {
 	}
 
 	public record RepoDetails(
-			String description,
-			String homepageUrl,
+			long id,
+			String nodeId,
+			String name,
+			String fullName,
+			@JsonProperty("private") boolean isPrivate,
+			boolean fork,
+			boolean archived,
+			boolean disabled,
+			boolean isTemplate,
+			String visibility,
+			String defaultBranch,
+			String description, // nullable — GitHub returns null for unset
+			String homepage, // nullable — GitHub returns null for unset
+			List<String> topics,
 			boolean hasIssues,
 			boolean hasProjects,
 			boolean hasWiki,
-			String defaultBranch,
-			boolean allowMergeCommit,
+			boolean hasDiscussions,
+			boolean hasPages,
+			boolean allowForking,
+			boolean webCommitSignoffRequired,
 			boolean allowSquashMerge,
+			boolean allowMergeCommit,
+			boolean allowRebaseMerge,
 			boolean allowAutoMerge,
 			boolean deleteBranchOnMerge,
-			boolean secretScanning,
-			boolean secretScanningPushProtection
-	) {
-	}
-
-	public record BranchProtection(
-			boolean enforceAdmins,
-			boolean requiredLinearHistory,
-			boolean allowForcePushes,
-			boolean requiredStatusChecksStrict,
-			List<String> requiredStatusCheckContexts
-	) {
-	}
-
-	public record WorkflowPermissions(
-			String defaultPermissions,
-			boolean canApprovePullRequestReviews
-	) {
-	}
-
-	public record Pages(
-			BuildType buildType
+			boolean allowUpdateBranch,
+			String squashMergeCommitTitle,
+			String squashMergeCommitMessage,
+			String mergeCommitTitle,
+			String mergeCommitMessage,
+			// May be absent for archived repos or repos where security features
+			// are not available (e.g. private repos without GHAS).
+			@JsonProperty(
+					required = false
+			) SecurityAndAnalysis securityAndAnalysis
 	) {
 
-		public enum BuildType {
+		public record SecurityAndAnalysis(
+				StatusObject secretScanning,
+				StatusObject secretScanningPushProtection,
+				@JsonProperty(required = false) StatusObject advancedSecurity,
+				@JsonProperty(
+						required = false
+				) StatusObject dependabotSecurityUpdates
+		) {
 
-			WORKFLOW, LEGACY, NULL;
-
-			public static BuildType valueOfRaw(String buildType) {
-				if (buildType == null || buildType.isBlank()) {
-					return BuildType.NULL;
-				}
-				return valueOf(buildType.toUpperCase());
+			public record StatusObject(
+					String status
+			) {
 			}
 
 		}
 
 	}
+
+	public record BranchProtection(
+			EnabledObject enforceAdmins,
+			EnabledObject requiredLinearHistory,
+			EnabledObject allowForcePushes,
+			// Absent when no status-check rules are configured.
+			@JsonProperty(
+					required = false
+			) RequiredStatusChecks requiredStatusChecks
+	) {
+
+		public record EnabledObject(
+				boolean enabled
+		) {
+		}
+
+		public record RequiredStatusChecks(
+				boolean strict,
+				// Modern API returns checks[].context; legacy returns
+				// contexts[].
+				@JsonProperty(required = false) List<StatusCheck> checks,
+				@JsonProperty(required = false) List<String> contexts
+		) {
+
+			public record StatusCheck(
+					String context
+			) {
+			}
+
+		}
+
+	}
+
+	public record WorkflowPermissions(
+			String defaultWorkflowPermissions,
+			boolean canApprovePullRequestReviews
+	) {
+	}
+
+	public record Pages(
+			String status,
+			// Absent in legacy Pages responses that predate the build_type
+			// field.
+			@JsonProperty(required = false) BuildType buildType
+	) {
+
+		public enum BuildType {
+
+			WORKFLOW, LEGACY;
+
+			@JsonCreator
+			public static BuildType fromValue(String value) {
+				return valueOf(value.toUpperCase());
+			}
+
+		}
+
+	}
+
+	// ─── Private deserialization helpers ─────────────────────────────────────
+
+	private record EnabledResponse(
+			boolean enabled
+	) {
+	}
+
+	private record NamedItem(
+			String name
+	) {
+	}
+
+	// ─── Client ──────────────────────────────────────────────────────────────
 
 	private final String baseUrl;
 	private final String token;
@@ -89,8 +178,19 @@ public class GitHubClient {
 				.version(HttpClient.Version.HTTP_2)
 				.connectTimeout(Duration.ofSeconds(10))
 				.build();
-		this.mapper = new ObjectMapper();
+		this.mapper = new ObjectMapper()
+				.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+				.configure(
+						DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+						false
+				)
+				.configure(
+						DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES,
+						true
+				);
 	}
+
+	// ─── Public API ──────────────────────────────────────────────────────────
 
 	public List<RepoSummary> listOrgRepos(String org) throws Exception {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
@@ -109,46 +209,21 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, null).stream()
-				.map(
-						node -> new RepoSummary(
-								requireText(node, "name"),
-								requireBoolean(node, "archived"),
-								requireText(node, "visibility")
-						)
-				)
+				.map(node -> mapper.convertValue(node, RepoSummary.class))
 				.toList();
 	}
 
 	public RepoDetails getRepo(String org, String repo) throws Exception {
-		JsonNode node = mapper
-				.readTree(send(baseUrl + "/repos/" + org + "/" + repo).body());
-		JsonNode sa = node.path("security_and_analysis");
-		boolean secretScanning = false;
-		boolean secretScanningPush = false;
-		if (!sa.isMissingNode() && !sa.isNull()) {
-			secretScanning = "enabled"
-					.equals(requireText(sa.path("secret_scanning"), "status"));
-			secretScanningPush = "enabled".equals(
-					requireText(
-							sa.path("secret_scanning_push_protection"),
-							"status"
-					)
+		HttpResponse<String> resp = send(
+				baseUrl + "/repos/" + org + "/" + repo
+		);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " fetching repo " + org + "/"
+							+ repo + ": " + resp.body()
 			);
 		}
-		return new RepoDetails(
-				requireText(node, "description"),
-				requireText(node, "homepage"),
-				requireBoolean(node, "has_issues"),
-				requireBoolean(node, "has_projects"),
-				requireBoolean(node, "has_wiki"),
-				requireText(node, "default_branch"),
-				requireBoolean(node, "allow_merge_commit"),
-				requireBoolean(node, "allow_squash_merge"),
-				requireBoolean(node, "allow_auto_merge"),
-				requireBoolean(node, "delete_branch_on_merge"),
-				secretScanning,
-				secretScanningPush
-		);
+		return mapper.readValue(resp.body(), RepoDetails.class);
 	}
 
 	public boolean getVulnerabilityAlerts(String owner, String repo)
@@ -176,7 +251,8 @@ public class GitHubClient {
 						+ "/automated-security-fixes"
 		);
 		if (resp.statusCode() == 200) {
-			return requireBoolean(mapper.readTree(resp.body()), "enabled");
+			return mapper.readValue(resp.body(), EnabledResponse.class)
+					.enabled();
 		}
 		if (resp.statusCode() == 404) {
 			return false;
@@ -193,7 +269,8 @@ public class GitHubClient {
 				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
 		);
 		if (resp.statusCode() == 200) {
-			return requireBoolean(mapper.readTree(resp.body()), "enabled");
+			return mapper.readValue(resp.body(), EnabledResponse.class)
+					.enabled();
 		}
 		if (resp.statusCode() == 404) {
 			return false;
@@ -222,47 +299,8 @@ public class GitHubClient {
 							+ " for branch protection on " + repo
 			);
 		}
-		JsonNode node = mapper.readTree(resp.body());
-		boolean enforceAdmins = requireBoolean(
-				node.path("enforce_admins"),
-				"enabled"
-		);
-		boolean linearHistory = requireBoolean(
-				node.path("required_linear_history"),
-				"enabled"
-		);
-		boolean allowForcePushes = requireBoolean(
-				node.path("allow_force_pushes"),
-				"enabled"
-		);
-		JsonNode rsc = node.path("required_status_checks");
-		boolean strict = false;
-		List<String> contexts = List.of();
-		if (!rsc.isMissingNode() && !rsc.isNull()) {
-			strict = requireBoolean(rsc, "strict");
-			// Modern API returns checks[].context; legacy returns contexts[]
-			JsonNode checks = rsc.path("checks");
-			if (!checks.isMissingNode() && checks.isArray()
-					&& checks.size() > 0) {
-				contexts = StreamSupport.stream(checks.spliterator(), false)
-						.map(c -> requireText(c, "context"))
-						.toList();
-			} else {
-				JsonNode ctxArray = rsc.path("contexts");
-				contexts = StreamSupport.stream(ctxArray.spliterator(), false)
-						.map(JsonNode::asText)
-						.toList();
-			}
-		}
-		return Optional.of(
-				new BranchProtection(
-						enforceAdmins,
-						linearHistory,
-						allowForcePushes,
-						strict,
-						contexts
-				)
-		);
+		return Optional
+				.of(mapper.readValue(resp.body(), BranchProtection.class));
 	}
 
 	public List<String> getActionSecretNames(String org, String repo)
@@ -277,7 +315,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "secrets").stream()
-				.map(s -> requireText(s, "name"))
+				.map(s -> mapper.convertValue(s, NamedItem.class).name())
 				.toList();
 	}
 
@@ -293,7 +331,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "environments").stream()
-				.map(e -> requireText(e, "name"))
+				.map(e -> mapper.convertValue(e, NamedItem.class).name())
 				.toList();
 	}
 
@@ -312,7 +350,7 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "secrets").stream()
-				.map(s -> requireText(s, "name"))
+				.map(s -> mapper.convertValue(s, NamedItem.class).name())
 				.toList();
 	}
 
@@ -334,11 +372,7 @@ public class GitHubClient {
 							+ " for workflow permissions on " + repo
 			);
 		}
-		JsonNode node = mapper.readTree(resp.body());
-		return new WorkflowPermissions(
-				requireText(node, "default_workflow_permissions"),
-				requireBoolean(node, "can_approve_pull_request_reviews")
-		);
+		return mapper.readValue(resp.body(), WorkflowPermissions.class);
 	}
 
 	public Optional<Pages> getPages(String owner, String repo)
@@ -348,7 +382,7 @@ public class GitHubClient {
 		);
 		if (resp.statusCode() == 403) {
 			throw new RuntimeException(
-					"HTTP 403 for workflow permissions on " + repo
+					"HTTP 403 for pages on " + repo
 							+ " — token may lack admin scope"
 			);
 		}
@@ -357,25 +391,20 @@ public class GitHubClient {
 		}
 		if (resp.statusCode() != 200) {
 			throw new RuntimeException(
-					"Unexpected HTTP " + resp.statusCode()
-							+ " for workflow permissions on " + repo
+					"Unexpected HTTP " + resp.statusCode() + " for pages on "
+							+ repo
 			);
 		}
-		JsonNode node = mapper.readTree(resp.body());
-		return Optional.of(
-				new Pages(
-						Pages.BuildType
-								.valueOfRaw(node.path("build_type").asText())
-				)
-		);
+		return Optional.of(mapper.readValue(resp.body(), Pages.class));
 	}
+
+	// ─── Pagination ──────────────────────────────────────────────────────────
 
 	/**
 	 * Collects all items from a paginated API response, following Link headers.
-	 * The caller is responsible for validating the status of {@code firstResp}
-	 * before calling this method. {@code arrayField} names the JSON field that
-	 * holds the array on each page; pass {@code null} when the page body is
-	 * itself the array (e.g. the repos list endpoint).
+	 * The caller is responsible for validating the status of {@code firstResp}.
+	 * {@code arrayField} names the JSON field that holds the array on each
+	 * page; pass {@code null} when the page body is itself the array.
 	 */
 	private List<JsonNode> collectPaginatedArrayItems(
 			HttpResponse<String> firstResp,
@@ -406,45 +435,6 @@ public class GitHubClient {
 			}
 		}
 		return items;
-	}
-
-	private static boolean requireBoolean(JsonNode node, String field) {
-		JsonNode n = node.path(field);
-		if (n.isMissingNode()) {
-			throw new RuntimeException(
-					"Expected field '" + field
-							+ "' to be present in response but was missing"
-			);
-		}
-		if (!n.isBoolean()) {
-			throw new RuntimeException(
-					"Expected field '" + field + "' to be a boolean but was: "
-							+ n
-			);
-		}
-		return n.booleanValue();
-	}
-
-	private static String requireText(JsonNode node, String field) {
-		JsonNode n = node.path(field);
-		if (n.isMissingNode()) {
-			throw new RuntimeException(
-					"Expected field '" + field
-							+ "' to be present in response but was missing"
-			);
-		}
-		if (n.isNull()) {
-			// GitHub treats null and empty string as equivalent for optional
-			// text fields (description, homepage, etc.)
-			return "";
-		}
-		if (!n.isTextual()) {
-			throw new RuntimeException(
-					"Expected field '" + field + "' to be a string but was: "
-							+ n
-			);
-		}
-		return n.textValue();
 	}
 
 	private HttpResponse<String> send(String url) throws Exception {
