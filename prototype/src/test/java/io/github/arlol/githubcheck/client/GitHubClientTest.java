@@ -207,6 +207,12 @@ class GitHubClientTest {
 	void getRepo_disabledSecurityAnalysis() throws Exception {
 		stubFor(get(urlEqualTo("/repos/ArloL/my-repo")).willReturn(okJson("""
 				{
+				  "description": null,
+				  "homepage": null,
+				  "has_issues": true,
+				  "has_projects": true,
+				  "has_wiki": true,
+				  "default_branch": "main",
 				  "allow_merge_commit": true,
 				  "allow_squash_merge": true,
 				  "allow_auto_merge": false,
@@ -324,7 +330,9 @@ class GitHubClientTest {
 												{
 												  "enforce_admins": {"enabled": true},
 												  "required_linear_history": {"enabled": true},
+												  "allow_force_pushes": {"enabled": false},
 												  "required_status_checks": {
+												    "strict": false,
 												    "checks": [
 												      {"context": "check-actions.required-status-check"},
 												      {"context": "CodeQL"}
@@ -359,7 +367,9 @@ class GitHubClientTest {
 												{
 												  "enforce_admins": {"enabled": false},
 												  "required_linear_history": {"enabled": false},
+												  "allow_force_pushes": {"enabled": false},
 												  "required_status_checks": {
+												    "strict": false,
 												    "contexts": ["legacy-check-1", "legacy-check-2"]
 												  }
 												}
