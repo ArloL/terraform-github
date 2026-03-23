@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 
 import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
-import io.github.arlol.githubcheck.client.Pages;
+import io.github.arlol.githubcheck.client.GitHubClient.Pages;
+import io.github.arlol.githubcheck.client.GitHubClient.RepoSummary;
+import io.github.arlol.githubcheck.client.GitHubClient.WorkflowPermissions;
 import io.github.arlol.githubcheck.client.RepoDetails;
-import io.github.arlol.githubcheck.client.RepoSummary;
-import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public class OrgChecker {
 
