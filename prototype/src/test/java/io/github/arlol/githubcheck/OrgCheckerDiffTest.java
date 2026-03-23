@@ -1,12 +1,12 @@
 package io.github.arlol.githubcheck;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class OrgCheckerDiffTest {
 
@@ -1104,8 +1104,8 @@ class OrgCheckerDiffTest {
 	}
 
 	@Test
-	void githubPages_expectsGithubPagesEnvironment() {
-		RepositoryArgs args = RepositoryArgs.builder().githubPages().build();
+	void pages_expectsGithubPagesEnvironment() {
+		RepositoryArgs args = RepositoryArgs.builder().pages().build();
 		// Repo without the github-pages environment
 		List<String> diffs = checker
 				.computeDiffs(goodPublicState("repo"), args);
@@ -1113,8 +1113,8 @@ class OrgCheckerDiffTest {
 	}
 
 	@Test
-	void githubPages_noDrift_whenEnvironmentPresent() {
-		RepositoryArgs args = RepositoryArgs.builder().githubPages().build();
+	void pages_noDrift_whenEnvironmentPresent() {
+		RepositoryArgs args = RepositoryArgs.builder().pages().build();
 		RepositoryState state = new RepositoryState(
 				"repo",
 				false,
