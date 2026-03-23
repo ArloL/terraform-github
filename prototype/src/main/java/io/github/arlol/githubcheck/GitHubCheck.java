@@ -6,7 +6,7 @@ import io.github.arlol.githubcheck.config.RepositoryArgs;
 
 public class GitHubCheck {
 
-	static void main() throws Exception {
+	static void main(String[] args) throws Exception {
 		String token = System.getenv("GITHUB_TOKEN");
 		if (token == null || token.isBlank()) {
 			System.err.println(
@@ -15,9 +15,11 @@ public class GitHubCheck {
 			System.exit(1);
 		}
 
+		boolean fix = List.of(args).contains("--fix");
+
 		long startTime = System.currentTimeMillis();
 
-		var checker = new OrgChecker(token, "ArloL");
+		var checker = new OrgChecker(token, "ArloL", fix);
 		CheckResult result = checker.check(repositories());
 		checker.printReport(result);
 

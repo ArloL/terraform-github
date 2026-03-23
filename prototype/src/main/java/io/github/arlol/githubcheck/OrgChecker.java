@@ -32,14 +32,24 @@ public class OrgChecker {
 
 	private final GitHubClient client;
 	private final String org;
+	private final boolean fix;
 
 	public OrgChecker(String token, String org) {
-		this(new GitHubClient(token), org);
+		this(new GitHubClient(token), org, false);
+	}
+
+	public OrgChecker(String token, String org, boolean fix) {
+		this(new GitHubClient(token), org, fix);
 	}
 
 	OrgChecker(GitHubClient client, String org) {
+		this(client, org, false);
+	}
+
+	OrgChecker(GitHubClient client, String org, boolean fix) {
 		this.client = client;
 		this.org = org;
+		this.fix = fix;
 	}
 
 	public CheckResult check(List<RepositoryArgs> repositories)
@@ -101,6 +111,9 @@ public class OrgChecker {
 		try {
 			RepositoryState state = fetchState(summary);
 			List<String> diffs = computeDiffs(state, desired);
+			if (fix) {
+				diffs = applyFixes(name, desired, diffs);
+			}
 			return diffs.isEmpty() ? CheckResult.RepoCheckResult.ok(name)
 					: CheckResult.RepoCheckResult.drift(name, diffs);
 		} catch (Exception e) {
@@ -352,6 +365,20 @@ public class OrgChecker {
 		}
 
 		return diffs;
+	}
+
+	private List<String> applyFixes(
+			String name,
+			RepositoryArgs desired,
+			List<String> diffs
+	) throws Exception {
+		List<String> remaining = new ArrayList<>(diffs);
+		boolean fixed = remaining.removeIf(d -> d.startsWith("description:"));
+		if (fixed) {
+			client.updateDescription(org, name, desired.description());
+			System.out.printf("[FIXED]   %s: description updated%n", name);
+		}
+		return remaining;
 	}
 
 	public void printReport(CheckResult result) {
