@@ -117,6 +117,12 @@ public class OrgChecker {
 					.getAutomatedSecurityFixes(org, name);
 		}
 
+		var sa = details.securityAndAnalysis();
+		boolean secretScanning = sa != null
+				&& "enabled".equals(sa.secretScanning().status());
+		boolean secretScanningPush = sa != null
+				&& "enabled".equals(sa.secretScanningPushProtection().status());
+
 		boolean protectionExists = false;
 		boolean enforceAdmins = false;
 		boolean linearHistory = false;
@@ -128,11 +134,25 @@ public class OrgChecker {
 			if (protection.isPresent()) {
 				var bp = protection.orElseThrow();
 				protectionExists = true;
-				enforceAdmins = bp.enforceAdmins();
-				linearHistory = bp.requiredLinearHistory();
-				allowForcePushes = bp.allowForcePushes();
-				strict = bp.requiredStatusChecksStrict();
-				statusContexts = bp.requiredStatusCheckContexts();
+				enforceAdmins = bp.enforceAdmins().enabled();
+				linearHistory = bp.requiredLinearHistory().enabled();
+				allowForcePushes = bp.allowForcePushes().enabled();
+				var rsc = bp.requiredStatusChecks();
+				if (rsc != null) {
+					strict = rsc.strict();
+					var checks = rsc.checks();
+					if (checks != null && !checks.isEmpty()) {
+						statusContexts = checks.stream()
+								.map(
+										GitHubClient.BranchProtection.RequiredStatusChecks.StatusCheck::context
+								)
+								.toList();
+					} else {
+						var contexts = rsc.contexts();
+						statusContexts = contexts != null ? contexts
+								: List.of();
+					}
+				}
 			}
 		}
 
@@ -155,7 +175,7 @@ public class OrgChecker {
 				archived,
 				summary.visibility(),
 				details.description(),
-				details.homepageUrl(),
+				details.homepage(),
 				details.hasIssues(),
 				details.hasProjects(),
 				details.hasWiki(),
@@ -166,8 +186,8 @@ public class OrgChecker {
 				details.deleteBranchOnMerge(),
 				vulnAlerts,
 				automatedSecurityFixes,
-				details.secretScanning(),
-				details.secretScanningPushProtection(),
+				secretScanning,
+				secretScanningPush,
 				protectionExists,
 				enforceAdmins,
 				linearHistory,
@@ -176,7 +196,7 @@ public class OrgChecker {
 				statusContexts,
 				secretNames,
 				envSecrets,
-				wfPerms.defaultPermissions(),
+				wfPerms.defaultWorkflowPermissions(),
 				wfPerms.canApprovePullRequestReviews()
 		);
 	}
