@@ -169,6 +169,25 @@ public class GitHubClient {
 		);
 	}
 
+	public boolean getImmutableReleases(String owner, String repo)
+			throws Exception {
+		HttpResponse<String> resp = send(
+				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
+		);
+		if (resp.statusCode() == 200) {
+			return mapper.readTree(resp.body())
+					.path("enabled")
+					.asBoolean(false);
+		}
+		if (resp.statusCode() == 404) {
+			return false;
+		}
+		throw new RuntimeException(
+				"Unexpected HTTP " + resp.statusCode()
+						+ " for automated-security-fixes on " + repo
+		);
+	}
+
 	public Optional<BranchProtection> getBranchProtection(
 			String org,
 			String repo
