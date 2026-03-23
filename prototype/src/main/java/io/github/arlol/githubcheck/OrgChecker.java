@@ -19,7 +19,6 @@ import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.Pages;
 import io.github.arlol.githubcheck.client.RepoDetails;
 import io.github.arlol.githubcheck.client.RepoSummary;
-import io.github.arlol.githubcheck.client.StatusCheck;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public class OrgChecker {
@@ -139,16 +138,18 @@ public class OrgChecker {
 			if (protection.isPresent()) {
 				var bp = protection.orElseThrow();
 				protectionExists = true;
-				enforceAdmins = bp.enforceAdmins().enabled();
-				linearHistory = bp.requiredLinearHistory().enabled();
-				allowForcePushes = bp.allowForcePushes().enabled();
+				enforceAdmins = bp.enforceAdmins();
+				linearHistory = bp.requiredLinearHistory();
+				allowForcePushes = bp.allowForcePushes();
 				var rsc = bp.requiredStatusChecks();
 				if (rsc != null) {
 					strict = rsc.strict();
 					var checks = rsc.checks();
 					if (checks != null && !checks.isEmpty()) {
 						statusContexts = checks.stream()
-								.map(StatusCheck::context)
+								.map(
+										BranchProtection.RequiredStatusChecks.StatusCheck::context
+								)
 								.toList();
 					} else {
 						var contexts = rsc.contexts();

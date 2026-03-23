@@ -443,12 +443,13 @@ class GitHubClientTest {
 
 		assertThat(opt).isPresent();
 		BranchProtection bp = opt.orElseThrow();
-		assertThat(bp.enforceAdmins().enabled()).isTrue();
-		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
-		assertThat(bp.allowForcePushes().enabled()).isFalse();
+		assertThat(bp.enforceAdmins()).isTrue();
+		assertThat(bp.requiredLinearHistory()).isTrue();
+		assertThat(bp.allowForcePushes()).isFalse();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
-		assertThat(bp.requiredStatusChecks().checks())
-				.extracting(StatusCheck::context)
+		assertThat(bp.requiredStatusChecks().checks()).extracting(
+				BranchProtection.RequiredStatusChecks.StatusCheck::context
+		)
 				.containsExactlyInAnyOrder(
 						"check-actions.required-status-check",
 						"CodeQL"
@@ -849,7 +850,7 @@ class GitHubClientTest {
 
 		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
 
-		assertThat(pages.buildType()).isEqualTo(BuildType.WORKFLOW);
+		assertThat(pages.buildType()).isEqualTo(Pages.BuildType.WORKFLOW);
 	}
 
 }
