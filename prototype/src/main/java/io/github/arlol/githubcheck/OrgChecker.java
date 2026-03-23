@@ -138,9 +138,9 @@ public class OrgChecker {
 			if (protection.isPresent()) {
 				var bp = protection.orElseThrow();
 				protectionExists = true;
-				enforceAdmins = bp.enforceAdmins();
-				linearHistory = bp.requiredLinearHistory();
-				allowForcePushes = bp.allowForcePushes();
+				enforceAdmins = bp.enforceAdmins().enabled();
+				linearHistory = bp.requiredLinearHistory().enabled();
+				allowForcePushes = bp.allowForcePushes().enabled();
 				var rsc = bp.requiredStatusChecks();
 				if (rsc != null) {
 					strict = rsc.strict();

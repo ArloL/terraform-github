@@ -443,9 +443,9 @@ class GitHubClientTest {
 
 		assertThat(opt).isPresent();
 		BranchProtection bp = opt.orElseThrow();
-		assertThat(bp.enforceAdmins()).isTrue();
-		assertThat(bp.requiredLinearHistory()).isTrue();
-		assertThat(bp.allowForcePushes()).isFalse();
+		assertThat(bp.enforceAdmins().enabled()).isTrue();
+		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
+		assertThat(bp.allowForcePushes().enabled()).isFalse();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
 		assertThat(bp.requiredStatusChecks().checks()).extracting(
 				BranchProtection.RequiredStatusChecks.StatusCheck::context
