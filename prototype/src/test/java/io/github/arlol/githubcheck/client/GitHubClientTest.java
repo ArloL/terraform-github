@@ -339,16 +339,16 @@ class GitHubClientTest {
 		assertThat(details.license().spdxId()).isEqualTo("MIT");
 		assertThat(details.forks()).isEqualTo(5);
 		assertThat(details.securityAndAnalysis().secretScanning().status())
-				.isEqualTo("enabled");
+				.isEqualTo(SecurityAndAnalysis.StatusObject.Status.ENABLED);
 		assertThat(
 				details.securityAndAnalysis()
 						.secretScanningPushProtection()
 						.status()
-		).isEqualTo("enabled");
+		).isEqualTo(SecurityAndAnalysis.StatusObject.Status.ENABLED);
 		assertThat(details.securityAndAnalysis().advancedSecurity().status())
-				.isEqualTo("enabled");
+				.isEqualTo(SecurityAndAnalysis.StatusObject.Status.ENABLED);
 		assertThat(details.securityAndAnalysis().codeSecurity().status())
-				.isEqualTo("enabled");
+				.isEqualTo(SecurityAndAnalysis.StatusObject.Status.ENABLED);
 	}
 
 	@Test
@@ -396,12 +396,12 @@ class GitHubClientTest {
 		RepoDetails details = client.getRepo("ArloL", "my-repo");
 
 		assertThat(details.securityAndAnalysis().secretScanning().status())
-				.isEqualTo("disabled");
+				.isEqualTo(SecurityAndAnalysis.StatusObject.Status.DISABLED);
 		assertThat(
 				details.securityAndAnalysis()
 						.secretScanningPushProtection()
 						.status()
-		).isEqualTo("disabled");
+		).isEqualTo(SecurityAndAnalysis.StatusObject.Status.DISABLED);
 	}
 
 	// ─── getVulnerabilityAlerts

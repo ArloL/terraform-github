@@ -1,5 +1,7 @@
 package io.github.arlol.githubcheck.client;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public record SecurityAndAnalysis(
 		StatusObject secretScanning,
 		StatusObject secretScanningPushProtection,
@@ -13,8 +15,20 @@ public record SecurityAndAnalysis(
 ) {
 
 	public record StatusObject(
-			String status
+			Status status
 	) {
+
+		public enum Status {
+
+			ENABLED, DISABLED;
+
+			@JsonCreator
+			public static Status fromValue(String value) {
+				return valueOf(value.toUpperCase());
+			}
+
+		}
+
 	}
 
 }
