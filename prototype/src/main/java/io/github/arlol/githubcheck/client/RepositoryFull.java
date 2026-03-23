@@ -57,7 +57,7 @@ public record RepositoryFull(
 		String pushedAt,
 		String createdAt,
 		String updatedAt,
-		RepoPermissions permissions, // optional
+		RepositoryPermissions permissions, // optional
 		String tempCloneToken, // nullable, optional
 		Integer subscribersCount,
 		Integer networkCount,
