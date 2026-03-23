@@ -1,16 +1,26 @@
 package io.github.arlol.githubcheck;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 @WireMockTest
 class GitHubClientTest {
@@ -533,6 +543,105 @@ class GitHubClientTest {
 								equalTo("Bearer test-token")
 						)
 		);
+	}
+
+	@Test
+	void pages_exampleResponse() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/repos/github/developer.github.com/pages"))
+						.willReturn(
+								okJson(
+										"""
+												{
+												   "url": "https://api.github.com/repos/github/developer.github.com/pages",
+												   "status": "built",
+												   "cname": "developer.github.com",
+												   "custom_404": false,
+												   "html_url": "https://developer.github.com",
+												   "source": {
+												     "branch": "master",
+												     "path": "/"
+												   },
+												   "public": true,
+												   "pending_domain_unverified_at": "2024-04-30T19:33:31Z",
+												   "protected_domain_state": "verified",
+												   "https_certificate": {
+												     "state": "approved",
+												     "description": "Certificate is approved",
+												     "domains": [
+												       "developer.github.com"
+												     ],
+												     "expires_at": "2021-05-22"
+												   },
+												   "https_enforced": true
+												 }
+												"""
+								)
+						)
+		);
+
+		var pages = client.getPages("github", "developer.github.com")
+				.orElseThrow();
+
+		assertThat(pages.buildType())
+				.isEqualTo(GitHubClient.Pages.BuildType.NULL);
+	}
+
+	@Test
+	void pages_notFound() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/dotfiles/pages")).willReturn(
+						aResponse().withStatus(404)
+								.withHeader("Content-Type", "application/json")
+								.withBody(
+										"""
+												{
+												  "message": "Not Found",
+												  "documentation_url": "https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site",
+												  "status": "404"
+												}
+												"""
+								)
+				)
+		);
+
+		var pages = client.getPages("ArloL", "dotfiles");
+
+		assertThat(pages).isEmpty();
+	}
+
+	@Test
+	void pages_realResponse() throws Exception {
+		stubFor(
+				get(urlPathEqualTo("/repos/ArloL/eclipse-projects/pages"))
+						.willReturn(
+								okJson(
+										"""
+												{
+												  "url": "https://api.github.com/repos/ArloL/eclipse-projects/pages",
+												  "status": "built",
+												  "cname": null,
+												  "custom_404": false,
+												  "html_url": "https://arlol.github.io/eclipse-projects/",
+												  "build_type": "workflow",
+												  "source": {
+												    "branch": "main",
+												    "path": "/"
+												  },
+												  "public": true,
+												  "protected_domain_state": null,
+												  "pending_domain_unverified_at": null,
+												  "https_enforced": true
+												}
+												"""
+								)
+						)
+		);
+
+		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
+
+		assertThat(pages.buildType())
+				.isEqualTo(GitHubClient.Pages.BuildType.WORKFLOW);
 	}
 
 }
