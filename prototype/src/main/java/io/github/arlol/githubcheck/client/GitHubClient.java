@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -235,6 +236,22 @@ public class GitHubClient {
 		return mapper.readValue(resp.body(), WorkflowPermissions.class);
 	}
 
+	public void updateDescription(String org, String repo, String description)
+			throws Exception {
+		String body = mapper
+				.writeValueAsString(Map.of("description", description));
+		HttpResponse<String> resp = patch(
+				baseUrl + "/repos/" + org + "/" + repo,
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " updating description for "
+							+ org + "/" + repo + ": " + resp.body()
+			);
+		}
+	}
+
 	public Optional<Pages> getPages(String owner, String repo)
 			throws Exception {
 		HttpResponse<String> resp = send(
@@ -296,6 +313,21 @@ public class GitHubClient {
 			}
 		}
 		return items;
+	}
+
+	private HttpResponse<String> patch(String url, String body)
+			throws Exception {
+		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+				.header("Authorization", "Bearer " + token)
+				.header("Accept", "application/vnd.github+json")
+				.header("Content-Type", "application/json")
+				.header("X-GitHub-Api-Version", "2026-03-10")
+				.method("PATCH", HttpRequest.BodyPublishers.ofString(body))
+				.build();
+		HttpResponse<String> resp = http
+				.send(request, HttpResponse.BodyHandlers.ofString());
+		handleRateLimit(resp);
+		return resp;
 	}
 
 	private HttpResponse<String> send(String url) throws Exception {

@@ -3,9 +3,12 @@ package io.github.arlol.githubcheck.client;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
+import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -1005,6 +1008,58 @@ class GitHubClientTest {
 		assertThat(pages.pendingDomainUnverifiedAt()).isNull();
 		assertThat(pages.httpsCertificate()).isNull();
 		assertThat(pages.httpsEnforced()).isTrue();
+	}
+
+	// ─── updateDescription
+	// ──────────────────────────────────────────────────
+
+	@Test
+	void updateDescription_success() throws Exception {
+		stubFor(
+				patch(urlEqualTo("/repos/ArloL/my-repo"))
+						.willReturn(okJson(REPO_BASE_JSON))
+		);
+
+		client.updateDescription("ArloL", "my-repo", "New description");
+
+		verify(
+				patchRequestedFor(urlEqualTo("/repos/ArloL/my-repo"))
+						.withRequestBody(
+								equalToJson(
+										"{\"description\":\"New description\"}"
+								)
+						)
+		);
+	}
+
+	@Test
+	void updateDescription_empty() throws Exception {
+		stubFor(
+				patch(urlEqualTo("/repos/ArloL/my-repo"))
+						.willReturn(okJson(REPO_BASE_JSON))
+		);
+
+		client.updateDescription("ArloL", "my-repo", "");
+
+		verify(
+				patchRequestedFor(urlEqualTo("/repos/ArloL/my-repo"))
+						.withRequestBody(equalToJson("{\"description\":\"\"}"))
+		);
+	}
+
+	@Test
+	void updateDescription_errorThrows() {
+		stubFor(
+				patch(urlEqualTo("/repos/ArloL/my-repo")).willReturn(
+						aResponse().withStatus(422)
+								.withHeader("Content-Type", "application/json")
+								.withBody("{\"message\":\"Validation Failed\"}")
+				)
+		);
+
+		assertThatThrownBy(
+				() -> client.updateDescription("ArloL", "my-repo", "desc")
+		).isInstanceOf(RuntimeException.class).hasMessageContaining("HTTP 422");
 	}
 
 }
