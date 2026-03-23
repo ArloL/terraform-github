@@ -14,7 +14,7 @@ import tarfile
 import tempfile
 import urllib.request
 
-TOOL_VERSIONS = os.path.join(os.environ["CLAUDE_PROJECT_DIR"], "prototype", ".tool-versions")
+TOOL_VERSIONS = os.path.join(os.environ["CLAUDE_PROJECT_DIR"], ".tool-versions")
 
 java_version = None
 with open(TOOL_VERSIONS) as f:
