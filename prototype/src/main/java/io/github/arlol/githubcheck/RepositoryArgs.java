@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public final class RepositoryArgs {
 
 	private final boolean archived;
-	private final boolean githubPages;
+	private final boolean pages;
 	private final String description;
 	private final String homepageUrl;
 	private final String visibility;
@@ -20,7 +20,7 @@ public final class RepositoryArgs {
 
 	private RepositoryArgs(Builder builder) {
 		this.archived = builder.archived;
-		this.githubPages = builder.githubPages;
+		this.pages = builder.pages;
 		this.description = builder.description;
 		this.homepageUrl = builder.homepageUrl;
 		this.visibility = builder.visibility;
@@ -34,8 +34,8 @@ public final class RepositoryArgs {
 		return archived;
 	}
 
-	public boolean githubPages() {
-		return githubPages;
+	public boolean pages() {
+		return pages;
 	}
 
 	public String description() {
@@ -70,7 +70,7 @@ public final class RepositoryArgs {
 	public static final class Builder {
 
 		private boolean archived = false;
-		private boolean githubPages = false;
+		private boolean pages = false;
 		private String description = "";
 		private String homepageUrl = "";
 		private String visibility = "public";
@@ -83,8 +83,8 @@ public final class RepositoryArgs {
 			return this;
 		}
 
-		public Builder githubPages() {
-			this.githubPages = true;
+		public Builder pages() {
+			this.pages = true;
 			return this;
 		}
 

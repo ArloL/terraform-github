@@ -21,8 +21,8 @@ public final class Repository {
 		return this;
 	}
 
-	public Repository githubPages() {
-		builder.githubPages();
+	public Repository pages() {
+		builder.pages();
 		return this;
 	}
 

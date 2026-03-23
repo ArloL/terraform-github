@@ -33,7 +33,7 @@ public class Main {
 						.homepageUrl(
 								"https://arlol.github.io/abenteuer-irland/"
 						)
-						.githubPages(),
+						.pages(),
 				new Repository("actions").archived(),
 				new Repository("actions-checkout-fetch-depth-demo").archived(),
 				new Repository("advent-of-code")
@@ -44,12 +44,12 @@ public class Main {
 						.homepageUrl(
 								"https://arlol.github.io/angular-playground/"
 						)
-						.githubPages()
+						.pages()
 						.requiredStatusChecks("pr-check.required-status-check"),
 				new Repository("arlol.github.io")
 						.description("This is the source of my GitHub page")
 						.homepageUrl("https://arlol.github.io/")
-						.githubPages(),
+						.pages(),
 				new Repository("beatunes-keytocomment").description(
 						"A beatunes plugin that writes the key to the comment"
 				),
@@ -58,13 +58,13 @@ public class Main {
 						.homepageUrl(
 								"https://arlol.github.io/bulma-playground/"
 						)
-						.githubPages(),
+						.pages(),
 				new Repository("business-english")
 						.description("Mum's website for Business English")
 						.homepageUrl(
 								"https://arlol.github.io/business-english/"
 						)
-						.githubPages(),
+						.pages(),
 				new Repository("calver-tag-action").description(
 						"A GitHub Actions action that creates a new version using a CalVer-style derivative and pushes it"
 				),
@@ -95,7 +95,7 @@ public class Main {
 						.homepageUrl(
 								"https://arlol.github.io/eclipse-projects/"
 						)
-						.githubPages(),
+						.pages(),
 				new Repository("effortful-retrieval-questions").description(
 						"A collection of effortful retrieval questions of a number of articles I've read"
 				),

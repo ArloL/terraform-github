@@ -283,7 +283,7 @@ public class OrgChecker {
 		Set<String> wantEnvs = new LinkedHashSet<>(
 				desired.environments().keySet()
 		);
-		if (desired.githubPages()) {
+		if (desired.pages()) {
 			wantEnvs.add("github-pages");
 		}
 		Set<String> gotEnvs = actual.environmentSecretNames().keySet();
