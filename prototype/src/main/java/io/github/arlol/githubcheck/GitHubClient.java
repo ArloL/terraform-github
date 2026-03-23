@@ -131,10 +131,11 @@ public class GitHubClient {
 		);
 	}
 
-	public boolean getVulnerabilityAlerts(String org, String repo)
+	public boolean getVulnerabilityAlerts(String owner, String repo)
 			throws Exception {
 		HttpResponse<String> resp = send(
-				baseUrl + "/repos/" + org + "/" + repo + "/vulnerability-alerts"
+				baseUrl + "/repos/" + owner + "/" + repo
++ "/vulnerability-alerts"
 		);
 		if (resp.statusCode() == 204) {
 			return true;
