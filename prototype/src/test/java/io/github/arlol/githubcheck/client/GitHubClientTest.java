@@ -9,6 +9,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -17,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -1010,17 +1013,21 @@ class GitHubClientTest {
 		assertThat(pages.httpsEnforced()).isTrue();
 	}
 
-	// ─── updateDescription
+	// ─── updateRepository
 	// ──────────────────────────────────────────────────
 
 	@Test
-	void updateDescription_success() throws Exception {
+	void updateRepository_singleField() throws Exception {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/my-repo"))
 						.willReturn(okJson(REPO_BASE_JSON))
 		);
 
-		client.updateDescription("ArloL", "my-repo", "New description");
+		client.updateRepository(
+				"ArloL",
+				"my-repo",
+				Map.of("description", "New description")
+		);
 
 		verify(
 				patchRequestedFor(urlEqualTo("/repos/ArloL/my-repo"))
@@ -1033,13 +1040,45 @@ class GitHubClientTest {
 	}
 
 	@Test
-	void updateDescription_empty() throws Exception {
+	void updateRepository_multipleFields() throws Exception {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/my-repo"))
 						.willReturn(okJson(REPO_BASE_JSON))
 		);
 
-		client.updateDescription("ArloL", "my-repo", "");
+		client.updateRepository(
+				"ArloL",
+				"my-repo",
+				Map.of(
+						"description",
+						"New description",
+						"has_wiki",
+						true,
+						"allow_merge_commit",
+						false
+				)
+		);
+
+		verify(
+				patchRequestedFor(urlEqualTo("/repos/ArloL/my-repo"))
+						.withRequestBody(equalToJson("""
+								{
+								  "description": "New description",
+								  "has_wiki": true,
+								  "allow_merge_commit": false
+								}
+								"""))
+		);
+	}
+
+	@Test
+	void updateRepository_emptyDescription() throws Exception {
+		stubFor(
+				patch(urlEqualTo("/repos/ArloL/my-repo"))
+						.willReturn(okJson(REPO_BASE_JSON))
+		);
+
+		client.updateRepository("ArloL", "my-repo", Map.of("description", ""));
 
 		verify(
 				patchRequestedFor(urlEqualTo("/repos/ArloL/my-repo"))
@@ -1048,7 +1087,7 @@ class GitHubClientTest {
 	}
 
 	@Test
-	void updateDescription_errorThrows() {
+	void updateRepository_errorThrows() {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/my-repo")).willReturn(
 						aResponse().withStatus(422)
@@ -1058,7 +1097,46 @@ class GitHubClientTest {
 		);
 
 		assertThatThrownBy(
-				() -> client.updateDescription("ArloL", "my-repo", "desc")
+				() -> client.updateRepository(
+						"ArloL",
+						"my-repo",
+						Map.of("description", "desc")
+				)
+		).isInstanceOf(RuntimeException.class).hasMessageContaining("HTTP 422");
+	}
+
+	// ─── replaceTopics
+	// ──────────────────────────────────────────────────
+
+	@Test
+	void replaceTopics_success() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/my-repo/topics"))
+						.willReturn(okJson("{\"names\":[\"java\",\"maven\"]}"))
+		);
+
+		client.replaceTopics("ArloL", "my-repo", List.of("java", "maven"));
+
+		verify(
+				putRequestedFor(urlEqualTo("/repos/ArloL/my-repo/topics"))
+						.withRequestBody(
+								equalToJson("{\"names\":[\"java\",\"maven\"]}")
+						)
+		);
+	}
+
+	@Test
+	void replaceTopics_errorThrows() {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/my-repo/topics")).willReturn(
+						aResponse().withStatus(422)
+								.withHeader("Content-Type", "application/json")
+								.withBody("{\"message\":\"Validation Failed\"}")
+				)
+		);
+
+		assertThatThrownBy(
+				() -> client.replaceTopics("ArloL", "my-repo", List.of("bad"))
 		).isInstanceOf(RuntimeException.class).hasMessageContaining("HTTP 422");
 	}
 

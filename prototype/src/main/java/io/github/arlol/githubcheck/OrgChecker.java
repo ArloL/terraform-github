@@ -197,6 +197,7 @@ public class OrgChecker {
 				details.hasProjects(),
 				details.hasWiki(),
 				details.defaultBranch(),
+				details.topics(),
 				details.allowMergeCommit(),
 				details.allowSquashMerge(),
 				details.allowAutoMerge(),
@@ -248,6 +249,12 @@ public class OrgChecker {
 		check(diffs, "has_projects", true, actual.hasProjects());
 		check(diffs, "has_wiki", true, actual.hasWiki());
 		check(diffs, "default_branch", "main", actual.defaultBranch());
+		checkSets(
+				diffs,
+				"topics",
+				new HashSet<>(desired.topics()),
+				new HashSet<>(actual.topics())
+		);
 		check(diffs, "allow_merge_commit", false, actual.allowMergeCommit());
 		check(diffs, "allow_squash_merge", false, actual.allowSquashMerge());
 		check(diffs, "allow_auto_merge", true, actual.allowAutoMerge());
@@ -373,11 +380,51 @@ public class OrgChecker {
 			List<String> diffs
 	) throws Exception {
 		List<String> remaining = new ArrayList<>(diffs);
-		boolean fixed = remaining.removeIf(d -> d.startsWith("description:"));
-		if (fixed) {
-			client.updateDescription(org, name, desired.description());
-			System.out.printf("[FIXED]   %s: description updated%n", name);
+		Map<String, Object> fields = new LinkedHashMap<>();
+
+		if (remaining.removeIf(d -> d.startsWith("description:"))) {
+			fields.put("description", desired.description());
 		}
+		if (remaining.removeIf(d -> d.startsWith("homepage_url:"))) {
+			fields.put("homepage", desired.homepageUrl());
+		}
+		if (remaining.removeIf(d -> d.startsWith("has_issues:"))) {
+			fields.put("has_issues", true);
+		}
+		if (remaining.removeIf(d -> d.startsWith("has_projects:"))) {
+			fields.put("has_projects", true);
+		}
+		if (remaining.removeIf(d -> d.startsWith("has_wiki:"))) {
+			fields.put("has_wiki", true);
+		}
+		if (remaining.removeIf(d -> d.startsWith("allow_merge_commit:"))) {
+			fields.put("allow_merge_commit", false);
+		}
+		if (remaining.removeIf(d -> d.startsWith("allow_squash_merge:"))) {
+			fields.put("allow_squash_merge", false);
+		}
+		if (remaining.removeIf(d -> d.startsWith("allow_auto_merge:"))) {
+			fields.put("allow_auto_merge", true);
+		}
+		if (remaining.removeIf(d -> d.startsWith("delete_branch_on_merge:"))) {
+			fields.put("delete_branch_on_merge", true);
+		}
+		if (remaining.removeIf(d -> d.startsWith("archived:"))) {
+			fields.put("archived", desired.archived());
+		}
+
+		if (!fields.isEmpty()) {
+			client.updateRepository(org, name, fields);
+			for (String field : fields.keySet()) {
+				System.out.printf("[FIXED]   %s: %s updated%n", name, field);
+			}
+		}
+
+		if (remaining.removeIf(d -> d.startsWith("topics"))) {
+			client.replaceTopics(org, name, desired.topics());
+			System.out.printf("[FIXED]   %s: topics updated%n", name);
+		}
+
 		return remaining;
 	}
 
