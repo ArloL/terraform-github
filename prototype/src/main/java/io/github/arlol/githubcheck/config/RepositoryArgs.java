@@ -15,6 +15,7 @@ public final class RepositoryArgs {
 	private final String description;
 	private final String homepageUrl;
 	private final String visibility;
+	private final List<String> topics;
 	private final List<String> requiredStatusChecks;
 	private final List<String> actionsSecrets;
 	private final Map<String, EnvironmentArgs> environments;
@@ -26,6 +27,7 @@ public final class RepositoryArgs {
 		this.description = builder.description;
 		this.homepageUrl = builder.homepageUrl;
 		this.visibility = builder.visibility;
+		this.topics = List.copyOf(builder.topics);
 		this.requiredStatusChecks = List.copyOf(builder.requiredStatusChecks);
 		this.actionsSecrets = List.copyOf(builder.actionsSecrets);
 		this.environments = Collections
@@ -54,6 +56,10 @@ public final class RepositoryArgs {
 
 	public String visibility() {
 		return visibility;
+	}
+
+	public List<String> topics() {
+		return topics;
 	}
 
 	/**
@@ -91,6 +97,7 @@ public final class RepositoryArgs {
 		private String description = "";
 		private String homepageUrl = "";
 		private String visibility = "public";
+		private List<String> topics = List.of();
 		private List<String> requiredStatusChecks = List.of();
 		private List<String> actionsSecrets = List.of();
 		private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
@@ -106,6 +113,7 @@ public final class RepositoryArgs {
 			this.description = repositoryArgs.description;
 			this.homepageUrl = repositoryArgs.homepageUrl;
 			this.visibility = repositoryArgs.visibility;
+			this.topics = repositoryArgs.topics;
 			this.requiredStatusChecks = repositoryArgs.requiredStatusChecks;
 			this.actionsSecrets = repositoryArgs.actionsSecrets;
 			this.environments.putAll(repositoryArgs.environments);
@@ -133,6 +141,11 @@ public final class RepositoryArgs {
 
 		public Builder visibility(String visibility) {
 			this.visibility = visibility;
+			return this;
+		}
+
+		public Builder topics(String... topics) {
+			this.topics = Arrays.asList(topics);
 			return this;
 		}
 

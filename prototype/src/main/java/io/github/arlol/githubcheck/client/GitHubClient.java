@@ -236,18 +236,20 @@ public class GitHubClient {
 		return mapper.readValue(resp.body(), WorkflowPermissions.class);
 	}
 
-	public void updateDescription(String org, String repo, String description)
-			throws Exception {
-		String body = mapper
-				.writeValueAsString(Map.of("description", description));
+	public void updateRepository(
+			String org,
+			String repo,
+			Map<String, Object> fields
+	) throws Exception {
+		String body = mapper.writeValueAsString(fields);
 		HttpResponse<String> resp = patch(
 				baseUrl + "/repos/" + org + "/" + repo,
 				body
 		);
 		if (resp.statusCode() != 200) {
 			throw new RuntimeException(
-					"HTTP " + resp.statusCode() + " updating description for "
-							+ org + "/" + repo + ": " + resp.body()
+					"HTTP " + resp.statusCode() + " updating " + org + "/"
+							+ repo + ": " + resp.body()
 			);
 		}
 	}
@@ -273,6 +275,21 @@ public class GitHubClient {
 			);
 		}
 		return Optional.of(mapper.readValue(resp.body(), Pages.class));
+	}
+
+	public void replaceTopics(String owner, String repo, List<String> topics)
+			throws Exception {
+		String body = mapper.writeValueAsString(Map.of("names", topics));
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo + "/topics",
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " updating topics for "
+							+ owner + "/" + repo + ": " + resp.body()
+			);
+		}
 	}
 
 	// ─── Pagination
@@ -323,6 +340,20 @@ public class GitHubClient {
 				.header("Content-Type", "application/json")
 				.header("X-GitHub-Api-Version", "2026-03-10")
 				.method("PATCH", HttpRequest.BodyPublishers.ofString(body))
+				.build();
+		HttpResponse<String> resp = http
+				.send(request, HttpResponse.BodyHandlers.ofString());
+		handleRateLimit(resp);
+		return resp;
+	}
+
+	private HttpResponse<String> put(String url, String body) throws Exception {
+		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+				.header("Authorization", "Bearer " + token)
+				.header("Accept", "application/vnd.github+json")
+				.header("Content-Type", "application/json")
+				.header("X-GitHub-Api-Version", "2026-03-10")
+				.PUT(HttpRequest.BodyPublishers.ofString(body))
 				.build();
 		HttpResponse<String> resp = http
 				.send(request, HttpResponse.BodyHandlers.ofString());

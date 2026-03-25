@@ -33,6 +33,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
@@ -73,6 +74,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false, // allowMergeCommit
 				false, // allowSquashMerge
 				true, // allowAutoMerge
@@ -130,6 +132,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				true, // allowMergeCommit — should be false
 				false,
 				false,
@@ -172,6 +175,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				true, // allowSquashMerge — should be false
 				true,
@@ -214,6 +218,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				false, // allowAutoMerge — should be true
@@ -256,6 +261,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -298,6 +304,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -340,6 +347,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -382,6 +390,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -427,6 +436,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -470,6 +480,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -507,6 +518,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -544,6 +556,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -587,6 +600,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -630,6 +644,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -673,6 +688,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -716,6 +732,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -762,6 +779,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -808,6 +826,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -854,6 +873,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -898,6 +918,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -945,6 +966,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -995,6 +1017,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1047,6 +1070,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1094,6 +1118,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1137,6 +1162,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1186,6 +1212,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1228,6 +1255,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1272,6 +1300,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1324,6 +1353,7 @@ class OrgCheckerDiffTest {
 				true, // hasProjects
 				true, // hasWiki
 				"main", // defaultBranch
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1365,6 +1395,7 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				"main",
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1407,6 +1438,7 @@ class OrgCheckerDiffTest {
 				false, // hasProjects — should be true
 				true,
 				"main",
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1449,6 +1481,7 @@ class OrgCheckerDiffTest {
 				true,
 				false, // hasWiki — should be true
 				"main",
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1491,6 +1524,7 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				"master", // defaultBranch — should be main
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1533,6 +1567,7 @@ class OrgCheckerDiffTest {
 				true,
 				true,
 				"main",
+				List.of(), // topics
 				false,
 				false,
 				true,
@@ -1561,6 +1596,140 @@ class OrgCheckerDiffTest {
 		);
 		assertThat(checker.computeDiffs(state, defaultArgs()))
 				.contains("automated_security_fixes: want=true got=false");
+	}
+
+	@Test
+	void noDrift_topicsMatch() {
+		RepositoryArgs args = RepositoryArgs.create("repo")
+				.topics("java", "maven")
+				.build();
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
+				List.of("java", "maven"), // topics
+				false, // allowMergeCommit
+				false, // allowSquashMerge
+				true, // allowAutoMerge
+				true, // deleteBranchOnMerge
+				true, // vulnerabilityAlerts
+				true, // automatedSecurityFixes
+				true, // secretScanning
+				true, // secretScanningPushProtection
+				true, // branchProtectionExists
+				true, // enforceAdmins
+				true, // requiredLinearHistory
+				false, // allowForcePushes
+				false, // requiredStatusChecksStrict
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
+		);
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void drift_topicsMissing() {
+		RepositoryArgs args = RepositoryArgs.create("repo")
+				.topics("java", "maven")
+				.build();
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
+				List.of("java"), // topics — missing "maven"
+				false, // allowMergeCommit
+				false, // allowSquashMerge
+				true, // allowAutoMerge
+				true, // deleteBranchOnMerge
+				true, // vulnerabilityAlerts
+				true, // automatedSecurityFixes
+				true, // secretScanning
+				true, // secretScanningPushProtection
+				true, // branchProtectionExists
+				true, // enforceAdmins
+				true, // requiredLinearHistory
+				false, // allowForcePushes
+				false, // requiredStatusChecksStrict
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
+		);
+		assertThat(checker.computeDiffs(state, args))
+				.contains("topics missing: [maven]");
+	}
+
+	@Test
+	void drift_topicsExtra() {
+		RepositoryState state = new RepositoryState(
+				"repo",
+				false,
+				"public",
+				"", // description
+				"", // homepageUrl
+				true, // hasIssues
+				true, // hasProjects
+				true, // hasWiki
+				"main", // defaultBranch
+				List.of("stale-topic"), // topics — extra
+				false, // allowMergeCommit
+				false, // allowSquashMerge
+				true, // allowAutoMerge
+				true, // deleteBranchOnMerge
+				true, // vulnerabilityAlerts
+				true, // automatedSecurityFixes
+				true, // secretScanning
+				true, // secretScanningPushProtection
+				true, // branchProtectionExists
+				true, // enforceAdmins
+				true, // requiredLinearHistory
+				false, // allowForcePushes
+				false, // requiredStatusChecksStrict
+				List.of(
+						"check-actions.required-status-check",
+						"codeql-analysis.required-status-check",
+						"CodeQL",
+						"zizmor"
+				),
+				List.of(),
+				Map.of(),
+				new WorkflowPermissions(
+						WorkflowPermissions.DefaultWorkflowPermissions.READ,
+						true
+				)
+		);
+		assertThat(checker.computeDiffs(state, defaultArgs()))
+				.contains("topics extra: [stale-topic]");
 	}
 
 }

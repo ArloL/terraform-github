@@ -15,6 +15,7 @@ public record RepositoryState(
 		boolean hasProjects,
 		boolean hasWiki,
 		String defaultBranch,
+		List<String> topics,
 		boolean allowMergeCommit,
 		boolean allowSquashMerge,
 		boolean allowAutoMerge,
