@@ -197,7 +197,7 @@ public class OrgChecker {
 				details.hasProjects(),
 				details.hasWiki(),
 				details.defaultBranch(),
-				details.topics(),
+				details.topics() != null ? details.topics() : List.of(),
 				details.allowMergeCommit(),
 				details.allowSquashMerge(),
 				details.allowAutoMerge(),
@@ -374,7 +374,7 @@ public class OrgChecker {
 		return diffs;
 	}
 
-	private List<String> applyFixes(
+	List<String> applyFixes(
 			String name,
 			RepositoryArgs desired,
 			List<String> diffs
@@ -420,7 +420,7 @@ public class OrgChecker {
 			}
 		}
 
-		if (remaining.removeIf(d -> d.startsWith("topics"))) {
+		if (remaining.removeIf(d -> d.startsWith("topics "))) {
 			client.replaceTopics(org, name, desired.topics());
 			System.out.printf("[FIXED]   %s: topics updated%n", name);
 		}

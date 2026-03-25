@@ -1,16 +1,8 @@
 # Missing Features
 
-## 1. Fix All Repository Settings (not just description)
+## ~~1. Fix All Repository Settings (not just description)~~ DONE
 
-Currently `--fix` only updates the repository description. The spec requires fixing all mutable repository settings.
-
-### Plan
-
-- In `OrgChecker.applyFixes()`, add PATCH calls for each drifted repository field: homepage, topics, visibility, has_issues, has_projects, has_wiki, allow_merge_commit, allow_squash_merge, allow_rebase_merge, allow_auto_merge, delete_branch_on_merge, archived.
-- Batch all patchable fields into a single PATCH `/repos/{owner}/{repo}` call per repo.
-- Topics use a different endpoint: PUT `/repos/{owner}/{repo}/topics`.
-- Default branch is check-only per spec — skip in fix.
-- Add `GitHubClient` methods for any missing write endpoints (e.g. `replaceTopics`).
+Implemented: `applyFixes()` batches all drifted repo fields (description, homepage, has_issues, has_projects, has_wiki, allow_merge_commit, allow_squash_merge, allow_auto_merge, delete_branch_on_merge, archived) into a single PATCH call. Topics use a separate PUT endpoint via `replaceTopics()`. Topics checking was also added (config, state, diff, fix). Default branch remains check-only.
 
 ## 2. Fix Security Settings
 
