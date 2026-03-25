@@ -112,7 +112,7 @@ public class OrgChecker {
 			RepositoryState state = fetchState(summary);
 			List<String> diffs = computeDiffs(state, desired);
 			if (fix) {
-				diffs = applyFixes(name, desired, diffs);
+				diffs = applyFixes(name, state, desired, diffs);
 			}
 			return diffs.isEmpty() ? CheckResult.RepoCheckResult.ok(name)
 					: CheckResult.RepoCheckResult.drift(name, diffs);
@@ -120,6 +120,9 @@ public class OrgChecker {
 			return CheckResult.RepoCheckResult.error(name, e.getMessage());
 		}
 	}
+
+	// ─── Fetch
+	// ──────────────────────────────────────────────────────────────
 
 	RepositoryState fetchState(RepositoryMinimal summary) throws Exception {
 		String name = summary.name();
@@ -135,43 +138,10 @@ public class OrgChecker {
 					.getAutomatedSecurityFixes(org, name);
 		}
 
-		var sa = details.securityAndAnalysis();
-		boolean secretScanning = SecurityAndAnalysis.StatusObject.Status.ENABLED
-				.equals(sa.secretScanning().status());
-		boolean secretScanningPush = SecurityAndAnalysis.StatusObject.Status.ENABLED
-				.equals(sa.secretScanningPushProtection().status());
-
-		boolean protectionExists = false;
-		boolean enforceAdmins = false;
-		boolean linearHistory = false;
-		boolean allowForcePushes = false;
-		boolean strict = false;
-		List<String> statusContexts = List.of();
+		BranchProtection branchProtection = null;
 		if (!archived && "public".equals(summary.visibility())) {
-			var protection = client.getBranchProtection(org, name, "main");
-			if (protection.isPresent()) {
-				var bp = protection.orElseThrow();
-				protectionExists = true;
-				enforceAdmins = bp.enforceAdmins().enabled();
-				linearHistory = bp.requiredLinearHistory().enabled();
-				allowForcePushes = bp.allowForcePushes().enabled();
-				var rsc = bp.requiredStatusChecks();
-				if (rsc != null) {
-					strict = rsc.strict();
-					var checks = rsc.checks();
-					if (checks != null && !checks.isEmpty()) {
-						statusContexts = checks.stream()
-								.map(
-										BranchProtection.RequiredStatusChecks.StatusCheck::context
-								)
-								.toList();
-					} else {
-						var contexts = rsc.contexts();
-						statusContexts = contexts != null ? contexts
-								: List.of();
-					}
-				}
-			}
+			branchProtection = client.getBranchProtection(org, name, "main")
+					.orElse(null);
 		}
 
 		List<String> secretNames = client.getActionSecretNames(org, name);
@@ -189,82 +159,106 @@ public class OrgChecker {
 
 		return new RepositoryState(
 				name,
-				archived,
-				summary.visibility(),
-				details.description(),
-				details.homepage(),
-				details.hasIssues(),
-				details.hasProjects(),
-				details.hasWiki(),
-				details.defaultBranch(),
-				details.topics() != null ? details.topics() : List.of(),
-				details.allowMergeCommit(),
-				details.allowSquashMerge(),
-				details.allowAutoMerge(),
-				details.deleteBranchOnMerge(),
+				summary,
+				details,
 				vulnAlerts,
 				automatedSecurityFixes,
-				secretScanning,
-				secretScanningPush,
-				protectionExists,
-				enforceAdmins,
-				linearHistory,
-				allowForcePushes,
-				strict,
-				statusContexts,
+				branchProtection,
 				secretNames,
 				envSecrets,
 				wfPerms
 		);
 	}
 
+	// ─── Diff
+	// ──────────────────────────────────────────────────────────────
+
 	List<String> computeDiffs(RepositoryState actual, RepositoryArgs desired) {
 		List<String> diffs = new ArrayList<>();
 
 		if (desired.archived()) {
-			if (actual.archived()) {
+			if (actual.summary().archived()) {
 				return List.of();
 			} else {
 				return List.of("archived");
 			}
-		} else {
-			check(diffs, "archived", desired.archived(), actual.archived());
 		}
 
-		boolean isPublic = "public".equals(actual.visibility());
+		checkRepoSettings(diffs, actual, desired);
+		checkTopics(diffs, actual, desired);
+		check(
+				diffs,
+				"default_branch",
+				"main",
+				actual.details().defaultBranch()
+		);
+		checkSecuritySettings(diffs, actual);
+		checkWorkflowPermissions(diffs, actual);
+		checkBranchProtection(diffs, actual, desired);
+		checkSecrets(diffs, actual, desired);
 
+		return diffs;
+	}
+
+	private void checkRepoSettings(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		var details = actual.details();
+		check(
+				diffs,
+				"archived",
+				desired.archived(),
+				actual.summary().archived()
+		);
 		check(
 				diffs,
 				"description",
 				desired.description(),
-				actual.description()
+				Objects.toString(details.description(), "")
 		);
 		check(
 				diffs,
 				"homepage_url",
 				desired.homepageUrl(),
-				actual.homepageUrl()
+				Objects.toString(details.homepage(), "")
 		);
-		check(diffs, "has_issues", true, actual.hasIssues());
-		check(diffs, "has_projects", true, actual.hasProjects());
-		check(diffs, "has_wiki", true, actual.hasWiki());
-		check(diffs, "default_branch", "main", actual.defaultBranch());
-		checkSets(
-				diffs,
-				"topics",
-				new HashSet<>(desired.topics()),
-				new HashSet<>(actual.topics())
-		);
-		check(diffs, "allow_merge_commit", false, actual.allowMergeCommit());
-		check(diffs, "allow_squash_merge", false, actual.allowSquashMerge());
-		check(diffs, "allow_auto_merge", true, actual.allowAutoMerge());
+		check(diffs, "has_issues", true, details.hasIssues());
+		check(diffs, "has_projects", true, details.hasProjects());
+		check(diffs, "has_wiki", true, details.hasWiki());
+		check(diffs, "allow_merge_commit", false, details.allowMergeCommit());
+		check(diffs, "allow_squash_merge", false, details.allowSquashMerge());
+		check(diffs, "allow_auto_merge", true, details.allowAutoMerge());
 		check(
 				diffs,
 				"delete_branch_on_merge",
 				true,
-				actual.deleteBranchOnMerge()
+				details.deleteBranchOnMerge()
 		);
+	}
 
+	private void checkTopics(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		List<String> topics = actual.details().topics();
+		if (topics == null) {
+			topics = List.of();
+		}
+		checkSets(
+				diffs,
+				"topics",
+				new HashSet<>(desired.topics()),
+				new HashSet<>(topics)
+		);
+	}
+
+	private void checkSecuritySettings(
+			List<String> diffs,
+			RepositoryState actual
+	) {
 		check(
 				diffs,
 				"vulnerability_alerts",
@@ -277,13 +271,29 @@ public class OrgChecker {
 				true,
 				actual.automatedSecurityFixes()
 		);
-		check(diffs, "secret_scanning", true, actual.secretScanning());
-		check(
-				diffs,
-				"secret_scanning_push_protection",
-				true,
-				actual.secretScanningPushProtection()
-		);
+		var sa = actual.details().securityAndAnalysis();
+		if (sa != null) {
+			boolean secretScanning = sa.secretScanning() != null
+					&& SecurityAndAnalysis.StatusObject.Status.ENABLED
+							.equals(sa.secretScanning().status());
+			boolean secretScanningPush = sa
+					.secretScanningPushProtection() != null
+					&& SecurityAndAnalysis.StatusObject.Status.ENABLED
+							.equals(sa.secretScanningPushProtection().status());
+			check(diffs, "secret_scanning", true, secretScanning);
+			check(
+					diffs,
+					"secret_scanning_push_protection",
+					true,
+					secretScanningPush
+			);
+		}
+	}
+
+	private void checkWorkflowPermissions(
+			List<String> diffs,
+			RepositoryState actual
+	) {
 		check(
 				diffs,
 				"workflow_permissions.default",
@@ -296,50 +306,82 @@ public class OrgChecker {
 				true,
 				actual.workflowPermissions().canApprovePullRequestReviews()
 		);
+	}
 
-		if (isPublic) {
-			if (!actual.branchProtectionExists()) {
-				diffs.add("branch_protection: missing");
+	private void checkBranchProtection(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		boolean isPublic = "public".equals(actual.summary().visibility());
+		if (!isPublic) {
+			return;
+		}
+
+		var bp = actual.branchProtection();
+		if (bp == null) {
+			diffs.add("branch_protection: missing");
+			return;
+		}
+
+		check(
+				diffs,
+				"branch_protection.enforce_admins",
+				true,
+				bp.enforceAdmins().enabled()
+		);
+		check(
+				diffs,
+				"branch_protection.required_linear_history",
+				true,
+				bp.requiredLinearHistory().enabled()
+		);
+		check(
+				diffs,
+				"branch_protection.allow_force_pushes",
+				false,
+				bp.allowForcePushes().enabled()
+		);
+
+		var rsc = bp.requiredStatusChecks();
+		boolean strict = rsc != null && rsc.strict();
+		check(
+				diffs,
+				"branch_protection.required_status_checks.strict",
+				false,
+				strict
+		);
+
+		List<String> statusContexts = List.of();
+		if (rsc != null) {
+			var checks = rsc.checks();
+			if (checks != null && !checks.isEmpty()) {
+				statusContexts = checks.stream()
+						.map(
+								BranchProtection.RequiredStatusChecks.StatusCheck::context
+						)
+						.toList();
 			} else {
-				check(
-						diffs,
-						"branch_protection.enforce_admins",
-						true,
-						actual.enforceAdmins()
-				);
-				check(
-						diffs,
-						"branch_protection.required_linear_history",
-						true,
-						actual.requiredLinearHistory()
-				);
-				check(
-						diffs,
-						"branch_protection.allow_force_pushes",
-						false,
-						actual.allowForcePushes()
-				);
-				check(
-						diffs,
-						"branch_protection.required_status_checks.strict",
-						false,
-						actual.requiredStatusChecksStrict()
-				);
-
-				Set<String> wantContexts = new HashSet<>(BASE_STATUS_CHECKS);
-				wantContexts.addAll(desired.requiredStatusChecks());
-				Set<String> gotContexts = new HashSet<>(
-						actual.requiredStatusCheckContexts()
-				);
-				checkSets(
-						diffs,
-						"branch_protection.required_status_checks",
-						wantContexts,
-						gotContexts
-				);
+				var contexts = rsc.contexts();
+				statusContexts = contexts != null ? contexts : List.of();
 			}
 		}
 
+		Set<String> wantContexts = new HashSet<>(BASE_STATUS_CHECKS);
+		wantContexts.addAll(desired.requiredStatusChecks());
+		checkSets(
+				diffs,
+				"branch_protection.required_status_checks",
+				wantContexts,
+				new HashSet<>(statusContexts)
+		);
+	}
+
+	private void checkSecrets(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
 		checkSets(
 				diffs,
 				"action_secrets",
@@ -370,63 +412,69 @@ public class OrgChecker {
 					new HashSet<>(gotSecrets)
 			);
 		}
-
-		return diffs;
 	}
+
+	// ─── Fix
+	// ──────────────────────────────────────────────────────────────
 
 	List<String> applyFixes(
 			String name,
+			RepositoryState actual,
 			RepositoryArgs desired,
 			List<String> diffs
 	) throws Exception {
 		List<String> remaining = new ArrayList<>(diffs);
-		Map<String, Object> fields = new LinkedHashMap<>();
 
-		if (remaining.removeIf(d -> d.startsWith("description:"))) {
-			fields.put("description", desired.description());
+		// Special case: archive the repo
+		if (desired.archived()) {
+			if (remaining.remove("archived")) {
+				client.updateRepository(org, name, Map.of("archived", true));
+				System.out.printf("[FIXED]   %s: archived%n", name);
+			}
+			return remaining;
 		}
-		if (remaining.removeIf(d -> d.startsWith("homepage_url:"))) {
-			fields.put("homepage", desired.homepageUrl());
-		}
-		if (remaining.removeIf(d -> d.startsWith("has_issues:"))) {
-			fields.put("has_issues", true);
-		}
-		if (remaining.removeIf(d -> d.startsWith("has_projects:"))) {
-			fields.put("has_projects", true);
-		}
-		if (remaining.removeIf(d -> d.startsWith("has_wiki:"))) {
-			fields.put("has_wiki", true);
-		}
-		if (remaining.removeIf(d -> d.startsWith("allow_merge_commit:"))) {
-			fields.put("allow_merge_commit", false);
-		}
-		if (remaining.removeIf(d -> d.startsWith("allow_squash_merge:"))) {
-			fields.put("allow_squash_merge", false);
-		}
-		if (remaining.removeIf(d -> d.startsWith("allow_auto_merge:"))) {
-			fields.put("allow_auto_merge", true);
-		}
-		if (remaining.removeIf(d -> d.startsWith("delete_branch_on_merge:"))) {
-			fields.put("delete_branch_on_merge", true);
-		}
-		if (remaining.removeIf(d -> d.startsWith("archived:"))) {
+
+		// Repo settings group (fixable)
+		List<String> repoSettingsDiffs = new ArrayList<>();
+		checkRepoSettings(repoSettingsDiffs, actual, desired);
+		if (!repoSettingsDiffs.isEmpty()) {
+			Map<String, Object> fields = new LinkedHashMap<>();
 			fields.put("archived", desired.archived());
-		}
-
-		if (!fields.isEmpty()) {
+			fields.put("description", desired.description());
+			fields.put("homepage", desired.homepageUrl());
+			fields.put("has_issues", true);
+			fields.put("has_projects", true);
+			fields.put("has_wiki", true);
+			fields.put("allow_merge_commit", false);
+			fields.put("allow_squash_merge", false);
+			fields.put("allow_auto_merge", true);
+			fields.put("delete_branch_on_merge", true);
 			client.updateRepository(org, name, fields);
+			remaining.removeAll(repoSettingsDiffs);
 			for (String field : fields.keySet()) {
 				System.out.printf("[FIXED]   %s: %s updated%n", name, field);
 			}
 		}
 
-		if (remaining.removeIf(d -> d.startsWith("topics "))) {
+		// Topics group (fixable)
+		List<String> topicsDiffs = new ArrayList<>();
+		checkTopics(topicsDiffs, actual, desired);
+		if (!topicsDiffs.isEmpty()) {
 			client.replaceTopics(org, name, desired.topics());
+			remaining.removeAll(topicsDiffs);
 			System.out.printf("[FIXED]   %s: topics updated%n", name);
 		}
 
+		// Security settings (NOT fixable yet)
+		// Workflow permissions (NOT fixable yet)
+		// Branch protection (NOT fixable yet)
+		// Secrets/environments (NOT fixable yet)
+
 		return remaining;
 	}
+
+	// ─── Report
+	// ──────────────────────────────────────────────────────────────
 
 	public void printReport(CheckResult result) {
 		List<CheckResult.RepoCheckResult> sorted = result.repos()
@@ -461,6 +509,9 @@ public class OrgChecker {
 		System.out.printf("Errored:        %d%n", result.errorCount());
 		System.out.printf("Unknown:        %d%n", result.unknownCount());
 	}
+
+	// ─── Helpers
+	// ──────────────────────────────────────────────────────────────
 
 	private static void check(
 			List<String> diffs,

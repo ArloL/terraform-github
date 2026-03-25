@@ -1,6 +1,5 @@
 package io.github.arlol.githubcheck.config;
 
-import java.util.Arrays;
 import java.util.List;
 
 public final class EnvironmentArgs {
@@ -35,7 +34,7 @@ public final class EnvironmentArgs {
 		}
 
 		public Builder secrets(String... secrets) {
-			this.secrets = Arrays.asList(secrets);
+			this.secrets = List.of(secrets);
 			return this;
 		}
 

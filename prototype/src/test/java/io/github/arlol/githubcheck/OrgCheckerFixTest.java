@@ -12,19 +12,105 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
+import io.github.arlol.githubcheck.client.BranchProtection;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.RepositoryFull;
+import io.github.arlol.githubcheck.client.RepositoryMinimal;
+import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 
 @WireMockTest
 class OrgCheckerFixTest {
+
+	private static final ObjectMapper MAPPER = new ObjectMapper()
+			.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+			.configure(
+					DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES,
+					false
+			);
+
+	private static final String GOOD_SUMMARY_JSON = """
+			{
+				"name": "repo",
+				"archived": false,
+				"visibility": "public"
+			}
+			""";
+
+	private static final String GOOD_DETAILS_JSON = """
+			{
+				"description": "",
+				"homepage": "",
+				"has_issues": true,
+				"has_projects": true,
+				"has_wiki": true,
+				"default_branch": "main",
+				"topics": [],
+				"allow_merge_commit": false,
+				"allow_squash_merge": false,
+				"allow_auto_merge": true,
+				"delete_branch_on_merge": true,
+				"visibility": "public",
+				"archived": false,
+				"security_and_analysis": {
+					"secret_scanning": {"status": "enabled"},
+					"secret_scanning_push_protection": {"status": "enabled"}
+				}
+			}
+			""";
+
+	private static final String GOOD_BRANCH_PROTECTION_JSON = """
+			{
+				"enforce_admins": {"enabled": true},
+				"required_linear_history": {"enabled": true},
+				"allow_force_pushes": {"enabled": false},
+				"required_status_checks": {
+					"strict": false,
+					"checks": [
+						{"context": "check-actions.required-status-check"},
+						{"context": "codeql-analysis.required-status-check"},
+						{"context": "CodeQL"},
+						{"context": "zizmor"}
+					]
+				}
+			}
+			""";
+
+	private static final String GOOD_WORKFLOW_PERMISSIONS_JSON = """
+			{
+				"default_workflow_permissions": "read",
+				"can_approve_pull_request_reviews": true
+			}
+			""";
+
+	private static final String FULL_DESIRED_REPO_SETTINGS = """
+			{
+				"archived": false,
+				"description": "",
+				"homepage": "",
+				"has_issues": true,
+				"has_projects": true,
+				"has_wiki": true,
+				"allow_merge_commit": false,
+				"allow_squash_merge": false,
+				"allow_auto_merge": true,
+				"delete_branch_on_merge": true
+			}
+			""";
 
 	private OrgChecker checker;
 
@@ -34,10 +120,69 @@ class OrgCheckerFixTest {
 		checker = new OrgChecker(client, "ArloL", true);
 	}
 
+	// ─── Helpers
+	// ──────────────────────────────────────────────────────────
+
+	private static <T> T parse(String json, Class<T> type) {
+		try {
+			return MAPPER.readValue(json, type);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static ObjectNode merge(String baseJson, String overridesJson) {
+		try {
+			ObjectNode base = (ObjectNode) MAPPER.readTree(baseJson);
+			ObjectNode overrides = (ObjectNode) MAPPER.readTree(overridesJson);
+			base.setAll(overrides);
+			return base;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static RepositoryState goodPublicState() {
+		return new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				List.of(),
+				Map.of(),
+				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+		);
+	}
+
+	private static RepositoryState stateWithDetailsOverride(
+			String overridesJson
+	) {
+		String mergedDetails = merge(GOOD_DETAILS_JSON, overridesJson)
+				.toString();
+		return new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(mergedDetails, RepositoryFull.class),
+				true,
+				true,
+				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				List.of(),
+				Map.of(),
+				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+		);
+	}
+
+	// ─── Tests
+	// ──────────────────────────────────────────────────────────
+
 	@Test
 	void noDiffs_noApiCalls() throws Exception {
+		var state = goodPublicState();
 		List<String> remaining = checker.applyFixes(
 				"repo",
+				state,
 				RepositoryArgs.create("repo").build(),
 				List.of()
 		);
@@ -47,7 +192,7 @@ class OrgCheckerFixTest {
 	}
 
 	@Test
-	void descriptionDrift_patchesDescription() throws Exception {
+	void descriptionDrift_patchesFullDesiredState() throws Exception {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/repo")).willReturn(okJson("{}"))
 		);
@@ -56,18 +201,31 @@ class OrgCheckerFixTest {
 				.description("correct")
 				.build();
 
-		List<String> remaining = checker.applyFixes(
-				"repo",
-				desired,
-				List.of("description: want=correct got=wrong")
-		);
+		var state = stateWithDetailsOverride("""
+				{"description": "wrong"}
+				""");
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
 
 		assertThat(remaining).isEmpty();
 		verify(
 				patchRequestedFor(urlEqualTo("/repos/ArloL/repo"))
-						.withRequestBody(
-								equalToJson("{\"description\":\"correct\"}")
-						)
+						.withRequestBody(equalToJson("""
+								{
+									"archived": false,
+									"description": "correct",
+									"homepage": "",
+									"has_issues": true,
+									"has_projects": true,
+									"has_wiki": true,
+									"allow_merge_commit": false,
+									"allow_squash_merge": false,
+									"allow_auto_merge": true,
+									"delete_branch_on_merge": true
+								}
+								"""))
 		);
 	}
 
@@ -82,16 +240,18 @@ class OrgCheckerFixTest {
 				.homepageUrl("https://example.com")
 				.build();
 
-		List<String> remaining = checker.applyFixes(
-				"repo",
-				desired,
-				List.of(
-						"description: want=correct got=wrong",
-						"homepage_url: want=https://example.com got=",
-						"has_wiki: want=true got=false",
-						"allow_merge_commit: want=false got=true"
-				)
-		);
+		var state = stateWithDetailsOverride("""
+				{
+					"description": "wrong",
+					"homepage": "",
+					"has_wiki": false,
+					"allow_merge_commit": true
+				}
+				""");
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
 
 		assertThat(remaining).isEmpty();
 		verify(
@@ -99,10 +259,16 @@ class OrgCheckerFixTest {
 				patchRequestedFor(urlEqualTo("/repos/ArloL/repo"))
 						.withRequestBody(equalToJson("""
 								{
-								  "description": "correct",
-								  "homepage": "https://example.com",
-								  "has_wiki": true,
-								  "allow_merge_commit": false
+									"archived": false,
+									"description": "correct",
+									"homepage": "https://example.com",
+									"has_issues": true,
+									"has_projects": true,
+									"has_wiki": true,
+									"allow_merge_commit": false,
+									"allow_squash_merge": false,
+									"allow_auto_merge": true,
+									"delete_branch_on_merge": true
 								}
 								"""))
 		);
@@ -119,8 +285,11 @@ class OrgCheckerFixTest {
 				.topics("java")
 				.build();
 
+		var state = goodPublicState(); // topics = []
+
+		List<String> diffs = checker.computeDiffs(state, desired);
 		List<String> remaining = checker
-				.applyFixes("repo", desired, List.of("topics missing: [java]"));
+				.applyFixes("repo", state, desired, diffs);
 
 		assertThat(remaining).isEmpty();
 		verify(
@@ -139,15 +308,28 @@ class OrgCheckerFixTest {
 				.description("correct")
 				.build();
 
-		List<String> remaining = checker.applyFixes(
+		var state = stateWithDetailsOverride("""
+				{
+					"description": "wrong",
+					"default_branch": "master"
+				}
+				""");
+		// Also override vulnerability alerts to false
+		var stateWithBadVuln = new RepositoryState(
 				"repo",
-				desired,
-				List.of(
-						"description: want=correct got=wrong",
-						"default_branch: want=main got=master",
-						"vulnerability_alerts: want=true got=false"
-				)
+				state.summary(),
+				state.details(),
+				false,
+				true,
+				state.branchProtection(),
+				state.actionSecretNames(),
+				state.environmentSecretNames(),
+				state.workflowPermissions()
 		);
+
+		List<String> diffs = checker.computeDiffs(stateWithBadVuln, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", stateWithBadVuln, desired, diffs);
 
 		assertThat(remaining).containsExactlyInAnyOrder(
 				"default_branch: want=main got=master",
@@ -170,21 +352,31 @@ class OrgCheckerFixTest {
 				.topics("java")
 				.build();
 
-		List<String> remaining = checker.applyFixes(
-				"repo",
-				desired,
-				List.of(
-						"description: want=correct got=wrong",
-						"topics missing: [java]"
-				)
-		);
+		var state = stateWithDetailsOverride("""
+				{"description": "wrong"}
+				""");
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
 
 		assertThat(remaining).isEmpty();
 		verify(
 				patchRequestedFor(urlEqualTo("/repos/ArloL/repo"))
-						.withRequestBody(
-								equalToJson("{\"description\":\"correct\"}")
-						)
+						.withRequestBody(equalToJson("""
+								{
+									"archived": false,
+									"description": "correct",
+									"homepage": "",
+									"has_issues": true,
+									"has_projects": true,
+									"has_wiki": true,
+									"allow_merge_commit": false,
+									"allow_squash_merge": false,
+									"allow_auto_merge": true,
+									"delete_branch_on_merge": true
+								}
+								"""))
 		);
 		verify(
 				putRequestedFor(urlEqualTo("/repos/ArloL/repo/topics"))
