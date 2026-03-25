@@ -98,8 +98,8 @@ public class GitHubClient {
 			return false;
 		}
 		throw new RuntimeException(
-				"Unexpected HTTP " + resp.statusCode()
-						+ " for vulnerability-alerts on " + repo
+				"HTTP " + resp.statusCode() + " GET vulnerability-alerts on "
+						+ repo
 		);
 	}
 
@@ -117,8 +117,8 @@ public class GitHubClient {
 			return false;
 		}
 		throw new RuntimeException(
-				"Unexpected HTTP " + resp.statusCode()
-						+ " for automated-security-fixes on " + repo
+				"HTTP " + resp.statusCode()
+						+ " GET automated-security-fixes on " + repo
 		);
 	}
 
@@ -137,8 +137,8 @@ public class GitHubClient {
 			return Optional.empty();
 		}
 		throw new RuntimeException(
-				"Unexpected HTTP " + resp.statusCode()
-						+ " for immutable-releases on " + repo
+				"HTTP " + resp.statusCode() + " GET immutable-releases on "
+						+ repo
 		);
 	}
 
@@ -156,8 +156,8 @@ public class GitHubClient {
 		}
 		if (resp.statusCode() != 200) {
 			throw new RuntimeException(
-					"Unexpected HTTP " + resp.statusCode()
-							+ " for branch protection on " + repo
+					"HTTP " + resp.statusCode() + " GET branch protection on "
+							+ repo
 			);
 		}
 		return Optional
@@ -229,8 +229,8 @@ public class GitHubClient {
 		}
 		if (resp.statusCode() != 200) {
 			throw new RuntimeException(
-					"Unexpected HTTP " + resp.statusCode()
-							+ " for workflow permissions on " + repo
+					"HTTP " + resp.statusCode()
+							+ " GET workflow permissions on " + repo
 			);
 		}
 		return mapper.readValue(resp.body(), WorkflowPermissions.class);
@@ -270,8 +270,7 @@ public class GitHubClient {
 		}
 		if (resp.statusCode() != 200) {
 			throw new RuntimeException(
-					"Unexpected HTTP " + resp.statusCode() + " for pages on "
-							+ repo
+					"HTTP " + resp.statusCode() + " GET pages on " + repo
 			);
 		}
 		return Optional.of(mapper.readValue(resp.body(), Pages.class));

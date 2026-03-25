@@ -1,6 +1,5 @@
 package io.github.arlol.githubcheck.config;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,17 +144,17 @@ public final class RepositoryArgs {
 		}
 
 		public Builder topics(String... topics) {
-			this.topics = Arrays.asList(topics);
+			this.topics = List.of(topics);
 			return this;
 		}
 
 		public Builder requiredStatusChecks(String... checks) {
-			this.requiredStatusChecks = Arrays.asList(checks);
+			this.requiredStatusChecks = List.of(checks);
 			return this;
 		}
 
 		public Builder actionsSecrets(String... secrets) {
-			this.actionsSecrets = Arrays.asList(secrets);
+			this.actionsSecrets = List.of(secrets);
 			return this;
 		}
 

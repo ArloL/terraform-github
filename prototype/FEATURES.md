@@ -6,7 +6,7 @@ Implemented: `applyFixes()` batches all drifted repo fields (description, homepa
 
 ## 2. Fix Security Settings
 
-Security settings (vulnerability alerts, automated security fixes, secret scanning, push protection) are checked but never fixed.
+Security settings (vulnerability alerts, automated security fixes, secret scanning, push protection) are checked but never fixed. The `checkSecuritySettings()` group is marked as not fixable yet.
 
 ### Plan
 
@@ -14,7 +14,8 @@ Security settings (vulnerability alerts, automated security fixes, secret scanni
   - PUT `/repos/{owner}/{repo}/vulnerability-alerts` to enable vulnerability alerts.
   - PUT `/repos/{owner}/{repo}/automated-security-fixes` to enable automated security fixes.
   - PATCH `/repos/{owner}/{repo}` with `security_and_analysis` payload for secret scanning and push protection.
-- Call these from `applyFixes()` when the corresponding drifts are detected.
+- Add a `fixSecuritySettings()` method in `OrgChecker` that sends the full desired security state when any security setting drifts.
+- Follow the same pattern as the existing `fixRepoSettings()` / `fixTopics()` endpoint groups.
 
 ## 3. Fix Workflow Settings
 
