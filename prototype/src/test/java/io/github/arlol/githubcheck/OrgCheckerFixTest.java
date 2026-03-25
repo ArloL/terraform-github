@@ -303,6 +303,10 @@ class OrgCheckerFixTest {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/repo")).willReturn(okJson("{}"))
 		);
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/vulnerability-alerts"))
+						.willReturn(WireMock.noContent())
+		);
 
 		RepositoryArgs desired = RepositoryArgs.create("repo")
 				.description("correct")
@@ -332,9 +336,123 @@ class OrgCheckerFixTest {
 				.applyFixes("repo", stateWithBadVuln, desired, diffs);
 
 		assertThat(remaining).containsExactlyInAnyOrder(
-				"default_branch: want=main got=master",
-				"vulnerability_alerts: want=true got=false"
+				"default_branch: want=main got=master"
 		);
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/vulnerability-alerts")
+				)
+		);
+	}
+
+	@Test
+	void securitySettingsDrift_fixesAllSettings() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/vulnerability-alerts"))
+						.willReturn(WireMock.noContent())
+		);
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/automated-security-fixes"))
+						.willReturn(WireMock.noContent())
+		);
+		stubFor(
+				patch(urlEqualTo("/repos/ArloL/repo")).willReturn(okJson("{}"))
+		);
+
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+
+		var baseState = stateWithDetailsOverride(
+				"""
+						{
+							"security_and_analysis": {
+								"secret_scanning": {"status": "disabled"},
+								"secret_scanning_push_protection": {"status": "disabled"}
+							}
+						}
+						"""
+		);
+		var state = new RepositoryState(
+				"repo",
+				baseState.summary(),
+				baseState.details(),
+				false,
+				false,
+				baseState.branchProtection(),
+				baseState.actionSecretNames(),
+				baseState.environmentSecretNames(),
+				baseState.workflowPermissions()
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/vulnerability-alerts")
+				)
+		);
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/automated-security-fixes")
+				)
+		);
+		verify(
+				patchRequestedFor(urlEqualTo("/repos/ArloL/repo"))
+						.withRequestBody(
+								equalToJson(
+										"""
+												{
+													"security_and_analysis": {
+														"secret_scanning": {"status": "enabled"},
+														"secret_scanning_push_protection": {"status": "enabled"}
+													}
+												}
+												"""
+								)
+						)
+		);
+	}
+
+	@Test
+	void partialSecurityDrift_fixesOnlyDrifted() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/vulnerability-alerts"))
+						.willReturn(WireMock.noContent())
+		);
+
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				false,
+				true,
+				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				List.of(),
+				Map.of(),
+				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/vulnerability-alerts")
+				)
+		);
+		verify(
+				0,
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/automated-security-fixes")
+				)
+		);
+		verify(0, patchRequestedFor(urlEqualTo("/repos/ArloL/repo")));
 	}
 
 	@Test
