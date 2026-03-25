@@ -4,18 +4,9 @@
 
 Implemented: `applyFixes()` batches all drifted repo fields (description, homepage, has_issues, has_projects, has_wiki, allow_merge_commit, allow_squash_merge, allow_auto_merge, delete_branch_on_merge, archived) into a single PATCH call. Topics use a separate PUT endpoint via `replaceTopics()`. Topics checking was also added (config, state, diff, fix). Default branch remains check-only.
 
-## 2. Fix Security Settings
+## ~~2. Fix Security Settings~~ DONE
 
-Security settings (vulnerability alerts, automated security fixes, secret scanning, push protection) are checked but never fixed. The `checkSecuritySettings()` group is marked as not fixable yet.
-
-### Plan
-
-- Add `GitHubClient` methods:
-  - PUT `/repos/{owner}/{repo}/vulnerability-alerts` to enable vulnerability alerts.
-  - PUT `/repos/{owner}/{repo}/automated-security-fixes` to enable automated security fixes.
-  - PATCH `/repos/{owner}/{repo}` with `security_and_analysis` payload for secret scanning and push protection.
-- Add a `fixSecuritySettings()` method in `OrgChecker` that sends the full desired security state when any security setting drifts.
-- Follow the same pattern as the existing `fixRepoSettings()` / `fixTopics()` endpoint groups.
+Implemented: `applyFixes()` now fixes all 4 security settings. Vulnerability alerts and automated security fixes each use dedicated PUT endpoints (`enableVulnerabilityAlerts()`, `enableAutomatedSecurityFixes()`). Secret scanning and push protection use a single PATCH call with a `security_and_analysis` payload via `updateRepository()`. All desired values are hardcoded to enabled.
 
 ## 3. Fix Workflow Settings
 

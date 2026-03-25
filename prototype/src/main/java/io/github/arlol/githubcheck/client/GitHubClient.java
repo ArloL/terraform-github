@@ -276,6 +276,36 @@ public class GitHubClient {
 		return Optional.of(mapper.readValue(resp.body(), Pages.class));
 	}
 
+	public void enableVulnerabilityAlerts(String owner, String repo)
+			throws Exception {
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo
+						+ "/vulnerability-alerts",
+				""
+		);
+		if (resp.statusCode() != 204) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode()
+							+ " enabling vulnerability-alerts on " + repo
+			);
+		}
+	}
+
+	public void enableAutomatedSecurityFixes(String owner, String repo)
+			throws Exception {
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo
+						+ "/automated-security-fixes",
+				""
+		);
+		if (resp.statusCode() != 204) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode()
+							+ " enabling automated-security-fixes on " + repo
+			);
+		}
+	}
+
 	public void replaceTopics(String owner, String repo, List<String> topics)
 			throws Exception {
 		String body = mapper.writeValueAsString(Map.of("names", topics));

@@ -465,7 +465,49 @@ public class OrgChecker {
 			System.out.printf("[FIXED]   %s: topics updated%n", name);
 		}
 
-		// Security settings (NOT fixable yet)
+		// Security settings group (fixable)
+		List<String> securityDiffs = new ArrayList<>();
+		checkSecuritySettings(securityDiffs, actual);
+		if (!securityDiffs.isEmpty()) {
+			if (securityDiffs.stream()
+					.anyMatch(d -> d.startsWith("vulnerability_alerts"))) {
+				client.enableVulnerabilityAlerts(org, name);
+				System.out.printf(
+						"[FIXED]   %s: vulnerability_alerts enabled%n",
+						name
+				);
+			}
+			if (securityDiffs.stream()
+					.anyMatch(d -> d.startsWith("automated_security_fixes"))) {
+				client.enableAutomatedSecurityFixes(org, name);
+				System.out.printf(
+						"[FIXED]   %s: automated_security_fixes enabled%n",
+						name
+				);
+			}
+			if (securityDiffs.stream()
+					.anyMatch(d -> d.startsWith("secret_scanning"))) {
+				client.updateRepository(
+						org,
+						name,
+						Map.of(
+								"security_and_analysis",
+								Map.of(
+										"secret_scanning",
+										Map.of("status", "enabled"),
+										"secret_scanning_push_protection",
+										Map.of("status", "enabled")
+								)
+						)
+				);
+				System.out.printf(
+						"[FIXED]   %s: secret_scanning settings updated%n",
+						name
+				);
+			}
+			remaining.removeAll(securityDiffs);
+		}
+
 		// Workflow permissions (NOT fixable yet)
 		// Branch protection (NOT fixable yet)
 		// Secrets/environments (NOT fixable yet)
