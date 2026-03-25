@@ -29,7 +29,7 @@ public class GitHubClient {
 		this("https://api.github.com", token);
 	}
 
-	GitHubClient(String baseUrl, String token) {
+	public GitHubClient(String baseUrl, String token) {
 		this.baseUrl = baseUrl;
 		this.token = token;
 		this.http = HttpClient.newBuilder()
