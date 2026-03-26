@@ -841,7 +841,10 @@ class OrgCheckerFixTest {
 
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of())
+				new RulesetResponse.Conditions.RefName(include, List.of()),
+				null,
+				null,
+				null
 		);
 		// Actual ruleset is missing required_linear_history — drift
 		var actualRuleset = new RulesetResponse(
@@ -890,7 +893,10 @@ class OrgCheckerFixTest {
 	void noRulesetDrift_noApiCalls() throws Exception {
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of())
+				new RulesetResponse.Conditions.RefName(include, List.of()),
+				null,
+				null,
+				null
 		);
 		var params = new RulesetResponse.Rule.Parameters(
 				List.of(

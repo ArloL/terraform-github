@@ -762,7 +762,10 @@ class OrgCheckerDiffTest {
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of())
+				new RulesetResponse.Conditions.RefName(include, List.of()),
+				null,
+				null,
+				null
 		);
 		List<RulesetResponse.Rule> rules = new java.util.ArrayList<>();
 		for (String type : ruleTypes) {
@@ -791,7 +794,10 @@ class OrgCheckerDiffTest {
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of())
+				new RulesetResponse.Conditions.RefName(include, List.of()),
+				null,
+				null,
+				null
 		);
 		List<RulesetResponse.Rule.Parameters.StatusCheck> checks = new java.util.ArrayList<>();
 		for (String ctx : contexts) {
@@ -987,7 +993,10 @@ class OrgCheckerDiffTest {
 				.build();
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of())
+				new RulesetResponse.Conditions.RefName(include, List.of()),
+				null,
+				null,
+				null
 		);
 		var prParams = new RulesetResponse.Rule.Parameters(
 				null,
