@@ -19,7 +19,7 @@ import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetRequest;
-import io.github.arlol.githubcheck.client.RulesetResponse;
+import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
@@ -161,8 +161,16 @@ public class OrgChecker {
 
 		WorkflowPermissions wfPerms = client.getWorkflowPermissions(org, name);
 
-		List<RulesetResponse> rulesets = archived ? List.of()
-				: client.listRulesets(org, name);
+		List<RulesetDetailsResponse> rulesets;
+		if (archived) {
+			rulesets = List.of();
+		} else {
+			var rulesetSummaries = client.listRulesets(org, name);
+			rulesets = new ArrayList<>();
+			for (var rs : rulesetSummaries) {
+				rulesets.add(client.getRuleset(org, name, rs.id()));
+			}
+		}
 
 		return new RepositoryState(
 				name,
@@ -395,11 +403,11 @@ public class OrgChecker {
 			return;
 		}
 
-		Map<String, RulesetResponse> actualByName = actual.rulesets()
+		Map<String, RulesetDetailsResponse> actualByName = actual.rulesets()
 				.stream()
 				.collect(
 						Collectors.toMap(
-								RulesetResponse::name,
+								RulesetDetailsResponse::name,
 								r -> r,
 								(a, b) -> a
 						)
@@ -407,7 +415,7 @@ public class OrgChecker {
 
 		for (RulesetArgs wantedRuleset : desired.rulesets()) {
 			String rName = wantedRuleset.name();
-			RulesetResponse actualRuleset = actualByName.get(rName);
+			RulesetDetailsResponse actualRuleset = actualByName.get(rName);
 			if (actualRuleset == null) {
 				diffs.add("ruleset." + rName + ": missing");
 				continue;
@@ -433,13 +441,14 @@ public class OrgChecker {
 			);
 
 			// Build a map of actual rules by type
-			Map<String, RulesetResponse.Rule> actualRulesByType = Map.of();
+			Map<String, RulesetDetailsResponse.Rule> actualRulesByType = Map
+					.of();
 			if (actualRuleset.rules() != null) {
 				actualRulesByType = actualRuleset.rules()
 						.stream()
 						.collect(
 								Collectors.toMap(
-										RulesetResponse.Rule::type,
+										RulesetDetailsResponse.Rule::type,
 										r -> r,
 										(a, b) -> a
 								)
@@ -471,7 +480,7 @@ public class OrgChecker {
 					wantedRuleset.requiredStatusChecks()
 			);
 			Set<String> gotChecks = new HashSet<>();
-			RulesetResponse.Rule statusCheckRule = actualRulesByType
+			RulesetDetailsResponse.Rule statusCheckRule = actualRulesByType
 					.get("required_status_checks");
 			if (statusCheckRule != null && statusCheckRule.parameters() != null
 					&& statusCheckRule.parameters()
@@ -492,7 +501,7 @@ public class OrgChecker {
 
 			// Check required reviews
 			if (wantedRuleset.requiredReviewCount() != null) {
-				RulesetResponse.Rule prRule = actualRulesByType
+				RulesetDetailsResponse.Rule prRule = actualRulesByType
 						.get("pull_request");
 				Integer gotCount = null;
 				if (prRule != null && prRule.parameters() != null) {
@@ -695,11 +704,11 @@ public class OrgChecker {
 		List<String> rulesetDiffs = new ArrayList<>();
 		checkRulesets(rulesetDiffs, actual, desired);
 		if (!rulesetDiffs.isEmpty()) {
-			Map<String, RulesetResponse> actualByName = actual.rulesets()
+			Map<String, RulesetDetailsResponse> actualByName = actual.rulesets()
 					.stream()
 					.collect(
 							Collectors.toMap(
-									RulesetResponse::name,
+									RulesetDetailsResponse::name,
 									r -> r,
 									(a, b) -> a
 							)
@@ -712,7 +721,7 @@ public class OrgChecker {
 					continue;
 				}
 				RulesetRequest payload = buildRulesetRequest(wantedRuleset);
-				RulesetResponse existing = actualByName
+				RulesetDetailsResponse existing = actualByName
 						.get(wantedRuleset.name());
 				if (existing == null) {
 					client.createRuleset(org, name, payload);

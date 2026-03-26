@@ -6,7 +6,7 @@ import java.util.Map;
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
-import io.github.arlol.githubcheck.client.RulesetResponse;
+import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 
 public record RepositoryState(
@@ -19,6 +19,6 @@ public record RepositoryState(
 		List<String> actionSecretNames,
 		Map<String, List<String>> environmentSecretNames,
 		WorkflowPermissions workflowPermissions,
-		List<RulesetResponse> rulesets
+		List<RulesetDetailsResponse> rulesets
 ) {
 }

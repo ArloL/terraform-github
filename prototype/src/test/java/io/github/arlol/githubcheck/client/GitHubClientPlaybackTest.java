@@ -109,7 +109,7 @@ class GitHubClientPlaybackTest {
 		assertThatNoException().isThrownBy(() -> {
 			var rulesets = client.listRulesets("ArloL", "terraform-github");
 			assertThat(rulesets).isNotEmpty();
-			assertThat(rulesets).extracting(RulesetResponse::name)
+			assertThat(rulesets).extracting(RulesetSummaryResponse::name)
 					.contains("main-branch-rules");
 			var ruleset = client.getRuleset(
 					"ArloL",

@@ -32,7 +32,7 @@ import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
-import io.github.arlol.githubcheck.client.RulesetResponse;
+import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 import io.github.arlol.githubcheck.config.RulesetArgs;
@@ -840,14 +840,17 @@ class OrgCheckerFixTest {
 				.build();
 
 		var include = List.of("~DEFAULT_BRANCH");
-		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of()),
+		var conditions = new RulesetDetailsResponse.Conditions(
+				new RulesetDetailsResponse.Conditions.RefName(
+						include,
+						List.of()
+				),
 				null,
 				null,
 				null
 		);
 		// Actual ruleset is missing required_linear_history — drift
-		var actualRuleset = new RulesetResponse(
+		var actualRuleset = new RulesetDetailsResponse(
 				42L,
 				"main-branch-rules",
 				"branch",
@@ -892,15 +895,18 @@ class OrgCheckerFixTest {
 	@Test
 	void noRulesetDrift_noApiCalls() throws Exception {
 		var include = List.of("~DEFAULT_BRANCH");
-		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of()),
+		var conditions = new RulesetDetailsResponse.Conditions(
+				new RulesetDetailsResponse.Conditions.RefName(
+						include,
+						List.of()
+				),
 				null,
 				null,
 				null
 		);
-		var params = new RulesetResponse.Rule.Parameters(
+		var params = new RulesetDetailsResponse.Rule.Parameters(
 				List.of(
-						new RulesetResponse.Rule.Parameters.StatusCheck(
+						new RulesetDetailsResponse.Rule.Parameters.StatusCheck(
 								"CodeQL",
 								null
 						)
@@ -911,7 +917,7 @@ class OrgCheckerFixTest {
 				null,
 				null
 		);
-		var actualRuleset = new RulesetResponse(
+		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
 				"branch",
@@ -925,11 +931,11 @@ class OrgCheckerFixTest {
 				null,
 				conditions,
 				List.of(
-						new RulesetResponse.Rule(
+						new RulesetDetailsResponse.Rule(
 								"required_linear_history",
 								null
 						),
-						new RulesetResponse.Rule(
+						new RulesetDetailsResponse.Rule(
 								"required_status_checks",
 								params
 						)
