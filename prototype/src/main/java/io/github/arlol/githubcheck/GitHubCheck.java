@@ -39,7 +39,7 @@ public class GitHubCheck {
 		// Default ruleset mirroring legacy branch protection for all public
 		// repos
 		var defaultRuleset = RulesetArgs.builder("main-branch-rules")
-				.includePatterns("main")
+				.includePatterns("refs/heads/main")
 				.requiredLinearHistory(true)
 				.noForcePushes(true)
 				.requiredStatusChecks(
