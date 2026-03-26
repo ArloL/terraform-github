@@ -761,8 +761,9 @@ class OrgCheckerFixTest {
 	@Test
 	void rulesetMissing_postsToCreateRuleset() throws Exception {
 		stubFor(
-				post(urlEqualTo("/repos/ArloL/repo/rulesets"))
-						.willReturn(WireMock.status(201).withBody("{}"))
+				post(urlEqualTo("/repos/ArloL/repo/rulesets")).willReturn(
+						WireMock.status(201).withBody("{\"id\": 1}")
+				)
 		);
 
 		var desired = RepositoryArgs.create("repo")
@@ -825,7 +826,7 @@ class OrgCheckerFixTest {
 	void rulesetDrift_putsToUpdateRuleset() throws Exception {
 		stubFor(
 				put(urlMatching("/repos/ArloL/repo/rulesets/42"))
-						.willReturn(okJson("{}"))
+						.willReturn(okJson("{\"id\": 42}"))
 		);
 
 		var desired = RepositoryArgs.create("repo")
