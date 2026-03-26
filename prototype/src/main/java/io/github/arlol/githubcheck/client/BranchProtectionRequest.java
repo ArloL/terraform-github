@@ -2,6 +2,8 @@ package io.github.arlol.githubcheck.client;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public record BranchProtectionRequest(
 		RequiredStatusChecks requiredStatusChecks,
 		boolean enforceAdmins,
@@ -17,7 +19,8 @@ public record BranchProtectionRequest(
 	) {
 
 		public record StatusCheck(
-				String context
+				String context,
+				@JsonInclude(JsonInclude.Include.NON_NULL) Integer appId
 		) {
 		}
 

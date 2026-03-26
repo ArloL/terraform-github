@@ -537,7 +537,10 @@ public class OrgChecker {
 			List<BranchProtectionRequest.RequiredStatusChecks.StatusCheck> checks = wantContexts
 					.stream()
 					.map(
-							BranchProtectionRequest.RequiredStatusChecks.StatusCheck::new
+							ctx -> new BranchProtectionRequest.RequiredStatusChecks.StatusCheck(
+									ctx,
+									null
+							)
 					)
 					.toList();
 			var payload = new BranchProtectionRequest(
