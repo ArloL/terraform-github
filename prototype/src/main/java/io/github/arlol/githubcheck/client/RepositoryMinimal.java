@@ -59,4 +59,9 @@ public record RepositoryMinimal(
 		Integer watchers, // optional
 		SecurityAndAnalysis securityAndAnalysis // nullable, optional
 ) {
+
+	public RepositoryMinimal {
+		topics = topics == null ? null : List.copyOf(topics);
+	}
+
 }

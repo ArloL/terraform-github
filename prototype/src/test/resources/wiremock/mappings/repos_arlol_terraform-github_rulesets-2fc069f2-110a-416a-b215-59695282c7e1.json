@@ -1,43 +1,40 @@
 {
-  "id" : "3e134287-38d5-42be-b5fb-db387d90cd54",
-  "name" : "user_repos",
+  "id" : "2fc069f2-110a-416a-b215-59695282c7e1",
+  "name" : "repos_arlol_terraform-github_rulesets",
   "request" : {
-    "urlPath" : "/user/repos",
+    "urlPath" : "/repos/ArloL/terraform-github/rulesets",
     "method" : "GET",
     "queryParameters" : {
       "per_page" : {
         "equalTo" : "100"
-      },
-      "type" : {
-        "equalTo" : "owner"
       }
     }
   },
   "response" : {
     "status" : 200,
-    "bodyFileName" : "user_repos-3e134287-38d5-42be-b5fb-db387d90cd54.json",
+    "body" : "[{\"id\":10897942,\"name\":\"main-branch-rules\",\"target\":\"branch\",\"source_type\":\"Repository\",\"source\":\"ArloL/terraform-github\",\"enforcement\":\"active\",\"node_id\":\"RRS_lACqUmVwb3NpdG9yec4reyMSzgCmShY\",\"_links\":{\"self\":{\"href\":\"https://api.github.com/repos/ArloL/terraform-github/rulesets/10897942\"},\"html\":{\"href\":\"https://github.com/ArloL/terraform-github/rules/10897942\"}},\"created_at\":\"2025-12-07T22:13:55.345+01:00\",\"updated_at\":\"2025-12-07T22:20:37.603+01:00\"}]",
     "headers" : {
-      "X-Accepted-OAuth-Scopes" : "",
+      "X-Accepted-OAuth-Scopes" : "repo",
       "X-RateLimit-Resource" : "core",
       "Server" : "github.com",
-      "X-RateLimit-Used" : "38",
+      "X-RateLimit-Used" : "108",
       "Access-Control-Allow-Origin" : "*",
       "x-github-api-version-selected" : "2026-03-10",
       "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
       "X-Frame-Options" : "deny",
       "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
       "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset",
-      "X-RateLimit-Remaining" : "4962",
+      "X-RateLimit-Remaining" : "4892",
       "X-GitHub-Media-Type" : "github.v3; format=json",
       "Content-Security-Policy" : "default-src 'none'",
       "X-XSS-Protection" : "0",
-      "X-GitHub-Request-Id" : "5DEA:38A585:1256DB5:F73611:69C5A408",
+      "X-GitHub-Request-Id" : "5D98:3A523A:147F6:12401:69C5A691",
       "Content-Type" : "application/json; charset=utf-8",
       "X-Content-Type-Options" : "nosniff",
       "X-RateLimit-Reset" : "1774562253",
-      "Date" : "Thu, 26 Mar 2026 21:24:24 GMT",
+      "Date" : "Thu, 26 Mar 2026 21:35:13 GMT",
       "Cache-Control" : "private, max-age=60, s-maxage=60",
-      "ETag" : "\"1dc3c78307803ba768555a81da4273ca4e4603b4a8838eb155da8b62076203fb\"",
+      "ETag" : "\"59c0c1b4b927e1b3dfa7d736cf2beb2f1a974c76cd83feba22d8b09921af17f1\"",
       "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With",
       "X-RateLimit-Limit" : "5000",
       "X-OAuth-Scopes" : "read:discussion, repo",
@@ -45,5 +42,5 @@
     }
   },
   "persistent" : true,
-  "insertionIndex" : 22
+  "insertionIndex" : 29
 }

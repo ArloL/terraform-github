@@ -79,6 +79,11 @@ public record BranchProtectionResponse(
 			String contextsUrl // optional
 	) {
 
+		public RequiredStatusChecks {
+			checks = checks == null ? null : List.copyOf(checks);
+			contexts = contexts == null ? null : List.copyOf(contexts);
+		}
+
 		public record StatusCheck(
 				String context,
 				Integer appId // nullable
@@ -105,6 +110,12 @@ public record BranchProtectionResponse(
 			List<Team> teams,
 			List<App> apps
 	) {
+
+		public Restrictions {
+			users = users == null ? null : List.copyOf(users);
+			teams = teams == null ? null : List.copyOf(teams);
+			apps = apps == null ? null : List.copyOf(apps);
+		}
 
 		public record Team(
 				Long id,

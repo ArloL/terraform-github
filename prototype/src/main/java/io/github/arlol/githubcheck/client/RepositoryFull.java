@@ -71,4 +71,9 @@ public record RepositoryFull(
 		// are not available (e.g. private repos without GHAS).
 		SecurityAndAnalysis securityAndAnalysis
 ) {
+
+	public RepositoryFull {
+		topics = topics == null ? null : List.copyOf(topics);
+	}
+
 }

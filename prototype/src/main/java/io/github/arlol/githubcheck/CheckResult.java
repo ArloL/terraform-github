@@ -6,12 +6,20 @@ public record CheckResult(
 		List<RepoCheckResult> repos
 ) {
 
+	public CheckResult {
+		repos = List.copyOf(repos);
+	}
+
 	public record RepoCheckResult(
 			String name,
 			Status status,
 			List<String> diffs,
 			String error
 	) {
+
+		public RepoCheckResult {
+			diffs = List.copyOf(diffs);
+		}
 
 		public static RepoCheckResult ok(String name) {
 			return new RepoCheckResult(name, Status.OK, List.of(), null);

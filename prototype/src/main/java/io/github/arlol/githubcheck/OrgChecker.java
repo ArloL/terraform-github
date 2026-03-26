@@ -1,5 +1,6 @@
 package io.github.arlol.githubcheck;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -57,7 +59,7 @@ public class OrgChecker {
 	}
 
 	public CheckResult check(List<RepositoryArgs> repositories)
-			throws Exception {
+			throws IOException, InterruptedException, ExecutionException {
 		System.out.println("Fetching repo list for org: " + org);
 		List<RepositoryMinimal> summaries = client.listOrgRepos(org);
 		System.out.printf(
@@ -120,7 +122,7 @@ public class OrgChecker {
 			}
 			return diffs.isEmpty() ? CheckResult.RepoCheckResult.ok(name)
 					: CheckResult.RepoCheckResult.drift(name, diffs);
-		} catch (Exception e) {
+		} catch (IOException | InterruptedException e) {
 			return CheckResult.RepoCheckResult.error(name, e.getMessage());
 		}
 	}
@@ -128,7 +130,8 @@ public class OrgChecker {
 	// ─── Fetch
 	// ──────────────────────────────────────────────────────────────
 
-	RepositoryState fetchState(RepositoryMinimal summary) throws Exception {
+	RepositoryState fetchState(RepositoryMinimal summary)
+			throws IOException, InterruptedException {
 		String name = summary.name();
 		boolean archived = summary.archived();
 
@@ -563,7 +566,7 @@ public class OrgChecker {
 			RepositoryState actual,
 			RepositoryArgs desired,
 			List<String> diffs
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		List<String> remaining = new ArrayList<>(diffs);
 
 		// Special case: archive the repo

@@ -1,5 +1,6 @@
 package io.github.arlol.githubcheck.client;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -7,6 +8,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,7 +53,8 @@ public class GitHubClient {
 	// ─── Public API
 	// ──────────────────────────────────────────────────────────
 
-	public List<RepositoryMinimal> listOrgRepos(String org) throws Exception {
+	public List<RepositoryMinimal> listOrgRepos(String org)
+			throws IOException, InterruptedException {
 		String url = baseUrl + "/orgs/" + org + "/repos?per_page=100&type=all";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() == 404) {
@@ -62,7 +65,7 @@ public class GitHubClient {
 			resp = send(url);
 		}
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " listing repos for " + org
 							+ ": " + resp.body()
 			);
@@ -72,12 +75,13 @@ public class GitHubClient {
 				.toList();
 	}
 
-	public RepositoryFull getRepo(String org, String repo) throws Exception {
+	public RepositoryFull getRepo(String org, String repo)
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + org + "/" + repo
 		);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " fetching repo " + org + "/"
 							+ repo + ": " + resp.body()
 			);
@@ -86,7 +90,7 @@ public class GitHubClient {
 	}
 
 	public boolean getVulnerabilityAlerts(String owner, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo
 						+ "/vulnerability-alerts"
@@ -97,14 +101,14 @@ public class GitHubClient {
 		if (resp.statusCode() == 404) {
 			return false;
 		}
-		throw new RuntimeException(
+		throw new GitHubApiException(
 				"HTTP " + resp.statusCode() + " GET vulnerability-alerts on "
 						+ repo
 		);
 	}
 
 	public boolean getAutomatedSecurityFixes(String org, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + org + "/" + repo
 						+ "/automated-security-fixes"
@@ -116,7 +120,7 @@ public class GitHubClient {
 		if (resp.statusCode() == 404) {
 			return false;
 		}
-		throw new RuntimeException(
+		throw new GitHubApiException(
 				"HTTP " + resp.statusCode()
 						+ " GET automated-security-fixes on " + repo
 		);
@@ -125,7 +129,7 @@ public class GitHubClient {
 	public Optional<ImmutableReleases> getImmutableReleases(
 			String owner,
 			String repo
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/immutable-releases"
 		);
@@ -136,7 +140,7 @@ public class GitHubClient {
 		if (resp.statusCode() == 404) {
 			return Optional.empty();
 		}
-		throw new RuntimeException(
+		throw new GitHubApiException(
 				"HTTP " + resp.statusCode() + " GET immutable-releases on "
 						+ repo
 		);
@@ -146,7 +150,7 @@ public class GitHubClient {
 			String owner,
 			String repo,
 			String branch
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/branches/" + branch
 						+ "/protection"
@@ -155,7 +159,7 @@ public class GitHubClient {
 			return Optional.empty();
 		}
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " GET branch protection on "
 							+ repo
 			);
@@ -166,12 +170,12 @@ public class GitHubClient {
 	}
 
 	public List<String> getActionSecretNames(String org, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		String url = baseUrl + "/repos/" + org + "/" + repo
 				+ "/actions/secrets?per_page=100";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " for action secrets on "
 							+ repo + ": " + resp.body()
 			);
@@ -182,12 +186,12 @@ public class GitHubClient {
 	}
 
 	public List<String> getEnvironmentNames(String org, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		String url = baseUrl + "/repos/" + org + "/" + repo
 				+ "/environments?per_page=100";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " for environments on " + repo
 							+ ": " + resp.body()
 			);
@@ -201,12 +205,12 @@ public class GitHubClient {
 			String org,
 			String repo,
 			String env
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String url = baseUrl + "/repos/" + org + "/" + repo + "/environments/"
 				+ env + "/secrets?per_page=100";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " for environment secrets on "
 							+ repo + "/" + env + ": " + resp.body()
 			);
@@ -217,19 +221,19 @@ public class GitHubClient {
 	}
 
 	public WorkflowPermissions getWorkflowPermissions(String org, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + org + "/" + repo
 						+ "/actions/permissions/workflow"
 		);
 		if (resp.statusCode() == 403) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP 403 for workflow permissions on " + repo
 							+ " — token may lack admin scope"
 			);
 		}
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " GET workflow permissions on " + repo
 			);
@@ -241,13 +245,13 @@ public class GitHubClient {
 			String owner,
 			String repo,
 			WorkflowPermissions permissions
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(
 				Map.of(
 						"default_workflow_permissions",
 						permissions.defaultWorkflowPermissions()
 								.name()
-								.toLowerCase(),
+								.toLowerCase(Locale.ROOT),
 						"can_approve_pull_request_reviews",
 						permissions.canApprovePullRequestReviews()
 				)
@@ -258,7 +262,7 @@ public class GitHubClient {
 				body
 		);
 		if (resp.statusCode() != 204) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " updating workflow permissions on " + repo
 			);
@@ -270,7 +274,7 @@ public class GitHubClient {
 			String repo,
 			String branch,
 			BranchProtectionRequest payload
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo + "/branches/" + branch
@@ -278,7 +282,7 @@ public class GitHubClient {
 				body
 		);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " updating branch protection on " + repo
 			);
@@ -290,14 +294,14 @@ public class GitHubClient {
 			String org,
 			String repo,
 			Map<String, Object> fields
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(fields);
 		HttpResponse<String> resp = patch(
 				baseUrl + "/repos/" + org + "/" + repo,
 				body
 		);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " updating " + org + "/"
 							+ repo + ": " + resp.body()
 			);
@@ -305,12 +309,12 @@ public class GitHubClient {
 	}
 
 	public Optional<Pages> getPages(String owner, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/pages"
 		);
 		if (resp.statusCode() == 403) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP 403 for pages on " + repo
 							+ " — token may lack admin scope"
 			);
@@ -319,7 +323,7 @@ public class GitHubClient {
 			return Optional.empty();
 		}
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " GET pages on " + repo
 			);
 		}
@@ -327,14 +331,14 @@ public class GitHubClient {
 	}
 
 	public void enableVulnerabilityAlerts(String owner, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo
 						+ "/vulnerability-alerts",
 				""
 		);
 		if (resp.statusCode() != 204) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " enabling vulnerability-alerts on " + repo
 			);
@@ -342,14 +346,14 @@ public class GitHubClient {
 	}
 
 	public void enableAutomatedSecurityFixes(String owner, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo
 						+ "/automated-security-fixes",
 				""
 		);
 		if (resp.statusCode() != 204) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " enabling automated-security-fixes on " + repo
 			);
@@ -357,12 +361,12 @@ public class GitHubClient {
 	}
 
 	public List<RulesetSummaryResponse> listRulesets(String owner, String repo)
-			throws Exception {
+			throws IOException, InterruptedException {
 		String url = baseUrl + "/repos/" + owner + "/" + repo
 				+ "/rulesets?per_page=100";
 		HttpResponse<String> resp = send(url);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " listing rulesets for "
 							+ owner + "/" + repo + ": " + resp.body()
 			);
@@ -381,14 +385,14 @@ public class GitHubClient {
 			String owner,
 			String repo,
 			RulesetRequest payload
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = post(
 				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets",
 				body
 		);
 		if (resp.statusCode() != 201) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " creating ruleset on "
 							+ owner + "/" + repo + ": " + resp.body()
 			);
@@ -401,7 +405,7 @@ public class GitHubClient {
 			String repo,
 			long rulesetId,
 			RulesetRequest payload
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets/"
@@ -409,7 +413,7 @@ public class GitHubClient {
 				body
 		);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " updating ruleset "
 							+ rulesetId + " on " + owner + "/" + repo + ": "
 							+ resp.body()
@@ -419,14 +423,14 @@ public class GitHubClient {
 	}
 
 	public void replaceTopics(String owner, String repo, List<String> topics)
-			throws Exception {
+			throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(Map.of("names", topics));
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo + "/topics",
 				body
 		);
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " updating topics for "
 							+ owner + "/" + repo + ": " + resp.body()
 			);
@@ -445,7 +449,7 @@ public class GitHubClient {
 	private List<JsonNode> collectPaginatedArrayItems(
 			HttpResponse<String> firstResp,
 			String arrayField
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		List<JsonNode> items = new ArrayList<>();
 		HttpResponse<String> resp = firstResp;
 		while (true) {
@@ -464,7 +468,7 @@ public class GitHubClient {
 			}
 			resp = send(next);
 			if (resp.statusCode() != 200) {
-				throw new RuntimeException(
+				throw new GitHubApiException(
 						"HTTP " + resp.statusCode() + " fetching next page: "
 								+ resp.body()
 				);
@@ -474,7 +478,7 @@ public class GitHubClient {
 	}
 
 	private HttpResponse<String> post(String url, String body)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
 				.header("Authorization", "Bearer " + token)
 				.header("Accept", "application/vnd.github+json")
@@ -489,7 +493,7 @@ public class GitHubClient {
 	}
 
 	private HttpResponse<String> patch(String url, String body)
-			throws Exception {
+			throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
 				.header("Authorization", "Bearer " + token)
 				.header("Accept", "application/vnd.github+json")
@@ -503,7 +507,8 @@ public class GitHubClient {
 		return resp;
 	}
 
-	private HttpResponse<String> put(String url, String body) throws Exception {
+	private HttpResponse<String> put(String url, String body)
+			throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
 				.header("Authorization", "Bearer " + token)
 				.header("Accept", "application/vnd.github+json")
@@ -517,7 +522,8 @@ public class GitHubClient {
 		return resp;
 	}
 
-	private HttpResponse<String> send(String url) throws Exception {
+	private HttpResponse<String> send(String url)
+			throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
 				.header("Authorization", "Bearer " + token)
 				.header("Accept", "application/vnd.github+json")
@@ -569,19 +575,19 @@ public class GitHubClient {
 			String owner,
 			String repo,
 			long rulesetId
-	) throws Exception {
+	) throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets/"
 						+ rulesetId
 		);
 		if (resp.statusCode() == 403) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP 403 for workflow permissions on " + repo
 							+ " — token may lack admin scope"
 			);
 		}
 		if (resp.statusCode() != 200) {
-			throw new RuntimeException(
+			throw new GitHubApiException(
 					"HTTP " + resp.statusCode()
 							+ " GET workflow permissions on " + repo
 			);
