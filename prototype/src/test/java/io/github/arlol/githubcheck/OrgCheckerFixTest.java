@@ -456,6 +456,74 @@ class OrgCheckerFixTest {
 	}
 
 	@Test
+	void workflowPermissionsDrift_putsWorkflowPermissions() throws Exception {
+		stubFor(
+				put(
+						urlEqualTo(
+								"/repos/ArloL/repo/actions/permissions/workflow"
+						)
+				).willReturn(WireMock.noContent())
+		);
+
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				List.of(),
+				Map.of(),
+				parse("""
+						{
+							"default_workflow_permissions": "write",
+							"can_approve_pull_request_reviews": false
+						}
+						""", WorkflowPermissions.class)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo(
+								"/repos/ArloL/repo/actions/permissions/workflow"
+						)
+				).withRequestBody(equalToJson("""
+						{
+							"default_workflow_permissions": "read",
+							"can_approve_pull_request_reviews": true
+						}
+						"""))
+		);
+	}
+
+	@Test
+	void noWorkflowPermissionsDrift_noPutCall() throws Exception {
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+		var state = goodPublicState();
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				0,
+				putRequestedFor(
+						urlEqualTo(
+								"/repos/ArloL/repo/actions/permissions/workflow"
+						)
+				)
+		);
+	}
+
+	@Test
 	void repoFieldsAndTopics_bothFixed() throws Exception {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/repo")).willReturn(okJson("{}"))

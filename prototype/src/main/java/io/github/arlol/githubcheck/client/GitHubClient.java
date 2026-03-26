@@ -236,6 +236,33 @@ public class GitHubClient {
 		return mapper.readValue(resp.body(), WorkflowPermissions.class);
 	}
 
+	public void updateWorkflowPermissions(
+			String owner,
+			String repo,
+			WorkflowPermissions.DefaultWorkflowPermissions defaultPermission,
+			boolean canApprovePullRequestReviews
+	) throws Exception {
+		String body = mapper.writeValueAsString(
+				Map.of(
+						"default_workflow_permissions",
+						defaultPermission.name().toLowerCase(),
+						"can_approve_pull_request_reviews",
+						canApprovePullRequestReviews
+				)
+		);
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo
+						+ "/actions/permissions/workflow",
+				body
+		);
+		if (resp.statusCode() != 204) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode()
+							+ " updating workflow permissions on " + repo
+			);
+		}
+	}
+
 	public void updateRepository(
 			String org,
 			String repo,

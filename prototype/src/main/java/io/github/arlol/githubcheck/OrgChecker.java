@@ -508,7 +508,23 @@ public class OrgChecker {
 			remaining.removeAll(securityDiffs);
 		}
 
-		// Workflow permissions (NOT fixable yet)
+		// Workflow permissions (fixable)
+		List<String> workflowDiffs = new ArrayList<>();
+		checkWorkflowPermissions(workflowDiffs, actual);
+		if (!workflowDiffs.isEmpty()) {
+			client.updateWorkflowPermissions(
+					org,
+					name,
+					WorkflowPermissions.DefaultWorkflowPermissions.READ,
+					true
+			);
+			remaining.removeAll(workflowDiffs);
+			System.out.printf(
+					"[FIXED]   %s: workflow_permissions updated%n",
+					name
+			);
+		}
+
 		// Branch protection (NOT fixable yet)
 		// Secrets/environments (NOT fixable yet)
 
