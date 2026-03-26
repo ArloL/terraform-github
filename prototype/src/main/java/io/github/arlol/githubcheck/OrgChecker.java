@@ -2,6 +2,7 @@ package io.github.arlol.githubcheck;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -16,14 +17,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import java.util.Optional;
+
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetRequest;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
+import io.github.arlol.githubcheck.config.PagesArgs;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 import io.github.arlol.githubcheck.config.RulesetArgs;
 
@@ -175,6 +180,9 @@ public class OrgChecker {
 			}
 		}
 
+		Optional<PagesResponse> pages = archived ? Optional.empty()
+				: client.getPages(org, name);
+
 		return new RepositoryState(
 				name,
 				summary,
@@ -185,7 +193,8 @@ public class OrgChecker {
 				secretNames,
 				envSecrets,
 				wfPerms,
-				rulesets
+				rulesets,
+				pages
 		);
 	}
 
@@ -215,6 +224,7 @@ public class OrgChecker {
 		checkWorkflowPermissions(diffs, actual);
 		checkBranchProtection(diffs, actual, desired);
 		checkRulesets(diffs, actual, desired);
+		checkPages(diffs, actual, desired);
 		checkSecrets(diffs, actual, desired);
 
 		return diffs;
@@ -558,6 +568,51 @@ public class OrgChecker {
 		}
 	}
 
+	private void checkPages(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		if (!desired.pages()) {
+			return;
+		}
+
+		Optional<PagesResponse> actualPages = actual.pages();
+		if (actualPages.isEmpty()) {
+			diffs.add("pages: missing");
+			return;
+		}
+		PagesResponse p = actualPages.orElseThrow();
+		PagesArgs want = desired.pagesArgs();
+
+		check(
+				diffs,
+				"pages.build_type",
+				want.buildType().name().toLowerCase(Locale.ROOT),
+				p.buildType() != null
+						? p.buildType().name().toLowerCase(Locale.ROOT)
+						: null
+		);
+
+		if (want.buildType() == PagesResponse.BuildType.LEGACY
+				&& p.source() != null) {
+			check(
+					diffs,
+					"pages.source.branch",
+					want.sourceBranch(),
+					p.source().branch()
+			);
+			check(
+					diffs,
+					"pages.source.path",
+					want.sourcePath(),
+					p.source().path()
+			);
+		}
+
+		check(diffs, "pages.https_enforced", true, p.httpsEnforced());
+	}
+
 	// ─── Fix
 	// ──────────────────────────────────────────────────────────────
 
@@ -743,6 +798,20 @@ public class OrgChecker {
 				}
 			}
 			remaining.removeAll(rulesetDiffs);
+		}
+
+		// Pages (fixable)
+		List<String> pagesDiffs = new ArrayList<>();
+		checkPages(pagesDiffs, actual, desired);
+		if (!pagesDiffs.isEmpty()) {
+			if (actual.pages().isEmpty()) {
+				client.createPages(org, name, desired.pagesArgs());
+				System.out.printf("[FIXED]   %s: pages created%n", name);
+			} else {
+				client.updatePages(org, name, desired.pagesArgs(), true);
+				System.out.printf("[FIXED]   %s: pages updated%n", name);
+			}
+			remaining.removeAll(pagesDiffs);
 		}
 
 		// Secrets/environments (NOT fixable yet)

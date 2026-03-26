@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
@@ -164,7 +166,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 	}
 
@@ -189,7 +192,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 	}
 
@@ -348,7 +352,8 @@ class OrgCheckerFixTest {
 				state.actionSecretNames(),
 				state.environmentSecretNames(),
 				state.workflowPermissions(),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(stateWithBadVuln, desired);
@@ -401,7 +406,8 @@ class OrgCheckerFixTest {
 				baseState.actionSecretNames(),
 				baseState.environmentSecretNames(),
 				baseState.workflowPermissions(),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -461,7 +467,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -513,7 +520,8 @@ class OrgCheckerFixTest {
 							"can_approve_pull_request_reviews": false
 						}
 						""", WorkflowPermissions.class),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -577,7 +585,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -654,7 +663,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of()
+				List.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -881,7 +891,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of(actualRuleset)
+				List.of(actualRuleset),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -968,7 +979,8 @@ class OrgCheckerFixTest {
 						GOOD_WORKFLOW_PERMISSIONS_JSON,
 						WorkflowPermissions.class
 				),
-				List.of(actualRuleset)
+				List.of(actualRuleset),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -981,6 +993,133 @@ class OrgCheckerFixTest {
 				0,
 				putRequestedFor(urlMatching("/repos/ArloL/repo/rulesets/.*"))
 		);
+	}
+
+	// ─── Pages tests
+	// ──────────────────────────────────────────────────────
+
+	@Test
+	void pagesMissing_postsToCreate() throws Exception {
+		stubFor(
+				post(urlEqualTo("/repos/ArloL/repo/pages"))
+						.willReturn(WireMock.status(201).withBody("""
+								{
+									"build_type": "workflow",
+									"https_enforced": true,
+									"public": true,
+									"custom_404": false
+								}
+								"""))
+		);
+
+		var desired = RepositoryArgs.create("repo").pages().build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of("github-pages", List.of()),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.empty()
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				postRequestedFor(urlEqualTo("/repos/ArloL/repo/pages"))
+						.withRequestBody(equalToJson("""
+								{"build_type": "workflow"}
+								"""))
+		);
+	}
+
+	@Test
+	void pagesDrift_putsToUpdate() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/pages"))
+						.willReturn(WireMock.noContent())
+		);
+
+		var desired = RepositoryArgs.create("repo").pages().build();
+
+		var actualPages = new PagesResponse(
+				null,
+				"built",
+				null,
+				false,
+				null,
+				PagesResponse.BuildType.WORKFLOW,
+				null,
+				true,
+				null,
+				null,
+				null,
+				false // https_enforced is false → drift
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of("github-pages", List.of()),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.of(actualPages)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(urlEqualTo("/repos/ArloL/repo/pages"))
+						.withRequestBody(equalToJson("""
+								{
+									"build_type": "workflow",
+									"https_enforced": true
+								}
+								"""))
+		);
+	}
+
+	@Test
+	void noPagesDesired_noPagesApiCall() throws Exception {
+		var desired = RepositoryArgs.create("repo").build(); // pages() not
+															 // called
+
+		var state = goodPublicState();
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(0, postRequestedFor(urlEqualTo("/repos/ArloL/repo/pages")));
+		verify(0, putRequestedFor(urlEqualTo("/repos/ArloL/repo/pages")));
 	}
 
 }

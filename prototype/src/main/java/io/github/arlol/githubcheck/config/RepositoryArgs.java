@@ -11,7 +11,7 @@ public final class RepositoryArgs {
 
 	private final String name;
 	private final boolean archived;
-	private final boolean pages;
+	private final PagesArgs pagesArgs;
 	private final String description;
 	private final String homepageUrl;
 	private final String visibility;
@@ -24,7 +24,7 @@ public final class RepositoryArgs {
 	private RepositoryArgs(Builder builder) {
 		this.name = builder.name;
 		this.archived = builder.archived;
-		this.pages = builder.pages;
+		this.pagesArgs = builder.pagesArgs;
 		this.description = builder.description;
 		this.homepageUrl = builder.homepageUrl;
 		this.visibility = builder.visibility;
@@ -45,7 +45,11 @@ public final class RepositoryArgs {
 	}
 
 	public boolean pages() {
-		return pages;
+		return pagesArgs != null;
+	}
+
+	public PagesArgs pagesArgs() {
+		return pagesArgs;
 	}
 
 	public String description() {
@@ -99,7 +103,7 @@ public final class RepositoryArgs {
 
 		private String name;
 		private boolean archived = false;
-		private boolean pages = false;
+		private PagesArgs pagesArgs = null;
 		private String description = "";
 		private String homepageUrl = "";
 		private String visibility = "public";
@@ -116,7 +120,7 @@ public final class RepositoryArgs {
 		public Builder(RepositoryArgs repositoryArgs) {
 			this.name = repositoryArgs.name;
 			this.archived = repositoryArgs.archived;
-			this.pages = repositoryArgs.pages;
+			this.pagesArgs = repositoryArgs.pagesArgs;
 			this.description = repositoryArgs.description;
 			this.homepageUrl = repositoryArgs.homepageUrl;
 			this.visibility = repositoryArgs.visibility;
@@ -138,7 +142,12 @@ public final class RepositoryArgs {
 		}
 
 		public Builder pages() {
-			this.pages = true;
+			this.pagesArgs = PagesArgs.defaults();
+			return this;
+		}
+
+		public Builder pages(PagesArgs pagesArgs) {
+			this.pagesArgs = pagesArgs;
 			return this;
 		}
 

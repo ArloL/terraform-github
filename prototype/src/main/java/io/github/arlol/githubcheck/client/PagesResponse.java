@@ -6,7 +6,7 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record Pages(
+public record PagesResponse(
 		String url,
 		String status,
 		String cname,

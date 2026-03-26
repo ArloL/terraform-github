@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
+import io.github.arlol.githubcheck.config.PagesArgs;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 import io.github.arlol.githubcheck.config.RulesetArgs;
 
@@ -139,6 +142,7 @@ class OrgCheckerDiffTest {
 		private Map<String, List<String>> environmentSecretNames = Map.of();
 		private String workflowPermissionsJson = GOOD_WORKFLOW_PERMISSIONS_JSON;
 		private List<RulesetDetailsResponse> rulesets = List.of();
+		private Optional<PagesResponse> pages = Optional.empty();
 
 		StateBuilder summaryOverride(String overridesJson) {
 			this.summaryJson = merge(this.summaryJson, overridesJson)
@@ -197,6 +201,11 @@ class OrgCheckerDiffTest {
 			return this;
 		}
 
+		StateBuilder pages(Optional<PagesResponse> pages) {
+			this.pages = pages;
+			return this;
+		}
+
 		RepositoryState build() {
 			return new RepositoryState(
 					"repo",
@@ -213,7 +222,8 @@ class OrgCheckerDiffTest {
 					actionSecretNames,
 					environmentSecretNames,
 					parse(workflowPermissionsJson, WorkflowPermissions.class),
-					rulesets
+					rulesets,
+					pages
 			);
 		}
 
@@ -745,10 +755,105 @@ class OrgCheckerDiffTest {
 	}
 
 	@Test
-	void pages_noDrift_whenEnvironmentPresent() {
+	void pages_noDrift_whenEnvironmentAndPagesPresent() {
 		var args = defaultArgs().toBuilder().pages().build();
 		var state = new StateBuilder()
 				.environmentSecretNames(Map.of("github-pages", List.of()))
+				.pages(Optional.of(goodPagesResponse()))
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	private static PagesResponse goodPagesResponse() {
+		return new PagesResponse(
+				null,
+				"built",
+				null,
+				false,
+				null,
+				PagesResponse.BuildType.WORKFLOW,
+				null,
+				true,
+				null,
+				null,
+				null,
+				true
+		);
+	}
+
+	@Test
+	void drift_pagesMissing() {
+		var args = defaultArgs().toBuilder().pages().build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("github-pages", List.of()))
+				.build(); // pages = Optional.empty()
+		assertThat(checker.computeDiffs(state, args))
+				.contains("pages: missing");
+	}
+
+	@Test
+	void drift_pagesBuildTypeMismatch() {
+		var args = defaultArgs().toBuilder().pages().build(); // wants WORKFLOW
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("github-pages", List.of()))
+				.pages(
+						Optional.of(
+								new PagesResponse(
+										null,
+										"built",
+										null,
+										false,
+										null,
+										PagesResponse.BuildType.LEGACY,
+										new PagesResponse.Source(
+												"gh-pages",
+												"/"
+										),
+										true,
+										null,
+										null,
+										null,
+										true
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args))
+				.contains("pages.build_type: want=workflow got=legacy");
+	}
+
+	@Test
+	void drift_pagesHttpsNotEnforced() {
+		var args = defaultArgs().toBuilder().pages().build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("github-pages", List.of()))
+				.pages(
+						Optional.of(
+								new PagesResponse(
+										null,
+										"built",
+										null,
+										false,
+										null,
+										PagesResponse.BuildType.WORKFLOW,
+										null,
+										true,
+										null,
+										null,
+										null,
+										false
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args))
+				.contains("pages.https_enforced: want=true got=false");
+	}
+
+	@Test
+	void noDrift_pagesIgnored_whenNotDesired() {
+		var args = defaultArgs(); // pages() not called
+		var state = new StateBuilder().pages(Optional.of(goodPagesResponse()))
 				.build();
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}

@@ -1005,7 +1005,8 @@ class GitHubClientTest {
 
 		var pages = client.getPages("ArloL", "eclipse-projects").orElseThrow();
 
-		assertThat(pages.buildType()).isEqualTo(Pages.BuildType.WORKFLOW);
+		assertThat(pages.buildType())
+				.isEqualTo(PagesResponse.BuildType.WORKFLOW);
 		assertThat(pages.cname()).isNull();
 		assertThat(pages.protectedDomainState()).isNull();
 		assertThat(pages.pendingDomainUnverifiedAt()).isNull();
