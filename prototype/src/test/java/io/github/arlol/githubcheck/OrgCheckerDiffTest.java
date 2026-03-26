@@ -17,8 +17,10 @@ import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
+import io.github.arlol.githubcheck.client.RulesetResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
+import io.github.arlol.githubcheck.config.RulesetArgs;
 
 class OrgCheckerDiffTest {
 
@@ -136,6 +138,7 @@ class OrgCheckerDiffTest {
 		private List<String> actionSecretNames = List.of();
 		private Map<String, List<String>> environmentSecretNames = Map.of();
 		private String workflowPermissionsJson = GOOD_WORKFLOW_PERMISSIONS_JSON;
+		private List<RulesetResponse> rulesets = List.of();
 
 		StateBuilder summaryOverride(String overridesJson) {
 			this.summaryJson = merge(this.summaryJson, overridesJson)
@@ -189,6 +192,11 @@ class OrgCheckerDiffTest {
 			return this;
 		}
 
+		StateBuilder rulesets(List<RulesetResponse> rulesets) {
+			this.rulesets = rulesets;
+			return this;
+		}
+
 		RepositoryState build() {
 			return new RepositoryState(
 					"repo",
@@ -204,7 +212,8 @@ class OrgCheckerDiffTest {
 							: null,
 					actionSecretNames,
 					environmentSecretNames,
-					parse(workflowPermissionsJson, WorkflowPermissions.class)
+					parse(workflowPermissionsJson, WorkflowPermissions.class),
+					rulesets
 			);
 		}
 
@@ -742,6 +751,250 @@ class OrgCheckerDiffTest {
 				.environmentSecretNames(Map.of("github-pages", List.of()))
 				.build();
 		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	// ─── Rulesets drift
+	// ──────────────────────────────────────────────────────
+
+	private static RulesetResponse rulesetWithRules(
+			String name,
+			String... ruleTypes
+	) {
+		var include = List.of("~DEFAULT_BRANCH");
+		var conditions = new RulesetResponse.Conditions(
+				new RulesetResponse.Conditions.RefName(include, List.of())
+		);
+		List<RulesetResponse.Rule> rules = new java.util.ArrayList<>();
+		for (String type : ruleTypes) {
+			rules.add(new RulesetResponse.Rule(type, null));
+		}
+		return new RulesetResponse(
+				1L,
+				name,
+				"branch",
+				"active",
+				conditions,
+				rules
+		);
+	}
+
+	private static RulesetResponse rulesetWithStatusChecks(
+			String name,
+			String... contexts
+	) {
+		var include = List.of("~DEFAULT_BRANCH");
+		var conditions = new RulesetResponse.Conditions(
+				new RulesetResponse.Conditions.RefName(include, List.of())
+		);
+		List<RulesetResponse.Rule.Parameters.StatusCheck> checks = new java.util.ArrayList<>();
+		for (String ctx : contexts) {
+			checks.add(
+					new RulesetResponse.Rule.Parameters.StatusCheck(ctx, null)
+			);
+		}
+		var params = new RulesetResponse.Rule.Parameters(
+				checks,
+				false,
+				null,
+				null,
+				null,
+				null
+		);
+		return new RulesetResponse(
+				1L,
+				name,
+				"branch",
+				"active",
+				conditions,
+				List.of(
+						new RulesetResponse.Rule(
+								"required_linear_history",
+								null
+						),
+						new RulesetResponse.Rule("non_fast_forward", null),
+						new RulesetResponse.Rule(
+								"required_status_checks",
+								params
+						)
+				)
+		);
+	}
+
+	@Test
+	void noDrift_noRulesetsConfigured() {
+		// actual has a ruleset, desired has none — no drift expected
+		var state = new StateBuilder()
+				.rulesets(
+						List.of(
+								rulesetWithRules(
+										"main-branch-rules",
+										"required_linear_history"
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, defaultArgs())).isEmpty();
+	}
+
+	@Test
+	void noDrift_rulesetMatchesExactly() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredLinearHistory(true)
+								.noForcePushes(true)
+								.requiredStatusChecks(
+										"check-actions.required-status-check"
+								)
+								.build()
+				)
+				.build();
+		var state = new StateBuilder()
+				.rulesets(
+						List.of(
+								rulesetWithStatusChecks(
+										"main-branch-rules",
+										"check-actions.required-status-check"
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void drift_rulesetMissing() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.build()
+				)
+				.build();
+		var state = new StateBuilder().rulesets(List.of()).build();
+		assertThat(checker.computeDiffs(state, args))
+				.contains("ruleset.main-branch-rules: missing");
+	}
+
+	@Test
+	void drift_rulesetLinearHistoryMissing() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredLinearHistory(true)
+								.build()
+				)
+				.build();
+		var state = new StateBuilder()
+				.rulesets(List.of(rulesetWithRules("main-branch-rules")))
+				.build();
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"ruleset.main-branch-rules.required_linear_history: want=true got=false"
+		);
+	}
+
+	@Test
+	void drift_rulesetNoForcePushesMissing() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.noForcePushes(true)
+								.build()
+				)
+				.build();
+		var state = new StateBuilder()
+				.rulesets(List.of(rulesetWithRules("main-branch-rules")))
+				.build();
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"ruleset.main-branch-rules.no_force_pushes: want=true got=false"
+		);
+	}
+
+	@Test
+	void drift_rulesetStatusCheckMissing() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredStatusChecks("CodeQL", "zizmor")
+								.build()
+				)
+				.build();
+		var state = new StateBuilder().rulesets(
+				List.of(rulesetWithStatusChecks("main-branch-rules", "CodeQL"))
+		).build();
+		assertThat(checker.computeDiffs(state, args)).anyMatch(
+				d -> d.contains(
+						"ruleset.main-branch-rules.required_status_checks"
+				) && d.contains("missing") && d.contains("zizmor")
+		);
+	}
+
+	@Test
+	void drift_rulesetExtraStatusCheck() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredStatusChecks("CodeQL")
+								.build()
+				)
+				.build();
+		var state = new StateBuilder()
+				.rulesets(
+						List.of(
+								rulesetWithStatusChecks(
+										"main-branch-rules",
+										"CodeQL",
+										"unexpected-check"
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).anyMatch(
+				d -> d.contains(
+						"ruleset.main-branch-rules.required_status_checks"
+				) && d.contains("extra") && d.contains("unexpected-check")
+		);
+	}
+
+	@Test
+	void drift_rulesetRequiredReviewCountWrong() {
+		var args = defaultArgs().toBuilder()
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredReviewCount(2)
+								.build()
+				)
+				.build();
+		var include = List.of("~DEFAULT_BRANCH");
+		var conditions = new RulesetResponse.Conditions(
+				new RulesetResponse.Conditions.RefName(include, List.of())
+		);
+		var prParams = new RulesetResponse.Rule.Parameters(
+				null,
+				null,
+				1,
+				false,
+				false,
+				false
+		);
+		var actualRuleset = new RulesetResponse(
+				1L,
+				"main-branch-rules",
+				"branch",
+				"active",
+				conditions,
+				List.of(new RulesetResponse.Rule("pull_request", prParams))
+		);
+		var state = new StateBuilder().rulesets(List.of(actualRuleset)).build();
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"ruleset.main-branch-rules.required_review_count: want=2 got=1"
+		);
 	}
 
 }

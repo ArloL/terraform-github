@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.github.arlol.githubcheck.config.RepositoryArgs;
+import io.github.arlol.githubcheck.config.RulesetArgs;
 
 public class GitHubCheck {
 
@@ -32,8 +33,32 @@ public class GitHubCheck {
 	}
 
 	static List<RepositoryArgs> repositories() {
+		// Default ruleset mirroring legacy branch protection for all public
+		// repos
+		var defaultRuleset = RulesetArgs.builder("main-branch-rules")
+				.includePatterns("~DEFAULT_BRANCH")
+				.requiredLinearHistory(true)
+				.noForcePushes(true)
+				.requiredStatusChecks(
+						OrgChecker.BASE_STATUS_CHECKS.toArray(String[]::new)
+				)
+				.build();
+
+		// Variant for repos with the main CI required status check
+		var mainCiRuleset = defaultRuleset.toBuilder()
+				.addRequiredStatusChecks("main.required-status-check")
+				.build();
+
+		// Variant for repos with the test required status check
+		var testCiRuleset = defaultRuleset.toBuilder()
+				.addRequiredStatusChecks("test.required-status-check")
+				.build();
+
 		// Group: GitHub Pages sites
-		var pagesSite = RepositoryArgs.create("_").pages().build();
+		var pagesSite = RepositoryArgs.create("_")
+				.pages()
+				.rulesets(defaultRuleset)
+				.build();
 		var pagesSites = List.of(
 				pagesSite.toBuilder()
 						.name("abenteuer-irland")
@@ -49,6 +74,13 @@ public class GitHubCheck {
 								"https://arlol.github.io/angular-playground/"
 						)
 						.requiredStatusChecks("pr-check.required-status-check")
+						.rulesets(
+								defaultRuleset.toBuilder()
+										.addRequiredStatusChecks(
+												"pr-check.required-status-check"
+										)
+										.build()
+						)
 						.build(),
 				pagesSite.toBuilder()
 						.name("arlol.github.io")
@@ -83,6 +115,7 @@ public class GitHubCheck {
 		// Group: repos with a main CI required status check
 		var mainCiRepo = RepositoryArgs.create("_")
 				.requiredStatusChecks("main.required-status-check")
+				.rulesets(mainCiRuleset)
 				.build();
 		var mainCiRepos = List.of(
 				mainCiRepo.toBuilder()
@@ -146,16 +179,19 @@ public class GitHubCheck {
 		var individual = List.of(
 				RepositoryArgs.create("advent-of-code")
 						.description("My advent of code solutions")
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("beatunes-keytocomment")
 						.description(
 								"A beatunes plugin that writes the key to the comment"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("calver-tag-action")
 						.description(
 								"A GitHub Actions action that creates a new version using a CalVer-style derivative and pushes it"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("corporate-python")
 						.description(
@@ -165,70 +201,84 @@ public class GitHubCheck {
 								"DOCKER_HUB_ACCESS_TOKEN",
 								"DOCKER_HUB_USERNAME"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("dependabot-dockerfile-test")
 						.description(
 								"A test to see whether dependabot updates dockerfiles with args"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("dotfiles")
 						.description(
 								"My collection of dotfiles used to configure my command line environments"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("effortful-retrieval-questions")
 						.description(
 								"A collection of effortful retrieval questions of a number of articles I've read"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("git-presentation-2018-10")
 						.description(
 								"Git Präsentation für Vorlesung Industrielle Softwareentwicklung"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("homebrew-tap")
 						.description(
 								"A homebrew tap for my own formulas and casks"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("kafka-debugger")
 						.description(
 								"A small jar utility to test kafka connections"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("menubar-scripts")
 						.description(
 								"A collection of scripts that can run in e.g. xbar, swiftbar, etc."
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("music-stuff")
 						.description("Some spotify and beatunes stuff")
 						.requiredStatusChecks("test.required-status-check")
+						.rulesets(testCiRuleset)
 						.build(),
 				RepositoryArgs.create("nope-amine")
 						.description(
 								"A firefox extension that slowly increases the time for things to load on reddit.com"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("open-webui-runner")
 						.description(
 								"A small repo to run open-webui locally and stop it after using it"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("postgres-sync-demo")
 						.description(
 								"A demo on how to use triggers, queues, etc. to sync the app's data somewhere else"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("python-nc")
 						.description(
 								"A test to see if I can implement nc's proxy functionality with python"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("sci-fi-movies")
 						.description(
 								"an app to import sci fi movies from rotten tomatoes into a database in order to run queries on them"
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("terraform-github")
 						.description(
@@ -238,15 +288,18 @@ public class GitHubCheck {
 								"production",
 								env -> env.secrets("TF_GITHUB_TOKEN")
 						)
+						.rulesets(defaultRuleset)
 						.build(),
 				RepositoryArgs.create("tsaf-parser")
 						.description("Binary format exploration")
 						.requiredStatusChecks("test.required-status-check")
+						.rulesets(testCiRuleset)
 						.build(),
 				RepositoryArgs.create("vagrant-ssh-config")
 						.description(
 								"A vagrant plugin that automatically creates ssh configs for vms"
 						)
+						.rulesets(defaultRuleset)
 						.build()
 		);
 

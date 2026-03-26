@@ -19,6 +19,7 @@ public final class RepositoryArgs {
 	private final List<String> requiredStatusChecks;
 	private final List<String> actionsSecrets;
 	private final Map<String, EnvironmentArgs> environments;
+	private final List<RulesetArgs> rulesets;
 
 	private RepositoryArgs(Builder builder) {
 		this.name = builder.name;
@@ -32,6 +33,7 @@ public final class RepositoryArgs {
 		this.actionsSecrets = List.copyOf(builder.actionsSecrets);
 		this.environments = Collections
 				.unmodifiableMap(new LinkedHashMap<>(builder.environments));
+		this.rulesets = List.copyOf(builder.rulesets);
 	}
 
 	public String name() {
@@ -77,6 +79,10 @@ public final class RepositoryArgs {
 		return environments;
 	}
 
+	public List<RulesetArgs> rulesets() {
+		return rulesets;
+	}
+
 	public Builder toBuilder() {
 		return new Builder(this);
 	}
@@ -101,6 +107,7 @@ public final class RepositoryArgs {
 		private List<String> requiredStatusChecks = List.of();
 		private List<String> actionsSecrets = List.of();
 		private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
+		private List<RulesetArgs> rulesets = List.of();
 
 		public Builder(String name) {
 			this.name = name;
@@ -117,6 +124,7 @@ public final class RepositoryArgs {
 			this.requiredStatusChecks = repositoryArgs.requiredStatusChecks;
 			this.actionsSecrets = repositoryArgs.actionsSecrets;
 			this.environments.putAll(repositoryArgs.environments);
+			this.rulesets = repositoryArgs.rulesets;
 		}
 
 		public Builder name(String name) {
@@ -183,6 +191,11 @@ public final class RepositoryArgs {
 			var envBuilder = EnvironmentArgs.builder(name);
 			configure.accept(envBuilder);
 			this.environments.put(name, envBuilder.build());
+			return this;
+		}
+
+		public Builder rulesets(RulesetArgs... rulesets) {
+			this.rulesets = List.of(rulesets);
 			return this;
 		}
 

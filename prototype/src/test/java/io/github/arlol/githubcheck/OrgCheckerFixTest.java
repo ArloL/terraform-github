@@ -4,10 +4,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,8 +32,10 @@ import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
+import io.github.arlol.githubcheck.client.RulesetResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
+import io.github.arlol.githubcheck.config.RulesetArgs;
 
 @WireMockTest
 class OrgCheckerFixTest {
@@ -155,7 +160,11 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Map.of(),
-				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of()
 		);
 	}
 
@@ -176,7 +185,11 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Map.of(),
-				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of()
 		);
 	}
 
@@ -334,7 +347,8 @@ class OrgCheckerFixTest {
 				state.branchProtection(),
 				state.actionSecretNames(),
 				state.environmentSecretNames(),
-				state.workflowPermissions()
+				state.workflowPermissions(),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(stateWithBadVuln, desired);
@@ -386,7 +400,8 @@ class OrgCheckerFixTest {
 				baseState.branchProtection(),
 				baseState.actionSecretNames(),
 				baseState.environmentSecretNames(),
-				baseState.workflowPermissions()
+				baseState.workflowPermissions(),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -442,7 +457,11 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Map.of(),
-				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -493,7 +512,8 @@ class OrgCheckerFixTest {
 							"default_workflow_permissions": "write",
 							"can_approve_pull_request_reviews": false
 						}
-						""", WorkflowPermissions.class)
+						""", WorkflowPermissions.class),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -553,7 +573,11 @@ class OrgCheckerFixTest {
 				null,
 				List.of(),
 				Map.of(),
-				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -626,7 +650,11 @@ class OrgCheckerFixTest {
 				driftedBp,
 				List.of(),
 				Map.of(),
-				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -724,6 +752,207 @@ class OrgCheckerFixTest {
 		verify(
 				putRequestedFor(urlEqualTo("/repos/ArloL/repo/topics"))
 						.withRequestBody(equalToJson("{\"names\":[\"java\"]}"))
+		);
+	}
+
+	// ─── Ruleset tests
+	// ──────────────────────────────────────────────────────
+
+	@Test
+	void rulesetMissing_postsToCreateRuleset() throws Exception {
+		stubFor(
+				post(urlEqualTo("/repos/ArloL/repo/rulesets"))
+						.willReturn(WireMock.status(201).withBody("{}"))
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredLinearHistory(true)
+								.noForcePushes(true)
+								.requiredStatusChecks("CodeQL", "zizmor")
+								.build()
+				)
+				.build();
+
+		var state = goodPublicState(); // no rulesets
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				postRequestedFor(urlEqualTo("/repos/ArloL/repo/rulesets"))
+						.withRequestBody(
+								equalToJson(
+										"""
+												{
+													"name": "main-branch-rules",
+													"target": "branch",
+													"enforcement": "active",
+													"conditions": {
+														"ref_name": {
+															"include": ["~DEFAULT_BRANCH"],
+															"exclude": []
+														}
+													},
+													"rules": [
+														{"type": "required_linear_history"},
+														{"type": "non_fast_forward"},
+														{
+															"type": "required_status_checks",
+															"parameters": {
+																"required_status_checks": [
+																	{"context": "CodeQL"},
+																	{"context": "zizmor"}
+																],
+																"strict_required_status_checks_policy": false
+															}
+														}
+													]
+												}
+												""",
+										true,
+										false
+								)
+						)
+		);
+	}
+
+	@Test
+	void rulesetDrift_putsToUpdateRuleset() throws Exception {
+		stubFor(
+				put(urlMatching("/repos/ArloL/repo/rulesets/42"))
+						.willReturn(okJson("{}"))
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredLinearHistory(true)
+								.noForcePushes(false)
+								.build()
+				)
+				.build();
+
+		var include = List.of("~DEFAULT_BRANCH");
+		var conditions = new RulesetResponse.Conditions(
+				new RulesetResponse.Conditions.RefName(include, List.of())
+		);
+		// Actual ruleset is missing required_linear_history — drift
+		var actualRuleset = new RulesetResponse(
+				42L,
+				"main-branch-rules",
+				"branch",
+				"active",
+				conditions,
+				List.of()
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of(),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(actualRuleset)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(putRequestedFor(urlEqualTo("/repos/ArloL/repo/rulesets/42")));
+	}
+
+	@Test
+	void noRulesetDrift_noApiCalls() throws Exception {
+		var include = List.of("~DEFAULT_BRANCH");
+		var conditions = new RulesetResponse.Conditions(
+				new RulesetResponse.Conditions.RefName(include, List.of())
+		);
+		var params = new RulesetResponse.Rule.Parameters(
+				List.of(
+						new RulesetResponse.Rule.Parameters.StatusCheck(
+								"CodeQL",
+								null
+						)
+				),
+				false,
+				null,
+				null,
+				null,
+				null
+		);
+		var actualRuleset = new RulesetResponse(
+				1L,
+				"main-branch-rules",
+				"branch",
+				"active",
+				conditions,
+				List.of(
+						new RulesetResponse.Rule(
+								"required_linear_history",
+								null
+						),
+						new RulesetResponse.Rule(
+								"required_status_checks",
+								params
+						)
+				)
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.rulesets(
+						RulesetArgs.builder("main-branch-rules")
+								.includePatterns("~DEFAULT_BRANCH")
+								.requiredLinearHistory(true)
+								.requiredStatusChecks("CodeQL")
+								.build()
+				)
+				.build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of(),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(actualRuleset)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(0, postRequestedFor(urlEqualTo("/repos/ArloL/repo/rulesets")));
+		verify(
+				0,
+				putRequestedFor(urlMatching("/repos/ArloL/repo/rulesets/.*"))
 		);
 	}
 
