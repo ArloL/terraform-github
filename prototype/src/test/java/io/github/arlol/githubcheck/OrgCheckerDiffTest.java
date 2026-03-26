@@ -773,6 +773,13 @@ class OrgCheckerDiffTest {
 				name,
 				"branch",
 				"active",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				conditions,
 				rules
 		);
@@ -805,6 +812,13 @@ class OrgCheckerDiffTest {
 				name,
 				"branch",
 				"active",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				conditions,
 				List.of(
 						new RulesetResponse.Rule(
@@ -988,6 +1002,13 @@ class OrgCheckerDiffTest {
 				"main-branch-rules",
 				"branch",
 				"active",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				conditions,
 				List.of(new RulesetResponse.Rule("pull_request", prParams))
 		);

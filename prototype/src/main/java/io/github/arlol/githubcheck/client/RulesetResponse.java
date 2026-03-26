@@ -2,14 +2,58 @@ package io.github.arlol.githubcheck.client;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record RulesetResponse(
 		long id,
 		String name,
 		String target,
 		String enforcement,
+		String nodeId,
+		SourceType sourceType,
+		String source,
+		CurrentUserCanBypass currentUserCanBypass,
+		String createdAt,
+		String updatedAt,
+		List<BypassActor> bypassActors,
 		Conditions conditions,
 		List<Rule> rules
 ) {
+
+	public enum SourceType {
+		@JsonProperty("Repository")
+		REPOSITORY, @JsonProperty("Organization")
+		ORGANIZATION
+	}
+
+	public enum CurrentUserCanBypass {
+		@JsonProperty("always")
+		ALWAYS, @JsonProperty("pull_requests_only")
+		PULL_REQUESTS_ONLY, @JsonProperty("never")
+		NEVER
+	}
+
+	public record BypassActor(
+			Long actorId,
+			ActorType actorType,
+			BypassMode bypassMode
+	) {
+
+		public enum ActorType {
+			@JsonProperty("Integration")
+			INTEGRATION, @JsonProperty("OrganizationAdmin")
+			ORGANIZATION_ADMIN, @JsonProperty("RepositoryRole")
+			REPOSITORY_ROLE, @JsonProperty("Team")
+			TEAM
+		}
+
+		public enum BypassMode {
+			@JsonProperty("always")
+			ALWAYS, @JsonProperty("pull_request")
+			PULL_REQUEST
+		}
+
+	}
 
 	public record Conditions(
 			RefName refName
