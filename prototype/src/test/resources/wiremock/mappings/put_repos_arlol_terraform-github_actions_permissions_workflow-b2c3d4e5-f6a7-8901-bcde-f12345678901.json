@@ -1,0 +1,31 @@
+{
+  "id" : "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "name" : "put_repos_arlol_terraform-github_actions_permissions_workflow",
+  "request" : {
+    "url" : "/repos/ArloL/terraform-github/actions/permissions/workflow",
+    "method" : "PUT"
+  },
+  "response" : {
+    "status" : 204,
+    "headers" : {
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-RateLimit-Resource" : "core",
+      "Server" : "github.com",
+      "Access-Control-Allow-Origin" : "*",
+      "X-Content-Type-Options" : "nosniff",
+      "x-github-api-version-selected" : "2026-03-10",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "X-Frame-Options" : "deny",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-XSS-Protection" : "0",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4584",
+      "X-RateLimit-Reset" : "1774511500",
+      "X-OAuth-Scopes" : "read:discussion, repo"
+    }
+  },
+  "persistent" : true,
+  "insertionIndex" : 17
+}
