@@ -265,7 +265,7 @@ public class GitHubClient {
 		}
 	}
 
-	public void updateBranchProtection(
+	public BranchProtectionResponse updateBranchProtection(
 			String owner,
 			String repo,
 			String branch,
@@ -283,6 +283,7 @@ public class GitHubClient {
 							+ " updating branch protection on " + repo
 			);
 		}
+		return mapper.readValue(resp.body(), BranchProtectionResponse.class);
 	}
 
 	public void updateRepository(
