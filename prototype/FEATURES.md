@@ -16,20 +16,9 @@ Implemented: `applyFixes()` now fixes workflow permissions drift. `GitHubClient.
 
 Implemented: `applyFixes()` now fixes branch protection drift for public repos. `GitHubClient.updateBranchProtection()` sends a PUT to `/repos/{owner}/{repo}/branches/{branch}/protection` with the full desired payload: `enforce_admins: true`, `required_linear_history: true`, `allow_force_pushes: false`, `required_status_checks` (strict: false, checks from `BASE_STATUS_CHECKS` + `RepositoryArgs.requiredStatusChecks()`), `required_pull_request_reviews: null`, `restrictions: null`. Both the "missing" and "drifted" cases are handled with a single PUT call.
 
-## 5. Repository Rulesets
+## ~~5. Repository Rulesets~~ DONE
 
-Rulesets are in the spec but not implemented at all — no check, no fix.
-
-### Plan
-
-- Add `Ruleset` record to the client package mirroring the GitHub API response.
-- Add `RepositoryArgs` fields: `rulesets` (list of ruleset configs with branch patterns, status checks, required reviews, linear history, force push).
-- Add `GitHubClient` methods:
-  - GET `/repos/{owner}/{repo}/rulesets` to list rulesets.
-  - POST `/repos/{owner}/{repo}/rulesets` to create.
-  - PUT `/repos/{owner}/{repo}/rulesets/{id}` to update.
-- Add diff logic in `OrgChecker.computeDiffs()` comparing desired vs actual rulesets.
-- Add fix logic to create/update rulesets.
+Implemented: `RulesetArgs` config defines desired rulesets (name, include patterns, required linear history, no force pushes, required status checks, required review count). `GitHubClient` has full CRUD: `listRulesets()` and `getRuleset()` for reading, `createRuleset()` for creation, `updateRuleset()` for updates. `OrgChecker.checkRulesets()` diffs each desired ruleset against actual state (missing rulesets, include patterns, rule settings, status checks, review count). `applyFixes()` creates missing rulesets via POST and updates drifted ones via PUT, using `buildRulesetRequest()` to construct the payload with target `branch`, enforcement `active`, and all configured rules/conditions.
 
 ## 6. GitHub Pages Validation and Fixing
 
