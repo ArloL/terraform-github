@@ -1,0 +1,49 @@
+{
+  "id" : "14c44f4b-f1ce-456f-9f7d-a3bb2f5a70c9",
+  "name" : "user_repos",
+  "request" : {
+    "urlPath" : "/user/repos",
+    "method" : "GET",
+    "queryParameters" : {
+      "per_page" : {
+        "equalTo" : "100"
+      },
+      "type" : {
+        "equalTo" : "owner"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "user_repos-14c44f4b-f1ce-456f-9f7d-a3bb2f5a70c9.json",
+    "headers" : {
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-RateLimit-Resource" : "core",
+      "Server" : "github.com",
+      "X-RateLimit-Used" : "402",
+      "Access-Control-Allow-Origin" : "*",
+      "x-github-api-version-selected" : "2026-03-10",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "X-Frame-Options" : "deny",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset",
+      "X-RateLimit-Remaining" : "4598",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-XSS-Protection" : "0",
+      "X-GitHub-Request-Id" : "5E34:19B677:31A04E3:2BC4C5A:69C4DA76",
+      "Content-Type" : "application/json; charset=utf-8",
+      "X-Content-Type-Options" : "nosniff",
+      "X-RateLimit-Reset" : "1774511500",
+      "Date" : "Thu, 26 Mar 2026 07:04:23 GMT",
+      "Cache-Control" : "private, max-age=60, s-maxage=60",
+      "ETag" : "\"d69c07ef521794474538a7fdaba81e86cbbbcc79d70fb2401c9becd4e8cc2018\"",
+      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With",
+      "X-RateLimit-Limit" : "5000",
+      "X-OAuth-Scopes" : "read:discussion, repo",
+      "github-authentication-token-expiration" : "2026-04-18 19:24:56 UTC"
+    }
+  },
+  "persistent" : true,
+  "insertionIndex" : 12
+}
