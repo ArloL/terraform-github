@@ -560,4 +560,25 @@ public class GitHubClient {
 		return null;
 	}
 
+	public RulesetResponse getRuleset(String owner, String repo, long rulesetId)
+			throws Exception {
+		HttpResponse<String> resp = send(
+				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets/"
+						+ rulesetId
+		);
+		if (resp.statusCode() == 403) {
+			throw new RuntimeException(
+					"HTTP 403 for workflow permissions on " + repo
+							+ " — token may lack admin scope"
+			);
+		}
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode()
+							+ " GET workflow permissions on " + repo
+			);
+		}
+		return mapper.readValue(resp.body(), RulesetResponse.class);
+	}
+
 }

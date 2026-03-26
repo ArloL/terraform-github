@@ -104,4 +104,24 @@ class GitHubClientPlaybackTest {
 		);
 	}
 
+	@Test
+	void listRulesets_succeeds() {
+		assertThatNoException().isThrownBy(() -> {
+			var rulesets = client.listRulesets("ArloL", "terraform-github");
+			assertThat(rulesets).isNotEmpty();
+			assertThat(rulesets).extracting(RulesetResponse::name)
+					.contains("main-branch-rules");
+			var ruleset = client.getRuleset(
+					"ArloL",
+					"terraform-github",
+					rulesets.getFirst().id()
+			);
+			assertThat(ruleset).isNotNull();
+			assertThat(ruleset.conditions()).isNotNull();
+			assertThat(ruleset.conditions().refName()).isNotNull();
+			assertThat(ruleset.conditions().refName().include())
+					.contains("refs/heads/main");
+		});
+	}
+
 }
