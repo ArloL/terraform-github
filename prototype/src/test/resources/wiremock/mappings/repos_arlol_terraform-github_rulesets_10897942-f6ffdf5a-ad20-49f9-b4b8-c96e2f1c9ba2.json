@@ -1,5 +1,5 @@
 {
-  "id" : "3238b410-4766-4f19-9f7a-9db5a416742f",
+  "id" : "f6ffdf5a-ad20-49f9-b4b8-c96e2f1c9ba2",
   "name" : "repos_arlol_terraform-github_rulesets_10897942",
   "request" : {
     "url" : "/repos/ArloL/terraform-github/rulesets/10897942",
@@ -12,22 +12,22 @@
       "X-Accepted-OAuth-Scopes" : "repo",
       "X-RateLimit-Resource" : "core",
       "Server" : "github.com",
-      "X-RateLimit-Used" : "2516",
+      "X-RateLimit-Used" : "46",
       "Access-Control-Allow-Origin" : "*",
       "x-github-api-version-selected" : "2026-03-10",
       "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
       "X-Frame-Options" : "deny",
       "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
       "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset",
-      "X-RateLimit-Remaining" : "2484",
+      "X-RateLimit-Remaining" : "4954",
       "X-GitHub-Media-Type" : "github.v3; format=json",
       "Content-Security-Policy" : "default-src 'none'",
       "X-XSS-Protection" : "0",
-      "X-GitHub-Request-Id" : "5DD6:348E39:159F002:13025F1:69C55C67",
+      "X-GitHub-Request-Id" : "5E00:39A4AF:14B670D:11C0932:69C5A40B",
       "Content-Type" : "application/json; charset=utf-8",
       "X-Content-Type-Options" : "nosniff",
-      "X-RateLimit-Reset" : "1774542655",
-      "Date" : "Thu, 26 Mar 2026 16:18:48 GMT",
+      "X-RateLimit-Reset" : "1774562253",
+      "Date" : "Thu, 26 Mar 2026 21:24:27 GMT",
       "Cache-Control" : "private, max-age=60, s-maxage=60",
       "ETag" : "\"7e7e83e9b60a4720e6158a2f89c496c5a908e026ec90df3ca4303548c9c6e8a3\"",
       "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With",
@@ -37,5 +37,5 @@
     }
   },
   "persistent" : true,
-  "insertionIndex" : 28
+  "insertionIndex" : 30
 }

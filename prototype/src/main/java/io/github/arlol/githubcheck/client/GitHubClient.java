@@ -356,7 +356,7 @@ public class GitHubClient {
 		}
 	}
 
-	public List<RulesetResponse> listRulesets(String owner, String repo)
+	public List<RulesetSummaryResponse> listRulesets(String owner, String repo)
 			throws Exception {
 		String url = baseUrl + "/repos/" + owner + "/" + repo
 				+ "/rulesets?per_page=100";
@@ -368,11 +368,16 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, null).stream()
-				.map(node -> mapper.convertValue(node, RulesetResponse.class))
+				.map(
+						node -> mapper.convertValue(
+								node,
+								RulesetSummaryResponse.class
+						)
+				)
 				.toList();
 	}
 
-	public RulesetResponse createRuleset(
+	public RulesetDetailsResponse createRuleset(
 			String owner,
 			String repo,
 			RulesetRequest payload
@@ -388,10 +393,10 @@ public class GitHubClient {
 							+ owner + "/" + repo + ": " + resp.body()
 			);
 		}
-		return mapper.readValue(resp.body(), RulesetResponse.class);
+		return mapper.readValue(resp.body(), RulesetDetailsResponse.class);
 	}
 
-	public RulesetResponse updateRuleset(
+	public RulesetDetailsResponse updateRuleset(
 			String owner,
 			String repo,
 			long rulesetId,
@@ -410,7 +415,7 @@ public class GitHubClient {
 							+ resp.body()
 			);
 		}
-		return mapper.readValue(resp.body(), RulesetResponse.class);
+		return mapper.readValue(resp.body(), RulesetDetailsResponse.class);
 	}
 
 	public void replaceTopics(String owner, String repo, List<String> topics)
@@ -560,8 +565,11 @@ public class GitHubClient {
 		return null;
 	}
 
-	public RulesetResponse getRuleset(String owner, String repo, long rulesetId)
-			throws Exception {
+	public RulesetDetailsResponse getRuleset(
+			String owner,
+			String repo,
+			long rulesetId
+	) throws Exception {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets/"
 						+ rulesetId
@@ -578,7 +586,7 @@ public class GitHubClient {
 							+ " GET workflow permissions on " + repo
 			);
 		}
-		return mapper.readValue(resp.body(), RulesetResponse.class);
+		return mapper.readValue(resp.body(), RulesetDetailsResponse.class);
 	}
 
 }

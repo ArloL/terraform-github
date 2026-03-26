@@ -17,7 +17,7 @@ import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
-import io.github.arlol.githubcheck.client.RulesetResponse;
+import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 import io.github.arlol.githubcheck.config.RulesetArgs;
@@ -138,7 +138,7 @@ class OrgCheckerDiffTest {
 		private List<String> actionSecretNames = List.of();
 		private Map<String, List<String>> environmentSecretNames = Map.of();
 		private String workflowPermissionsJson = GOOD_WORKFLOW_PERMISSIONS_JSON;
-		private List<RulesetResponse> rulesets = List.of();
+		private List<RulesetDetailsResponse> rulesets = List.of();
 
 		StateBuilder summaryOverride(String overridesJson) {
 			this.summaryJson = merge(this.summaryJson, overridesJson)
@@ -192,7 +192,7 @@ class OrgCheckerDiffTest {
 			return this;
 		}
 
-		StateBuilder rulesets(List<RulesetResponse> rulesets) {
+		StateBuilder rulesets(List<RulesetDetailsResponse> rulesets) {
 			this.rulesets = rulesets;
 			return this;
 		}
@@ -756,22 +756,25 @@ class OrgCheckerDiffTest {
 	// ─── Rulesets drift
 	// ──────────────────────────────────────────────────────
 
-	private static RulesetResponse rulesetWithRules(
+	private static RulesetDetailsResponse rulesetWithRules(
 			String name,
 			String... ruleTypes
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
-		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of()),
+		var conditions = new RulesetDetailsResponse.Conditions(
+				new RulesetDetailsResponse.Conditions.RefName(
+						include,
+						List.of()
+				),
 				null,
 				null,
 				null
 		);
-		List<RulesetResponse.Rule> rules = new java.util.ArrayList<>();
+		List<RulesetDetailsResponse.Rule> rules = new java.util.ArrayList<>();
 		for (String type : ruleTypes) {
-			rules.add(new RulesetResponse.Rule(type, null));
+			rules.add(new RulesetDetailsResponse.Rule(type, null));
 		}
-		return new RulesetResponse(
+		return new RulesetDetailsResponse(
 				1L,
 				name,
 				"branch",
@@ -788,24 +791,30 @@ class OrgCheckerDiffTest {
 		);
 	}
 
-	private static RulesetResponse rulesetWithStatusChecks(
+	private static RulesetDetailsResponse rulesetWithStatusChecks(
 			String name,
 			String... contexts
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
-		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of()),
+		var conditions = new RulesetDetailsResponse.Conditions(
+				new RulesetDetailsResponse.Conditions.RefName(
+						include,
+						List.of()
+				),
 				null,
 				null,
 				null
 		);
-		List<RulesetResponse.Rule.Parameters.StatusCheck> checks = new java.util.ArrayList<>();
+		List<RulesetDetailsResponse.Rule.Parameters.StatusCheck> checks = new java.util.ArrayList<>();
 		for (String ctx : contexts) {
 			checks.add(
-					new RulesetResponse.Rule.Parameters.StatusCheck(ctx, null)
+					new RulesetDetailsResponse.Rule.Parameters.StatusCheck(
+							ctx,
+							null
+					)
 			);
 		}
-		var params = new RulesetResponse.Rule.Parameters(
+		var params = new RulesetDetailsResponse.Rule.Parameters(
 				checks,
 				false,
 				null,
@@ -813,7 +822,7 @@ class OrgCheckerDiffTest {
 				null,
 				null
 		);
-		return new RulesetResponse(
+		return new RulesetDetailsResponse(
 				1L,
 				name,
 				"branch",
@@ -827,12 +836,15 @@ class OrgCheckerDiffTest {
 				null,
 				conditions,
 				List.of(
-						new RulesetResponse.Rule(
+						new RulesetDetailsResponse.Rule(
 								"required_linear_history",
 								null
 						),
-						new RulesetResponse.Rule("non_fast_forward", null),
-						new RulesetResponse.Rule(
+						new RulesetDetailsResponse.Rule(
+								"non_fast_forward",
+								null
+						),
+						new RulesetDetailsResponse.Rule(
 								"required_status_checks",
 								params
 						)
@@ -992,13 +1004,16 @@ class OrgCheckerDiffTest {
 				)
 				.build();
 		var include = List.of("~DEFAULT_BRANCH");
-		var conditions = new RulesetResponse.Conditions(
-				new RulesetResponse.Conditions.RefName(include, List.of()),
+		var conditions = new RulesetDetailsResponse.Conditions(
+				new RulesetDetailsResponse.Conditions.RefName(
+						include,
+						List.of()
+				),
 				null,
 				null,
 				null
 		);
-		var prParams = new RulesetResponse.Rule.Parameters(
+		var prParams = new RulesetDetailsResponse.Rule.Parameters(
 				null,
 				null,
 				1,
@@ -1006,7 +1021,7 @@ class OrgCheckerDiffTest {
 				false,
 				false
 		);
-		var actualRuleset = new RulesetResponse(
+		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
 				"branch",
@@ -1019,7 +1034,12 @@ class OrgCheckerDiffTest {
 				null,
 				null,
 				conditions,
-				List.of(new RulesetResponse.Rule("pull_request", prParams))
+				List.of(
+						new RulesetDetailsResponse.Rule(
+								"pull_request",
+								prParams
+						)
+				)
 		);
 		var state = new StateBuilder().rulesets(List.of(actualRuleset)).build();
 		assertThat(checker.computeDiffs(state, args)).contains(

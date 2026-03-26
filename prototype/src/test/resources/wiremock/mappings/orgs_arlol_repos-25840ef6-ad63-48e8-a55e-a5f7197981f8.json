@@ -1,49 +1,47 @@
 {
-  "id" : "937c3038-5491-40bc-bddb-b08f71a8aaef",
-  "name" : "user_repos",
+  "id" : "25840ef6-ad63-48e8-a55e-a5f7197981f8",
+  "name" : "orgs_arlol_repos",
   "request" : {
-    "urlPath" : "/user/repos",
+    "urlPath" : "/orgs/ArloL/repos",
     "method" : "GET",
     "queryParameters" : {
       "per_page" : {
         "equalTo" : "100"
       },
       "type" : {
-        "equalTo" : "owner"
+        "equalTo" : "all"
       }
     }
   },
   "response" : {
-    "status" : 200,
-    "bodyFileName" : "user_repos-937c3038-5491-40bc-bddb-b08f71a8aaef.json",
+    "status" : 404,
+    "body" : "{\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#list-organization-repositories\",\"status\":\"404\"}",
     "headers" : {
-      "X-Accepted-OAuth-Scopes" : "",
-      "X-RateLimit-Resource" : "core",
+      "X-Accepted-OAuth-Scopes" : "repo",
       "Server" : "github.com",
-      "X-RateLimit-Used" : "2508",
+      "X-RateLimit-Resource" : "core",
       "Access-Control-Allow-Origin" : "*",
+      "X-RateLimit-Used" : "5",
+      "X-Content-Type-Options" : "nosniff",
+      "X-RateLimit-Reset" : "1774563764",
       "x-github-api-version-selected" : "2026-03-10",
+      "Date" : "Thu, 26 Mar 2026 21:24:24 GMT",
       "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
       "X-Frame-Options" : "deny",
       "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
       "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset",
-      "X-RateLimit-Remaining" : "2492",
+      "X-RateLimit-Remaining" : "4995",
       "X-GitHub-Media-Type" : "github.v3; format=json",
       "Content-Security-Policy" : "default-src 'none'",
-      "X-XSS-Protection" : "0",
-      "X-GitHub-Request-Id" : "5DF0:37EE1B:158CED4:12F6B56:69C55C63",
-      "Content-Type" : "application/json; charset=utf-8",
-      "X-Content-Type-Options" : "nosniff",
-      "X-RateLimit-Reset" : "1774542655",
-      "Date" : "Thu, 26 Mar 2026 16:18:44 GMT",
-      "Cache-Control" : "private, max-age=60, s-maxage=60",
-      "ETag" : "\"b0a778d96d5720e2f8488c6046cdc235cf0f19959f33a019958e4b0a99513fc1\"",
-      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With",
+      "Vary" : "Accept-Encoding, Accept, X-Requested-With",
       "X-RateLimit-Limit" : "5000",
+      "X-XSS-Protection" : "0",
       "X-OAuth-Scopes" : "read:discussion, repo",
-      "github-authentication-token-expiration" : "2026-04-18 19:24:56 UTC"
+      "github-authentication-token-expiration" : "2026-04-18 19:24:56 UTC",
+      "X-GitHub-Request-Id" : "5E67:19694B:127568B:F809B1:69C5A407",
+      "Content-Type" : "application/json; charset=utf-8"
     }
   },
   "persistent" : true,
-  "insertionIndex" : 20
+  "insertionIndex" : 21
 }
