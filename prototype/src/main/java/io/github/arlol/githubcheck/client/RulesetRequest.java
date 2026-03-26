@@ -13,6 +13,10 @@ public record RulesetRequest(
 		List<Rule> rules
 ) {
 
+	public RulesetRequest {
+		rules = rules == null ? null : List.copyOf(rules);
+	}
+
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record Conditions(
 			RefName refName,
@@ -25,6 +29,12 @@ public record RulesetRequest(
 				List<String> include,
 				List<String> exclude
 		) {
+
+			public RefName {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 		}
 
 		@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -33,11 +43,23 @@ public record RulesetRequest(
 				List<String> exclude,
 				@JsonProperty("protected") Boolean isProtected
 		) {
+
+			public RepositoryName {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 		}
 
 		public record RepositoryId(
 				List<Long> repositoryIds
 		) {
+
+			public RepositoryId {
+				repositoryIds = repositoryIds == null ? null
+						: List.copyOf(repositoryIds);
+			}
+
 		}
 
 		public record RepositoryProperty(
@@ -45,12 +67,23 @@ public record RulesetRequest(
 				List<PropertyCondition> exclude
 		) {
 
+			public RepositoryProperty {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 			@JsonInclude(JsonInclude.Include.NON_NULL)
 			public record PropertyCondition(
 					String name,
 					List<String> propertyValues,
 					String source
 			) {
+
+				public PropertyCondition {
+					propertyValues = propertyValues == null ? null
+							: List.copyOf(propertyValues);
+				}
+
 			}
 
 		}
@@ -74,6 +107,11 @@ public record RulesetRequest(
 				Boolean requireCodeOwnerReview,
 				Boolean requireLastPushApproval
 		) {
+
+			public Parameters {
+				requiredStatusChecks = requiredStatusChecks == null ? null
+						: List.copyOf(requiredStatusChecks);
+			}
 
 			@JsonInclude(JsonInclude.Include.NON_NULL)
 			public record StatusCheck(

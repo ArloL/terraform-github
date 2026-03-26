@@ -20,6 +20,11 @@ public record RulesetDetailsResponse(
 		List<Rule> rules
 ) {
 
+	public RulesetDetailsResponse {
+		bypassActors = bypassActors == null ? null : List.copyOf(bypassActors);
+		rules = rules == null ? null : List.copyOf(rules);
+	}
+
 	public enum SourceType {
 		@JsonProperty("Repository")
 		REPOSITORY, @JsonProperty("Organization")
@@ -66,6 +71,12 @@ public record RulesetDetailsResponse(
 				List<String> include,
 				List<String> exclude
 		) {
+
+			public RefName {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 		}
 
 		public record RepositoryName(
@@ -73,11 +84,23 @@ public record RulesetDetailsResponse(
 				List<String> exclude,
 				@JsonProperty("protected") Boolean isProtected
 		) {
+
+			public RepositoryName {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 		}
 
 		public record RepositoryId(
 				List<Long> repositoryIds
 		) {
+
+			public RepositoryId {
+				repositoryIds = repositoryIds == null ? null
+						: List.copyOf(repositoryIds);
+			}
+
 		}
 
 		public record RepositoryProperty(
@@ -85,11 +108,22 @@ public record RulesetDetailsResponse(
 				List<PropertyCondition> exclude
 		) {
 
+			public RepositoryProperty {
+				include = include == null ? null : List.copyOf(include);
+				exclude = exclude == null ? null : List.copyOf(exclude);
+			}
+
 			public record PropertyCondition(
 					String name,
 					List<String> propertyValues,
 					String source
 			) {
+
+				public PropertyCondition {
+					propertyValues = propertyValues == null ? null
+							: List.copyOf(propertyValues);
+				}
+
 			}
 
 		}
@@ -111,6 +145,11 @@ public record RulesetDetailsResponse(
 				Boolean requireCodeOwnerReview,
 				Boolean requireLastPushApproval
 		) {
+
+			public Parameters {
+				requiredStatusChecks = requiredStatusChecks == null ? null
+						: List.copyOf(requiredStatusChecks);
+			}
 
 			public record StatusCheck(
 					String context,

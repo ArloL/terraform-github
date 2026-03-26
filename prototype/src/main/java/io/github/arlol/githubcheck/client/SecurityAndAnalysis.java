@@ -1,5 +1,7 @@
 package io.github.arlol.githubcheck.client;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public record SecurityAndAnalysis(
@@ -24,7 +26,7 @@ public record SecurityAndAnalysis(
 
 			@JsonCreator
 			public static Status fromValue(String value) {
-				return valueOf(value.toUpperCase());
+				return valueOf(value.toUpperCase(Locale.ROOT));
 			}
 
 		}

@@ -1,6 +1,8 @@
 package io.github.arlol.githubcheck;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import io.github.arlol.githubcheck.config.RepositoryArgs;
@@ -8,7 +10,8 @@ import io.github.arlol.githubcheck.config.RulesetArgs;
 
 public class GitHubCheck {
 
-	static void main(String[] args) throws Exception {
+	static void main(String[] args)
+			throws IOException, InterruptedException, ExecutionException {
 		String token = System.getenv("GITHUB_TOKEN");
 		if (token == null || token.isBlank()) {
 			System.err.println(

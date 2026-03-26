@@ -18,6 +18,10 @@ public record BranchProtectionRequest(
 			List<StatusCheck> checks
 	) {
 
+		public RequiredStatusChecks {
+			checks = List.copyOf(checks);
+		}
+
 		public record StatusCheck(
 				String context,
 				@JsonInclude(JsonInclude.Include.NON_NULL) Integer appId
@@ -41,6 +45,13 @@ public record BranchProtectionRequest(
 			List<String> teams,
 			List<String> apps
 	) {
+
+		public Restrictions {
+			users = List.copyOf(users);
+			teams = List.copyOf(teams);
+			apps = List.copyOf(apps);
+		}
+
 	}
 
 }

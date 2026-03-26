@@ -21,4 +21,11 @@ public record RepositoryState(
 		WorkflowPermissions workflowPermissions,
 		List<RulesetDetailsResponse> rulesets
 ) {
+
+	public RepositoryState {
+		actionSecretNames = List.copyOf(actionSecretNames);
+		environmentSecretNames = Map.copyOf(environmentSecretNames);
+		rulesets = List.copyOf(rulesets);
+	}
+
 }

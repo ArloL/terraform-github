@@ -1,6 +1,7 @@
 package io.github.arlol.githubcheck.client;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +29,7 @@ public record Pages(
 
 		@JsonCreator
 		public static BuildType fromValue(String value) {
-			return valueOf(value.toUpperCase());
+			return valueOf(value.toUpperCase(Locale.ROOT));
 		}
 
 	}
@@ -45,6 +46,11 @@ public record Pages(
 			List<String> domains,
 			String expiresAt
 	) {
+
+		public HttpsCertificate {
+			domains = domains == null ? null : List.copyOf(domains);
+		}
+
 	}
 
 }
