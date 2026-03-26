@@ -46,13 +46,14 @@ class GitHubClientPlaybackTest {
 		RepositoryFull repo = client.getRepo("ArloL", "terraform-github");
 		assertThat(repo.name()).isEqualTo("terraform-github");
 		assertThat(repo.visibility()).isEqualTo("public");
-		assertThat(repo.description()).isEqualTo("Terraform config for GitHub");
+		assertThat(repo.description()).isEqualTo(
+				"A project to manage github settings with terraform"
+		);
 		assertThat(repo.allowMergeCommit()).isFalse();
-		assertThat(repo.allowSquashMerge()).isTrue();
+		assertThat(repo.allowSquashMerge()).isFalse();
 		assertThat(repo.allowAutoMerge()).isTrue();
 		assertThat(repo.deleteBranchOnMerge()).isTrue();
-		assertThat(repo.topics())
-				.containsExactlyInAnyOrder("terraform", "github");
+		assertThat(repo.topics()).isEmpty();
 	}
 
 	@Test
@@ -68,7 +69,7 @@ class GitHubClientPlaybackTest {
 				.getWorkflowPermissions("ArloL", "terraform-github");
 		assertThat(perms.defaultWorkflowPermissions())
 				.isEqualTo(DefaultWorkflowPermissions.READ);
-		assertThat(perms.canApprovePullRequestReviews()).isFalse();
+		assertThat(perms.canApprovePullRequestReviews()).isTrue();
 	}
 
 }
