@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import io.github.arlol.githubcheck.client.BranchProtection;
+import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
@@ -531,22 +532,25 @@ public class OrgChecker {
 		List<String> branchProtectionDiffs = new ArrayList<>();
 		checkBranchProtection(branchProtectionDiffs, actual, desired);
 		if (!branchProtectionDiffs.isEmpty()) {
-			List<Map<String, String>> checks = new ArrayList<>();
 			Set<String> wantContexts = new LinkedHashSet<>(BASE_STATUS_CHECKS);
 			wantContexts.addAll(desired.requiredStatusChecks());
-			for (String context : wantContexts) {
-				checks.add(Map.of("context", context));
-			}
-			Map<String, Object> payload = new LinkedHashMap<>();
-			payload.put(
-					"required_status_checks",
-					Map.of("strict", false, "checks", checks)
+			List<BranchProtectionRequest.RequiredStatusChecks.StatusCheck> checks = wantContexts
+					.stream()
+					.map(
+							BranchProtectionRequest.RequiredStatusChecks.StatusCheck::new
+					)
+					.toList();
+			var payload = new BranchProtectionRequest(
+					new BranchProtectionRequest.RequiredStatusChecks(
+							false,
+							checks
+					),
+					true,
+					null,
+					null,
+					true,
+					false
 			);
-			payload.put("enforce_admins", true);
-			payload.put("required_pull_request_reviews", null);
-			payload.put("restrictions", null);
-			payload.put("required_linear_history", true);
-			payload.put("allow_force_pushes", false);
 			client.updateBranchProtection(org, name, "main", payload);
 			remaining.removeAll(branchProtectionDiffs);
 			System.out
