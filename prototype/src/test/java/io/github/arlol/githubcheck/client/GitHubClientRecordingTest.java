@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -54,7 +55,11 @@ class GitHubClientRecordingTest {
 		client.listOrgRepos("ArloL");
 		client.getRepo("ArloL", "terraform-github");
 		client.getVulnerabilityAlerts("ArloL", "terraform-github");
-		client.getWorkflowPermissions("ArloL", "terraform-github");
+		var perms = client.getWorkflowPermissions("ArloL", "terraform-github");
+		// Non-destructive writes: write back what was just read (idempotent)
+		client.enableVulnerabilityAlerts("ArloL", "terraform-github");
+		client.updateWorkflowPermissions("ArloL", "terraform-github", perms);
+		client.replaceTopics("ArloL", "terraform-github", List.of());
 
 		wm.stopRecording();
 	}

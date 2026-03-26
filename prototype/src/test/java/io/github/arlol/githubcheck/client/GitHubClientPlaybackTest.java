@@ -2,6 +2,7 @@ package io.github.arlol.githubcheck.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
 
@@ -70,6 +71,37 @@ class GitHubClientPlaybackTest {
 		assertThat(perms.defaultWorkflowPermissions())
 				.isEqualTo(DefaultWorkflowPermissions.READ);
 		assertThat(perms.canApprovePullRequestReviews()).isTrue();
+	}
+
+	@Test
+	void enableVulnerabilityAlerts_succeeds() {
+		assertThatNoException().isThrownBy(
+				() -> client
+						.enableVulnerabilityAlerts("ArloL", "terraform-github")
+		);
+	}
+
+	@Test
+	void updateWorkflowPermissions_succeeds() {
+		var perms = new WorkflowPermissions(
+				DefaultWorkflowPermissions.READ,
+				true
+		);
+		assertThatNoException().isThrownBy(
+				() -> client.updateWorkflowPermissions(
+						"ArloL",
+						"terraform-github",
+						perms
+				)
+		);
+	}
+
+	@Test
+	void replaceTopics_succeeds() {
+		assertThatNoException().isThrownBy(
+				() -> client
+						.replaceTopics("ArloL", "terraform-github", List.of())
+		);
 	}
 
 }
