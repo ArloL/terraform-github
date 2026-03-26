@@ -268,7 +268,7 @@ public class GitHubClient {
 			String owner,
 			String repo,
 			String branch,
-			Map<String, Object> payload
+			BranchProtectionRequest payload
 	) throws Exception {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = put(
