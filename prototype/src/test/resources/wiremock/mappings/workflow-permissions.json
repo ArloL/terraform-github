@@ -1,0 +1,15 @@
+{
+  "id": "55555555-5555-5555-5555-555555555555",
+  "name": "workflow-permissions",
+  "request": {
+    "method": "GET",
+    "urlPath": "/repos/ArloL/terraform-github/actions/permissions/workflow"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"default_workflow_permissions\":\"read\",\"can_approve_pull_request_reviews\":false}"
+  }
+}
