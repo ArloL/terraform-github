@@ -8,15 +8,9 @@ Implemented: `applyFixes()` batches all drifted repo fields (description, homepa
 
 Implemented: `applyFixes()` now fixes all 4 security settings. Vulnerability alerts and automated security fixes each use dedicated PUT endpoints (`enableVulnerabilityAlerts()`, `enableAutomatedSecurityFixes()`). Secret scanning and push protection use a single PATCH call with a `security_and_analysis` payload via `updateRepository()`. All desired values are hardcoded to enabled.
 
-## 3. Fix Workflow Settings
+## ~~3. Fix Workflow Settings~~ DONE
 
-Workflow permissions are checked but not fixed.
-
-### Plan
-
-- Add `GitHubClient.updateWorkflowPermissions(owner, repo, defaultPermission, canApprovePullRequestReviews)`.
-- Endpoint: PUT `/repos/{owner}/{repo}/actions/permissions/workflow`.
-- Call from `applyFixes()` on drift.
+Implemented: `applyFixes()` now fixes workflow permissions drift. `GitHubClient.updateWorkflowPermissions()` sends a PUT to `/repos/{owner}/{repo}/actions/permissions/workflow` with the desired state (`default_workflow_permissions: read`, `can_approve_pull_request_reviews: true`).
 
 ## 4. Fix Branch Protection
 
