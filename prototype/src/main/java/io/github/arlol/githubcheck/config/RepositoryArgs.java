@@ -1,5 +1,6 @@
 package io.github.arlol.githubcheck.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -90,7 +91,7 @@ public final class RepositoryArgs {
 
 	public static final class Builder {
 
-		private final String name;
+		private String name;
 		private boolean archived = false;
 		private boolean pages = false;
 		private String description = "";
@@ -116,6 +117,11 @@ public final class RepositoryArgs {
 			this.requiredStatusChecks = repositoryArgs.requiredStatusChecks;
 			this.actionsSecrets = repositoryArgs.actionsSecrets;
 			this.environments.putAll(repositoryArgs.environments);
+		}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
 		}
 
 		public Builder archived() {
@@ -150,6 +156,13 @@ public final class RepositoryArgs {
 
 		public Builder requiredStatusChecks(String... checks) {
 			this.requiredStatusChecks = List.of(checks);
+			return this;
+		}
+
+		public Builder addRequiredStatusChecks(String... checks) {
+			List<String> combined = new ArrayList<>(this.requiredStatusChecks);
+			combined.addAll(List.of(checks));
+			this.requiredStatusChecks = combined;
 			return this;
 		}
 
