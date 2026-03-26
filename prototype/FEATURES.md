@@ -103,13 +103,9 @@ The spec says the owner/org is a CLI argument. Currently it's hardcoded to "Arlo
 - Print usage and exit with code 1 if no owner is provided.
 - Pass owner through to `OrgChecker` instead of using a hardcoded value.
 
-## 11. Configurable Repo Groups with Defaults
+## ~~11. Configurable Repo Groups with Defaults~~ DONE
 
-The spec describes repo groups sharing defaults with per-repo overrides. The current implementation has a flat `repositories()` method with a single defaults builder.
-
-### Status
-
-The builder pattern with `defaults.toBuilder()` is already in place, which effectively supports the grouping model. This is **partially implemented** — the mechanism works but there's only one group. Adding more groups is a matter of adding more default builders in `GitHubCheck.repositories()`. No code changes needed — this is a config concern.
+Implemented: `RepositoryArgs.Builder` gained a `name(String)` setter (making `toBuilder()` usable as a group-defaults template) and an `addRequiredStatusChecks()` method that appends to the inherited list instead of replacing it. `GitHubCheck.repositories()` was reorganized into four named groups — `pagesSites` (6 repos sharing `.pages()`), `mainCiRepos` (9 repos sharing `main.required-status-check`), `individual` (unique configs), and `archived` — combined into a flat list via `Stream.of(...).flatMap(List::stream).toList()`. A new `RepositoryArgsTest` covers the builder additions.
 
 ## 12. Output: Show API Calls That `--fix` Would Make
 
