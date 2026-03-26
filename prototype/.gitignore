@@ -18,3 +18,4 @@
 /.flattened-pom.xml
 
 # Add custom entries after this line to be preserved during automated updates
+/schemas/
