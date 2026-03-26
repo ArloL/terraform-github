@@ -524,6 +524,151 @@ class OrgCheckerFixTest {
 	}
 
 	@Test
+	void branchProtectionMissing_putsBranchProtection() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/branches/main/protection"))
+						.willReturn(okJson("{}"))
+		);
+
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				null,
+				List.of(),
+				Map.of(),
+				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/branches/main/protection")
+				).withRequestBody(
+						equalToJson(
+								"""
+										{
+											"required_status_checks": {
+												"strict": false,
+												"checks": [
+													{"context": "check-actions.required-status-check"},
+													{"context": "codeql-analysis.required-status-check"},
+													{"context": "CodeQL"},
+													{"context": "zizmor"}
+												]
+											},
+											"enforce_admins": true,
+											"required_pull_request_reviews": null,
+											"restrictions": null,
+											"required_linear_history": true,
+											"allow_force_pushes": false
+										}
+										"""
+						)
+				)
+		);
+	}
+
+	@Test
+	void branchProtectionDrift_putsBranchProtection() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/branches/main/protection"))
+						.willReturn(okJson("{}"))
+		);
+
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+
+		var driftedBp = parse(
+				"""
+						{
+							"enforce_admins": {"enabled": false},
+							"required_linear_history": {"enabled": true},
+							"allow_force_pushes": {"enabled": false},
+							"required_status_checks": {
+								"strict": false,
+								"checks": [
+									{"context": "check-actions.required-status-check"},
+									{"context": "codeql-analysis.required-status-check"},
+									{"context": "CodeQL"},
+									{"context": "zizmor"}
+								]
+							}
+						}
+						""",
+				BranchProtection.class
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				driftedBp,
+				List.of(),
+				Map.of(),
+				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/branches/main/protection")
+				).withRequestBody(
+						equalToJson(
+								"""
+										{
+											"required_status_checks": {
+												"strict": false,
+												"checks": [
+													{"context": "check-actions.required-status-check"},
+													{"context": "codeql-analysis.required-status-check"},
+													{"context": "CodeQL"},
+													{"context": "zizmor"}
+												]
+											},
+											"enforce_admins": true,
+											"required_pull_request_reviews": null,
+											"restrictions": null,
+											"required_linear_history": true,
+											"allow_force_pushes": false
+										}
+										"""
+						)
+				)
+		);
+	}
+
+	@Test
+	void noBranchProtectionDrift_noPutCall() throws Exception {
+		RepositoryArgs desired = RepositoryArgs.create("repo").build();
+		var state = goodPublicState();
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				0,
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/branches/main/protection")
+				)
+		);
+	}
+
+	@Test
 	void repoFieldsAndTopics_bothFixed() throws Exception {
 		stubFor(
 				patch(urlEqualTo("/repos/ArloL/repo")).willReturn(okJson("{}"))
