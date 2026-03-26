@@ -60,6 +60,12 @@ class GitHubClientRecordingTest {
 		client.enableVulnerabilityAlerts("ArloL", "terraform-github");
 		client.updateWorkflowPermissions("ArloL", "terraform-github", perms);
 		client.replaceTopics("ArloL", "terraform-github", List.of());
+		var rulesets = client.listRulesets("ArloL", "terraform-github");
+		client.getRuleset(
+				"ArloL",
+				"terraform-github",
+				rulesets.getFirst().id()
+		);
 
 		wm.stopRecording();
 	}
