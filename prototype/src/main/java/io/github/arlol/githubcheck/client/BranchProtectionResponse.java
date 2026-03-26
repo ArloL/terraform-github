@@ -3,6 +3,8 @@ package io.github.arlol.githubcheck.client;
 import java.util.List;
 
 public record BranchProtectionResponse(
+		String url, // optional
+		Boolean enabled, // optional
 		EnforceAdmins enforceAdmins,
 		RequiredLinearHistory requiredLinearHistory,
 		AllowForcePushes allowForcePushes,
@@ -13,12 +15,15 @@ public record BranchProtectionResponse(
 		RequiredStatusChecks requiredStatusChecks,
 		RequiredPullRequestReviews requiredPullRequestReviews, // optional
 		Restrictions restrictions, // optional
+		String name, // optional
+		String protectionUrl, // optional
 		RequiredSignatures requiredSignatures, // optional
 		LockBranch lockBranch, // optional
 		AllowForkSyncing allowForkSyncing // optional
 ) {
 
 	public record EnforceAdmins(
+			String url,
 			boolean enabled
 	) {
 	}
@@ -49,6 +54,7 @@ public record BranchProtectionResponse(
 	}
 
 	public record RequiredSignatures(
+			String url,
 			boolean enabled
 	) {
 	}
@@ -64,10 +70,13 @@ public record BranchProtectionResponse(
 	}
 
 	public record RequiredStatusChecks(
+			String url, // optional
+			String enforcementLevel, // optional
 			boolean strict,
 			// Modern API returns checks[].context; legacy returns contexts[].
 			List<StatusCheck> checks,
-			List<String> contexts
+			List<String> contexts,
+			String contextsUrl // optional
 	) {
 
 		public record StatusCheck(
@@ -79,6 +88,7 @@ public record BranchProtectionResponse(
 	}
 
 	public record RequiredPullRequestReviews(
+			String url, // optional
 			boolean dismissStaleReviews,
 			boolean requireCodeOwnerReviews,
 			Integer requiredApprovingReviewCount, // optional
@@ -87,6 +97,10 @@ public record BranchProtectionResponse(
 	}
 
 	public record Restrictions(
+			String url,
+			String usersUrl,
+			String teamsUrl,
+			String appsUrl,
 			List<SimpleUser> users,
 			List<Team> teams,
 			List<App> apps
