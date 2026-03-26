@@ -2,8 +2,10 @@ package io.github.arlol.githubcheck;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
+import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
@@ -19,7 +21,8 @@ public record RepositoryState(
 		List<String> actionSecretNames,
 		Map<String, List<String>> environmentSecretNames,
 		WorkflowPermissions workflowPermissions,
-		List<RulesetDetailsResponse> rulesets
+		List<RulesetDetailsResponse> rulesets,
+		Optional<PagesResponse> pages
 ) {
 
 	public RepositoryState {

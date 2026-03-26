@@ -308,7 +308,7 @@ public class GitHubClient {
 		}
 	}
 
-	public Optional<Pages> getPages(String owner, String repo)
+	public Optional<PagesResponse> getPages(String owner, String repo)
 			throws IOException, InterruptedException {
 		HttpResponse<String> resp = send(
 				baseUrl + "/repos/" + owner + "/" + repo + "/pages"
@@ -327,7 +327,103 @@ public class GitHubClient {
 					"HTTP " + resp.statusCode() + " GET pages on " + repo
 			);
 		}
-		return Optional.of(mapper.readValue(resp.body(), Pages.class));
+		return Optional.of(mapper.readValue(resp.body(), PagesResponse.class));
+	}
+
+	public PagesResponse createPages(
+			String owner,
+			String repo,
+			io.github.arlol.githubcheck.config.PagesArgs args
+	) throws IOException, InterruptedException {
+		java.util.Map<String, Object> bodyMap = new java.util.LinkedHashMap<>();
+		bodyMap.put(
+				"build_type",
+				args.buildType().name().toLowerCase(Locale.ROOT)
+		);
+		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
+			bodyMap.put(
+					"source",
+					java.util.Map.of(
+							"branch",
+							args.sourceBranch(),
+							"path",
+							args.sourcePath()
+					)
+			);
+		}
+		String body = mapper.writeValueAsString(bodyMap);
+		HttpResponse<String> resp = post(
+				baseUrl + "/repos/" + owner + "/" + repo + "/pages",
+				body
+		);
+		if (resp.statusCode() != 201) {
+			throw new GitHubApiException(
+					"HTTP " + resp.statusCode() + " creating pages for " + owner
+							+ "/" + repo + ": " + resp.body()
+			);
+		}
+		return mapper.readValue(resp.body(), PagesResponse.class);
+	}
+
+	public void updatePages(
+			String owner,
+			String repo,
+			io.github.arlol.githubcheck.config.PagesArgs args,
+			boolean httpsEnforced
+	) throws IOException, InterruptedException {
+		java.util.Map<String, Object> bodyMap = new java.util.LinkedHashMap<>();
+		bodyMap.put(
+				"build_type",
+				args.buildType().name().toLowerCase(Locale.ROOT)
+		);
+		bodyMap.put("https_enforced", httpsEnforced);
+		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
+			bodyMap.put(
+					"source",
+					java.util.Map.of(
+							"branch",
+							args.sourceBranch(),
+							"path",
+							args.sourcePath()
+					)
+			);
+		}
+		String body = mapper.writeValueAsString(bodyMap);
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo + "/pages",
+				body
+		);
+		if (resp.statusCode() != 204) {
+			throw new GitHubApiException(
+					"HTTP " + resp.statusCode() + " updating pages for " + owner
+							+ "/" + repo + ": " + resp.body()
+			);
+		}
+	}
+
+	public void deletePages(String owner, String repo)
+			throws IOException, InterruptedException {
+		HttpRequest request = HttpRequest
+				.newBuilder(
+						URI.create(
+								baseUrl + "/repos/" + owner + "/" + repo
+										+ "/pages"
+						)
+				)
+				.header("Authorization", "Bearer " + token)
+				.header("Accept", "application/vnd.github+json")
+				.header("X-GitHub-Api-Version", "2026-03-10")
+				.DELETE()
+				.build();
+		HttpResponse<String> resp = http
+				.send(request, HttpResponse.BodyHandlers.ofString());
+		handleRateLimit(resp);
+		if (resp.statusCode() != 204) {
+			throw new GitHubApiException(
+					"HTTP " + resp.statusCode() + " deleting pages for " + owner
+							+ "/" + repo + ": " + resp.body()
+			);
+		}
 	}
 
 	public void enableVulnerabilityAlerts(String owner, String repo)
