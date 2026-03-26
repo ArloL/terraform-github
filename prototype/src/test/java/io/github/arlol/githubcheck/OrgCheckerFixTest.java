@@ -849,6 +849,13 @@ class OrgCheckerFixTest {
 				"main-branch-rules",
 				"branch",
 				"active",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				conditions,
 				List.of()
 		);
@@ -903,6 +910,13 @@ class OrgCheckerFixTest {
 				"main-branch-rules",
 				"branch",
 				"active",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				conditions,
 				List.of(
 						new RulesetResponse.Rule(
