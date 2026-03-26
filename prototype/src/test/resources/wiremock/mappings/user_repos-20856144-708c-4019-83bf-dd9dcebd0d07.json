@@ -1,5 +1,5 @@
 {
-  "id" : "14c44f4b-f1ce-456f-9f7d-a3bb2f5a70c9",
+  "id" : "20856144-708c-4019-83bf-dd9dcebd0d07",
   "name" : "user_repos",
   "request" : {
     "urlPath" : "/user/repos",
@@ -15,29 +15,29 @@
   },
   "response" : {
     "status" : 200,
-    "bodyFileName" : "user_repos-14c44f4b-f1ce-456f-9f7d-a3bb2f5a70c9.json",
+    "bodyFileName" : "user_repos-20856144-708c-4019-83bf-dd9dcebd0d07.json",
     "headers" : {
       "X-Accepted-OAuth-Scopes" : "",
       "X-RateLimit-Resource" : "core",
       "Server" : "github.com",
-      "X-RateLimit-Used" : "402",
+      "X-RateLimit-Used" : "892",
       "Access-Control-Allow-Origin" : "*",
       "x-github-api-version-selected" : "2026-03-10",
       "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
       "X-Frame-Options" : "deny",
       "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
       "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset",
-      "X-RateLimit-Remaining" : "4598",
+      "X-RateLimit-Remaining" : "4108",
       "X-GitHub-Media-Type" : "github.v3; format=json",
       "Content-Security-Policy" : "default-src 'none'",
       "X-XSS-Protection" : "0",
-      "X-GitHub-Request-Id" : "5E34:19B677:31A04E3:2BC4C5A:69C4DA76",
+      "X-GitHub-Request-Id" : "5DBE:2A2B2B:384682D:318BC5C:69C4E8E4",
       "Content-Type" : "application/json; charset=utf-8",
       "X-Content-Type-Options" : "nosniff",
-      "X-RateLimit-Reset" : "1774511500",
-      "Date" : "Thu, 26 Mar 2026 07:04:23 GMT",
+      "X-RateLimit-Reset" : "1774515588",
+      "Date" : "Thu, 26 Mar 2026 08:05:57 GMT",
       "Cache-Control" : "private, max-age=60, s-maxage=60",
-      "ETag" : "\"d69c07ef521794474538a7fdaba81e86cbbbcc79d70fb2401c9becd4e8cc2018\"",
+      "ETag" : "\"3d63e76333e1c4eb91aa7166ac2dfd1f41a88d26e9b6dc29b2294c5e3c3173c1\"",
       "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With",
       "X-RateLimit-Limit" : "5000",
       "X-OAuth-Scopes" : "read:discussion, repo",
@@ -45,5 +45,5 @@
     }
   },
   "persistent" : true,
-  "insertionIndex" : 12
+  "insertionIndex" : 18
 }
