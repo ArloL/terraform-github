@@ -25,7 +25,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
-import io.github.arlol.githubcheck.client.BranchProtection;
+import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
@@ -149,7 +149,10 @@ class OrgCheckerFixTest {
 				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
 				true,
 				true,
-				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
 				List.of(),
 				Map.of(),
 				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
@@ -167,7 +170,10 @@ class OrgCheckerFixTest {
 				parse(mergedDetails, RepositoryFull.class),
 				true,
 				true,
-				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
 				List.of(),
 				Map.of(),
 				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
@@ -430,7 +436,10 @@ class OrgCheckerFixTest {
 				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
 				false,
 				true,
-				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
 				List.of(),
 				Map.of(),
 				parse(GOOD_WORKFLOW_PERMISSIONS_JSON, WorkflowPermissions.class)
@@ -473,7 +482,10 @@ class OrgCheckerFixTest {
 				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
 				true,
 				true,
-				parse(GOOD_BRANCH_PROTECTION_JSON, BranchProtection.class),
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
 				List.of(),
 				Map.of(),
 				parse("""
@@ -603,7 +615,7 @@ class OrgCheckerFixTest {
 							}
 						}
 						""",
-				BranchProtection.class
+				BranchProtectionResponse.class
 		);
 		var state = new RepositoryState(
 				"repo",

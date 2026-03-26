@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import io.github.arlol.githubcheck.client.BranchProtection;
+import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
@@ -139,7 +139,7 @@ public class OrgChecker {
 					.getAutomatedSecurityFixes(org, name);
 		}
 
-		BranchProtection branchProtection = null;
+		BranchProtectionResponse branchProtection = null;
 		if (!archived && "public".equals(summary.visibility())) {
 			branchProtection = client.getBranchProtection(org, name, "main")
 					.orElse(null);
@@ -359,7 +359,7 @@ public class OrgChecker {
 			if (checks != null && !checks.isEmpty()) {
 				statusContexts = checks.stream()
 						.map(
-								BranchProtection.RequiredStatusChecks.StatusCheck::context
+								BranchProtectionResponse.RequiredStatusChecks.StatusCheck::context
 						)
 						.toList();
 			} else {

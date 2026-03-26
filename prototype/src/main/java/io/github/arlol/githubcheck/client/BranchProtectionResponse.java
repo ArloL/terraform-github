@@ -2,7 +2,7 @@ package io.github.arlol.githubcheck.client;
 
 import java.util.List;
 
-public record BranchProtection(
+public record BranchProtectionResponse(
 		EnforceAdmins enforceAdmins,
 		RequiredLinearHistory requiredLinearHistory,
 		AllowForcePushes allowForcePushes,

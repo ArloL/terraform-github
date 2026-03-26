@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.github.arlol.githubcheck.client.BranchProtection;
+import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
@@ -199,7 +199,7 @@ class OrgCheckerDiffTest {
 					hasBranchProtection
 							? parse(
 									branchProtectionJson,
-									BranchProtection.class
+									BranchProtectionResponse.class
 							)
 							: null,
 					actionSecretNames,

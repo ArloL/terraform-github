@@ -142,7 +142,7 @@ public class GitHubClient {
 		);
 	}
 
-	public Optional<BranchProtection> getBranchProtection(
+	public Optional<BranchProtectionResponse> getBranchProtection(
 			String owner,
 			String repo,
 			String branch
@@ -160,8 +160,9 @@ public class GitHubClient {
 							+ repo
 			);
 		}
-		return Optional
-				.of(mapper.readValue(resp.body(), BranchProtection.class));
+		return Optional.of(
+				mapper.readValue(resp.body(), BranchProtectionResponse.class)
+		);
 	}
 
 	public List<String> getActionSecretNames(String org, String repo)
