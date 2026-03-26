@@ -239,15 +239,16 @@ public class GitHubClient {
 	public void updateWorkflowPermissions(
 			String owner,
 			String repo,
-			WorkflowPermissions.DefaultWorkflowPermissions defaultPermission,
-			boolean canApprovePullRequestReviews
+			WorkflowPermissions permissions
 	) throws Exception {
 		String body = mapper.writeValueAsString(
 				Map.of(
 						"default_workflow_permissions",
-						defaultPermission.name().toLowerCase(),
+						permissions.defaultWorkflowPermissions()
+								.name()
+								.toLowerCase(),
 						"can_approve_pull_request_reviews",
-						canApprovePullRequestReviews
+						permissions.canApprovePullRequestReviews()
 				)
 		);
 		HttpResponse<String> resp = put(
