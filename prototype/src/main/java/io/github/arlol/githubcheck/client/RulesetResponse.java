@@ -3,7 +3,7 @@ package io.github.arlol.githubcheck.client;
 import java.util.List;
 
 public record RulesetResponse(
-		Long id,
+		long id,
 		String name,
 		String target,
 		String enforcement,
