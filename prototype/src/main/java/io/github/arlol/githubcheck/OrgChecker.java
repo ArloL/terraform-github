@@ -515,8 +515,10 @@ public class OrgChecker {
 			client.updateWorkflowPermissions(
 					org,
 					name,
-					WorkflowPermissions.DefaultWorkflowPermissions.READ,
-					true
+					new WorkflowPermissions(
+							WorkflowPermissions.DefaultWorkflowPermissions.READ,
+							true
+					)
 			);
 			remaining.removeAll(workflowDiffs);
 			System.out.printf(
