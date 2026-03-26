@@ -12,16 +12,9 @@ Implemented: `applyFixes()` now fixes all 4 security settings. Vulnerability ale
 
 Implemented: `applyFixes()` now fixes workflow permissions drift. `GitHubClient.updateWorkflowPermissions()` sends a PUT to `/repos/{owner}/{repo}/actions/permissions/workflow` with the desired state (`default_workflow_permissions: read`, `can_approve_pull_request_reviews: true`).
 
-## 4. Fix Branch Protection
+## ~~4. Fix Branch Protection~~ DONE
 
-Branch protection is checked but not fixed.
-
-### Plan
-
-- Add `GitHubClient.updateBranchProtection(owner, repo, branch, ...)`.
-- Endpoint: PUT `/repos/{owner}/{repo}/branches/{branch}/protection`.
-- Build the full protection payload from `RepositoryArgs` (enforce admins, linear history, force pushes, status checks, pull request reviews, restrictions).
-- Call from `applyFixes()` when branch protection drifts are detected.
+Implemented: `applyFixes()` now fixes branch protection drift for public repos. `GitHubClient.updateBranchProtection()` sends a PUT to `/repos/{owner}/{repo}/branches/{branch}/protection` with the full desired payload: `enforce_admins: true`, `required_linear_history: true`, `allow_force_pushes: false`, `required_status_checks` (strict: false, checks from `BASE_STATUS_CHECKS` + `RepositoryArgs.requiredStatusChecks()`), `required_pull_request_reviews: null`, `restrictions: null`. Both the "missing" and "drifted" cases are handled with a single PUT call.
 
 ## 5. Repository Rulesets
 

@@ -527,7 +527,32 @@ public class OrgChecker {
 			);
 		}
 
-		// Branch protection (NOT fixable yet)
+		// Branch protection (fixable for public repos)
+		List<String> branchProtectionDiffs = new ArrayList<>();
+		checkBranchProtection(branchProtectionDiffs, actual, desired);
+		if (!branchProtectionDiffs.isEmpty()) {
+			List<Map<String, String>> checks = new ArrayList<>();
+			Set<String> wantContexts = new LinkedHashSet<>(BASE_STATUS_CHECKS);
+			wantContexts.addAll(desired.requiredStatusChecks());
+			for (String context : wantContexts) {
+				checks.add(Map.of("context", context));
+			}
+			Map<String, Object> payload = new LinkedHashMap<>();
+			payload.put(
+					"required_status_checks",
+					Map.of("strict", false, "checks", checks)
+			);
+			payload.put("enforce_admins", true);
+			payload.put("required_pull_request_reviews", null);
+			payload.put("restrictions", null);
+			payload.put("required_linear_history", true);
+			payload.put("allow_force_pushes", false);
+			client.updateBranchProtection(org, name, "main", payload);
+			remaining.removeAll(branchProtectionDiffs);
+			System.out
+					.printf("[FIXED]   %s: branch_protection updated%n", name);
+		}
+
 		// Secrets/environments (NOT fixable yet)
 
 		return remaining;

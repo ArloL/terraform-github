@@ -264,6 +264,26 @@ public class GitHubClient {
 		}
 	}
 
+	public void updateBranchProtection(
+			String owner,
+			String repo,
+			String branch,
+			Map<String, Object> payload
+	) throws Exception {
+		String body = mapper.writeValueAsString(payload);
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo + "/branches/" + branch
+						+ "/protection",
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode()
+							+ " updating branch protection on " + repo
+			);
+		}
+	}
+
 	public void updateRepository(
 			String org,
 			String repo,
