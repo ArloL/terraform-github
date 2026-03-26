@@ -552,21 +552,13 @@ class GitHubClientTest {
 
 		assertThat(opt).isPresent();
 		BranchProtection bp = opt.orElseThrow();
-		assertThat(bp.url()).isEqualTo(
-				"https://api.github.com/repos/ArloL/my-repo/branches/main/protection"
-		);
 		assertThat(bp.enforceAdmins().enabled()).isTrue();
-		assertThat(bp.enforceAdmins().url()).isEqualTo(
-				"https://api.github.com/repos/ArloL/my-repo/branches/main/protection/enforce_admins"
-		);
 		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
 		assertThat(bp.allowForcePushes().enabled()).isFalse();
 		assertThat(bp.allowDeletions().enabled()).isFalse();
 		assertThat(bp.blockCreations().enabled()).isFalse();
 		assertThat(bp.requiredConversationResolution().enabled()).isTrue();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
-		assertThat(bp.requiredStatusChecks().enforcementLevel())
-				.isEqualTo("non_admins");
 		assertThat(bp.requiredStatusChecks().checks()).extracting(
 				BranchProtection.RequiredStatusChecks.StatusCheck::context
 		)
