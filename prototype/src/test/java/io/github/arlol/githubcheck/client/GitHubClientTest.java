@@ -547,11 +547,11 @@ class GitHubClientTest {
 						)
 		);
 
-		Optional<BranchProtection> opt = client
+		Optional<BranchProtectionResponse> opt = client
 				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
-		BranchProtection bp = opt.orElseThrow();
+		BranchProtectionResponse bp = opt.orElseThrow();
 		assertThat(bp.enforceAdmins().enabled()).isTrue();
 		assertThat(bp.requiredLinearHistory().enabled()).isTrue();
 		assertThat(bp.allowForcePushes().enabled()).isFalse();
@@ -560,7 +560,7 @@ class GitHubClientTest {
 		assertThat(bp.requiredConversationResolution().enabled()).isTrue();
 		assertThat(bp.requiredStatusChecks().strict()).isFalse();
 		assertThat(bp.requiredStatusChecks().checks()).extracting(
-				BranchProtection.RequiredStatusChecks.StatusCheck::context
+				BranchProtectionResponse.RequiredStatusChecks.StatusCheck::context
 		)
 				.containsExactlyInAnyOrder(
 						"check-actions.required-status-check",
@@ -602,7 +602,7 @@ class GitHubClientTest {
 						)
 		);
 
-		Optional<BranchProtection> opt = client
+		Optional<BranchProtectionResponse> opt = client
 				.getBranchProtection("ArloL", "my-repo", "main");
 
 		assertThat(opt).isPresent();
