@@ -3,6 +3,7 @@ package io.github.arlol.githubcheck.client;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record RulesetRequest(
 		String name,
@@ -12,14 +13,46 @@ public record RulesetRequest(
 		List<Rule> rules
 ) {
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record Conditions(
-			RefName refName
+			RefName refName,
+			RepositoryName repositoryName,
+			RepositoryId repositoryId,
+			RepositoryProperty repositoryProperty
 	) {
 
 		public record RefName(
 				List<String> include,
 				List<String> exclude
 		) {
+		}
+
+		@JsonInclude(JsonInclude.Include.NON_NULL)
+		public record RepositoryName(
+				List<String> include,
+				List<String> exclude,
+				@JsonProperty("protected") Boolean isProtected
+		) {
+		}
+
+		public record RepositoryId(
+				List<Long> repositoryIds
+		) {
+		}
+
+		public record RepositoryProperty(
+				List<PropertyCondition> include,
+				List<PropertyCondition> exclude
+		) {
+
+			@JsonInclude(JsonInclude.Include.NON_NULL)
+			public record PropertyCondition(
+					String name,
+					List<String> propertyValues,
+					String source
+			) {
+			}
+
 		}
 
 	}

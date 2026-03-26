@@ -790,7 +790,12 @@ public class OrgChecker {
 				args.includePatterns(),
 				List.of()
 		);
-		var conditions = new RulesetRequest.Conditions(refName);
+		var conditions = new RulesetRequest.Conditions(
+				refName,
+				null,
+				null,
+				null
+		);
 		return new RulesetRequest(
 				args.name(),
 				"branch",
