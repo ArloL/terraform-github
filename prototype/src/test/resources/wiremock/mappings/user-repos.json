@@ -1,0 +1,15 @@
+{
+  "id": "22222222-2222-2222-2222-222222222222",
+  "name": "user-repos",
+  "request": {
+    "method": "GET",
+    "urlPath": "/user/repos"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "[{\"name\":\"terraform-github\",\"archived\":false,\"visibility\":\"public\"}]"
+  }
+}

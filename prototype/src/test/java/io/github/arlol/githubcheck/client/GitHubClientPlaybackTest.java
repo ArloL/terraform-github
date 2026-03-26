@@ -1,0 +1,74 @@
+package io.github.arlol.githubcheck.client;
+
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+
+import io.github.arlol.githubcheck.client.WorkflowPermissions.DefaultWorkflowPermissions;
+
+class GitHubClientPlaybackTest {
+
+	@RegisterExtension
+	static WireMockExtension wm = WireMockExtension.newInstance()
+			.options(
+					wireMockConfig().dynamicPort()
+							.usingFilesUnderClasspath("wiremock")
+			)
+			.build();
+
+	private GitHubClient client;
+
+	@BeforeEach
+	void setUp() {
+		client = new GitHubClient(
+				wm.getRuntimeInfo().getHttpBaseUrl(),
+				"test-token"
+		);
+	}
+
+	@Test
+	void listOrgRepos_returnsRecordedRepos() throws Exception {
+		List<RepositoryMinimal> repos = client.listOrgRepos("ArloL");
+		assertThat(repos).isNotEmpty();
+		assertThat(repos).extracting(RepositoryMinimal::name)
+				.contains("terraform-github");
+	}
+
+	@Test
+	void getRepo_returnsRecordedDetails() throws Exception {
+		RepositoryFull repo = client.getRepo("ArloL", "terraform-github");
+		assertThat(repo.name()).isEqualTo("terraform-github");
+		assertThat(repo.visibility()).isEqualTo("public");
+		assertThat(repo.description()).isEqualTo("Terraform config for GitHub");
+		assertThat(repo.allowMergeCommit()).isFalse();
+		assertThat(repo.allowSquashMerge()).isTrue();
+		assertThat(repo.allowAutoMerge()).isTrue();
+		assertThat(repo.deleteBranchOnMerge()).isTrue();
+		assertThat(repo.topics())
+				.containsExactlyInAnyOrder("terraform", "github");
+	}
+
+	@Test
+	void getVulnerabilityAlerts_returnsRecordedState() throws Exception {
+		boolean enabled = client
+				.getVulnerabilityAlerts("ArloL", "terraform-github");
+		assertThat(enabled).isTrue();
+	}
+
+	@Test
+	void getWorkflowPermissions_returnsRecordedPermissions() throws Exception {
+		WorkflowPermissions perms = client
+				.getWorkflowPermissions("ArloL", "terraform-github");
+		assertThat(perms.defaultWorkflowPermissions())
+				.isEqualTo(DefaultWorkflowPermissions.READ);
+		assertThat(perms.canApprovePullRequestReviews()).isFalse();
+	}
+
+}
