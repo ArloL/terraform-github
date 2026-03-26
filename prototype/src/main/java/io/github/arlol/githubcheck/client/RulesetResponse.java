@@ -56,13 +56,42 @@ public record RulesetResponse(
 	}
 
 	public record Conditions(
-			RefName refName
+			RefName refName,
+			RepositoryName repositoryName,
+			RepositoryId repositoryId,
+			RepositoryProperty repositoryProperty
 	) {
 
 		public record RefName(
 				List<String> include,
 				List<String> exclude
 		) {
+		}
+
+		public record RepositoryName(
+				List<String> include,
+				List<String> exclude,
+				@JsonProperty("protected") Boolean isProtected
+		) {
+		}
+
+		public record RepositoryId(
+				List<Long> repositoryIds
+		) {
+		}
+
+		public record RepositoryProperty(
+				List<PropertyCondition> include,
+				List<PropertyCondition> exclude
+		) {
+
+			public record PropertyCondition(
+					String name,
+					List<String> propertyValues,
+					String source
+			) {
+			}
+
 		}
 
 	}
