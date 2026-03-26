@@ -18,9 +18,12 @@ import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
+import io.github.arlol.githubcheck.client.RulesetRequest;
+import io.github.arlol.githubcheck.client.RulesetResponse;
 import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
+import io.github.arlol.githubcheck.config.RulesetArgs;
 
 public class OrgChecker {
 
@@ -158,6 +161,9 @@ public class OrgChecker {
 
 		WorkflowPermissions wfPerms = client.getWorkflowPermissions(org, name);
 
+		List<RulesetResponse> rulesets = archived ? List.of()
+				: client.listRulesets(org, name);
+
 		return new RepositoryState(
 				name,
 				summary,
@@ -167,7 +173,8 @@ public class OrgChecker {
 				branchProtection,
 				secretNames,
 				envSecrets,
-				wfPerms
+				wfPerms,
+				rulesets
 		);
 	}
 
@@ -196,6 +203,7 @@ public class OrgChecker {
 		checkSecuritySettings(diffs, actual);
 		checkWorkflowPermissions(diffs, actual);
 		checkBranchProtection(diffs, actual, desired);
+		checkRulesets(diffs, actual, desired);
 		checkSecrets(diffs, actual, desired);
 
 		return diffs;
@@ -376,6 +384,129 @@ public class OrgChecker {
 				wantContexts,
 				new HashSet<>(statusContexts)
 		);
+	}
+
+	private void checkRulesets(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		if (desired.rulesets().isEmpty()) {
+			return;
+		}
+
+		Map<String, RulesetResponse> actualByName = actual.rulesets()
+				.stream()
+				.collect(
+						Collectors.toMap(
+								RulesetResponse::name,
+								r -> r,
+								(a, b) -> a
+						)
+				);
+
+		for (RulesetArgs wantedRuleset : desired.rulesets()) {
+			String rName = wantedRuleset.name();
+			RulesetResponse actualRuleset = actualByName.get(rName);
+			if (actualRuleset == null) {
+				diffs.add("ruleset." + rName + ": missing");
+				continue;
+			}
+
+			// Check include patterns
+			Set<String> wantIncludes = new HashSet<>(
+					wantedRuleset.includePatterns()
+			);
+			Set<String> gotIncludes = Set.of();
+			if (actualRuleset.conditions() != null
+					&& actualRuleset.conditions().refName() != null
+					&& actualRuleset.conditions().refName().include() != null) {
+				gotIncludes = new HashSet<>(
+						actualRuleset.conditions().refName().include()
+				);
+			}
+			checkSets(
+					diffs,
+					"ruleset." + rName + ".include_patterns",
+					wantIncludes,
+					gotIncludes
+			);
+
+			// Build a map of actual rules by type
+			Map<String, RulesetResponse.Rule> actualRulesByType = Map.of();
+			if (actualRuleset.rules() != null) {
+				actualRulesByType = actualRuleset.rules()
+						.stream()
+						.collect(
+								Collectors.toMap(
+										RulesetResponse.Rule::type,
+										r -> r,
+										(a, b) -> a
+								)
+						);
+			}
+
+			// Check required_linear_history
+			boolean hasLinearHistory = actualRulesByType
+					.containsKey("required_linear_history");
+			check(
+					diffs,
+					"ruleset." + rName + ".required_linear_history",
+					wantedRuleset.requiredLinearHistory(),
+					hasLinearHistory
+			);
+
+			// Check non_fast_forward (no force pushes)
+			boolean hasNonFastForward = actualRulesByType
+					.containsKey("non_fast_forward");
+			check(
+					diffs,
+					"ruleset." + rName + ".no_force_pushes",
+					wantedRuleset.noForcePushes(),
+					hasNonFastForward
+			);
+
+			// Check required_status_checks
+			Set<String> wantChecks = new HashSet<>(
+					wantedRuleset.requiredStatusChecks()
+			);
+			Set<String> gotChecks = new HashSet<>();
+			RulesetResponse.Rule statusCheckRule = actualRulesByType
+					.get("required_status_checks");
+			if (statusCheckRule != null && statusCheckRule.parameters() != null
+					&& statusCheckRule.parameters()
+							.requiredStatusChecks() != null) {
+				for (var sc : statusCheckRule.parameters()
+						.requiredStatusChecks()) {
+					gotChecks.add(sc.context());
+				}
+			}
+			if (!wantChecks.isEmpty() || !gotChecks.isEmpty()) {
+				checkSets(
+						diffs,
+						"ruleset." + rName + ".required_status_checks",
+						wantChecks,
+						gotChecks
+				);
+			}
+
+			// Check required reviews
+			if (wantedRuleset.requiredReviewCount() != null) {
+				RulesetResponse.Rule prRule = actualRulesByType
+						.get("pull_request");
+				Integer gotCount = null;
+				if (prRule != null && prRule.parameters() != null) {
+					gotCount = prRule.parameters()
+							.requiredApprovingReviewCount();
+				}
+				check(
+						diffs,
+						"ruleset." + rName + ".required_review_count",
+						wantedRuleset.requiredReviewCount(),
+						gotCount
+				);
+			}
+		}
 	}
 
 	private void checkSecrets(
@@ -560,9 +691,113 @@ public class OrgChecker {
 					.printf("[FIXED]   %s: branch_protection updated%n", name);
 		}
 
+		// Rulesets (fixable)
+		List<String> rulesetDiffs = new ArrayList<>();
+		checkRulesets(rulesetDiffs, actual, desired);
+		if (!rulesetDiffs.isEmpty()) {
+			Map<String, RulesetResponse> actualByName = actual.rulesets()
+					.stream()
+					.collect(
+							Collectors.toMap(
+									RulesetResponse::name,
+									r -> r,
+									(a, b) -> a
+							)
+					);
+			for (RulesetArgs wantedRuleset : desired.rulesets()) {
+				String prefix = "ruleset." + wantedRuleset.name();
+				boolean hasDrift = rulesetDiffs.stream()
+						.anyMatch(d -> d.startsWith(prefix));
+				if (!hasDrift) {
+					continue;
+				}
+				RulesetRequest payload = buildRulesetRequest(wantedRuleset);
+				RulesetResponse existing = actualByName
+						.get(wantedRuleset.name());
+				if (existing == null) {
+					client.createRuleset(org, name, payload);
+					System.out.printf(
+							"[FIXED]   %s: ruleset.%s created%n",
+							name,
+							wantedRuleset.name()
+					);
+				} else {
+					client.updateRuleset(org, name, existing.id(), payload);
+					System.out.printf(
+							"[FIXED]   %s: ruleset.%s updated%n",
+							name,
+							wantedRuleset.name()
+					);
+				}
+			}
+			remaining.removeAll(rulesetDiffs);
+		}
+
 		// Secrets/environments (NOT fixable yet)
 
 		return remaining;
+	}
+
+	private static RulesetRequest buildRulesetRequest(RulesetArgs args) {
+		List<RulesetRequest.Rule> rules = new ArrayList<>();
+		if (args.requiredLinearHistory()) {
+			rules.add(new RulesetRequest.Rule("required_linear_history", null));
+		}
+		if (args.noForcePushes()) {
+			rules.add(new RulesetRequest.Rule("non_fast_forward", null));
+		}
+		if (!args.requiredStatusChecks().isEmpty()) {
+			List<RulesetRequest.Rule.Parameters.StatusCheck> checks = args
+					.requiredStatusChecks()
+					.stream()
+					.map(
+							ctx -> new RulesetRequest.Rule.Parameters.StatusCheck(
+									ctx,
+									null
+							)
+					)
+					.toList();
+			rules.add(
+					new RulesetRequest.Rule(
+							"required_status_checks",
+							new RulesetRequest.Rule.Parameters(
+									checks,
+									false,
+									null,
+									null,
+									null,
+									null
+							)
+					)
+			);
+		}
+		if (args.requiredReviewCount() != null) {
+			rules.add(
+					new RulesetRequest.Rule(
+							"pull_request",
+							new RulesetRequest.Rule.Parameters(
+									null,
+									null,
+									args.requiredReviewCount(),
+									false,
+									false,
+									false
+							)
+					)
+			);
+		}
+		var refName = new RulesetRequest.Conditions.RefName(
+				args.includePatterns(),
+				List.of()
+		);
+		var conditions = new RulesetRequest.Conditions(refName);
+		return new RulesetRequest(
+				args.name(),
+				"branch",
+				"active",
+				conditions,
+				rules
+		);
 	}
 
 	// ─── Report

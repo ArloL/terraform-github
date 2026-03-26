@@ -356,6 +356,63 @@ public class GitHubClient {
 		}
 	}
 
+	public List<RulesetResponse> listRulesets(String owner, String repo)
+			throws Exception {
+		String url = baseUrl + "/repos/" + owner + "/" + repo
+				+ "/rulesets?per_page=100";
+		HttpResponse<String> resp = send(url);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " listing rulesets for "
+							+ owner + "/" + repo + ": " + resp.body()
+			);
+		}
+		return collectPaginatedArrayItems(resp, null).stream()
+				.map(node -> mapper.convertValue(node, RulesetResponse.class))
+				.toList();
+	}
+
+	public RulesetResponse createRuleset(
+			String owner,
+			String repo,
+			RulesetRequest payload
+	) throws Exception {
+		String body = mapper.writeValueAsString(payload);
+		HttpResponse<String> resp = post(
+				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets",
+				body
+		);
+		if (resp.statusCode() != 201) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " creating ruleset on "
+							+ owner + "/" + repo + ": " + resp.body()
+			);
+		}
+		return mapper.readValue(resp.body(), RulesetResponse.class);
+	}
+
+	public RulesetResponse updateRuleset(
+			String owner,
+			String repo,
+			long rulesetId,
+			RulesetRequest payload
+	) throws Exception {
+		String body = mapper.writeValueAsString(payload);
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo + "/rulesets/"
+						+ rulesetId,
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new RuntimeException(
+					"HTTP " + resp.statusCode() + " updating ruleset "
+							+ rulesetId + " on " + owner + "/" + repo + ": "
+							+ resp.body()
+			);
+		}
+		return mapper.readValue(resp.body(), RulesetResponse.class);
+	}
+
 	public void replaceTopics(String owner, String repo, List<String> topics)
 			throws Exception {
 		String body = mapper.writeValueAsString(Map.of("names", topics));
@@ -409,6 +466,21 @@ public class GitHubClient {
 			}
 		}
 		return items;
+	}
+
+	private HttpResponse<String> post(String url, String body)
+			throws Exception {
+		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+				.header("Authorization", "Bearer " + token)
+				.header("Accept", "application/vnd.github+json")
+				.header("Content-Type", "application/json")
+				.header("X-GitHub-Api-Version", "2026-03-10")
+				.POST(HttpRequest.BodyPublishers.ofString(body))
+				.build();
+		HttpResponse<String> resp = http
+				.send(request, HttpResponse.BodyHandlers.ofString());
+		handleRateLimit(resp);
+		return resp;
 	}
 
 	private HttpResponse<String> patch(String url, String body)
