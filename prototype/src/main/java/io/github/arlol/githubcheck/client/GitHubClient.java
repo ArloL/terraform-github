@@ -384,7 +384,7 @@ public class GitHubClient {
 		HttpResponse<String> resp = http
 				.send(request, HttpResponse.BodyHandlers.ofString());
 		handleRateLimit(resp);
-		if (resp.statusCode() != 204) {
+		if (resp.statusCode() != 204 && resp.statusCode() != 404) {
 			throw new GitHubApiException(
 					"HTTP " + resp.statusCode() + " deleting pages for " + owner
 							+ "/" + repo + ": " + resp.body()

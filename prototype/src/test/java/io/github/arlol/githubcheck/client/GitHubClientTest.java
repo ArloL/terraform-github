@@ -2,6 +2,7 @@ package io.github.arlol.githubcheck.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -1012,6 +1013,26 @@ class GitHubClientTest {
 		assertThat(pages.pendingDomainUnverifiedAt()).isNull();
 		assertThat(pages.httpsCertificate()).isNull();
 		assertThat(pages.httpsEnforced()).isTrue();
+	}
+
+	@Test
+	void deletePages_204() throws Exception {
+		stubFor(
+				delete(urlPathEqualTo("/repos/ArloL/my-repo/pages"))
+						.willReturn(aResponse().withStatus(204))
+		);
+
+		client.deletePages("ArloL", "my-repo");
+	}
+
+	@Test
+	void deletePages_404() throws Exception {
+		stubFor(
+				delete(urlPathEqualTo("/repos/ArloL/my-repo/pages"))
+						.willReturn(aResponse().withStatus(404))
+		);
+
+		client.deletePages("ArloL", "my-repo");
 	}
 
 	// ─── updateRepository
