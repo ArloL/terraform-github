@@ -22,7 +22,8 @@ import java.util.Optional;
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
-import io.github.arlol.githubcheck.client.PagesRequest;
+import io.github.arlol.githubcheck.client.PagesCreateRequest;
+import io.github.arlol.githubcheck.client.PagesUpdateRequest;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetRequest;
@@ -809,14 +810,14 @@ public class OrgChecker {
 				client.createPages(
 						org,
 						name,
-						buildPagesRequest(desired.pagesArgs(), null)
+						buildPagesCreateRequest(desired.pagesArgs())
 				);
 				System.out.printf("[FIXED]   %s: pages created%n", name);
 			} else {
 				client.updatePages(
 						org,
 						name,
-						buildPagesRequest(desired.pagesArgs(), true)
+						buildPagesUpdateRequest(desired.pagesArgs())
 				);
 				System.out.printf("[FIXED]   %s: pages updated%n", name);
 			}
@@ -828,21 +829,32 @@ public class OrgChecker {
 		return remaining;
 	}
 
-	private static PagesRequest buildPagesRequest(
-			PagesArgs args,
-			Boolean httpsEnforced
-	) {
-		PagesRequest.Source source = null;
+	private static PagesCreateRequest buildPagesCreateRequest(PagesArgs args) {
+		PagesCreateRequest.Source source = null;
 		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
-			source = new PagesRequest.Source(
+			source = new PagesCreateRequest.Source(
 					args.sourceBranch(),
 					args.sourcePath()
 			);
 		}
-		return new PagesRequest(
+		return new PagesCreateRequest(
+				args.buildType().name().toLowerCase(Locale.ROOT),
+				source
+		);
+	}
+
+	private static PagesUpdateRequest buildPagesUpdateRequest(PagesArgs args) {
+		PagesUpdateRequest.Source source = null;
+		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
+			source = new PagesUpdateRequest.Source(
+					args.sourceBranch(),
+					args.sourcePath()
+			);
+		}
+		return new PagesUpdateRequest(
 				args.buildType().name().toLowerCase(Locale.ROOT),
 				source,
-				httpsEnforced
+				true
 		);
 	}
 
