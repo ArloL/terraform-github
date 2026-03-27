@@ -25,4 +25,4 @@ python3 "${SCRIPTS_DIR}/configure-maven-proxy.py"
 echo "Installing Temurin JDK..."
 python3 "${SCRIPTS_DIR}/install-temurin.py"
 
-"./${SCRIPTS_DIR}/warmup-maven.sh"
+"${SCRIPTS_DIR}/warmup-maven.sh"
