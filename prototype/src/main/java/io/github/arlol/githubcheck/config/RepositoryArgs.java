@@ -142,7 +142,7 @@ public final class RepositoryArgs {
 		}
 
 		public Builder pages() {
-			this.pagesArgs = PagesArgs.defaults();
+			this.pagesArgs = PagesArgs.workflow();
 			return this;
 		}
 
