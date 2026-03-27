@@ -13,7 +13,7 @@ SCRIPTS_DIR="${CLAUDE_PROJECT_DIR}/.claude/scripts"
     # Single-threaded artifact download avoids parallel 407s through the proxy
     echo "export MAVEN_OPTS=\"\${MAVEN_OPTS:+\$MAVEN_OPTS }-Dmaven.artifact.threads=1\""
     echo "export PATH=${JAVA_HOME}/bin:\${PATH}"
-    echo "export JAVA_TOOL_OPTIONS=\"\${JAVA_TOOL_OPTIONS:*\$JAVA_TOOL_OPTIONS }-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts\""
+    echo "export JAVA_TOOL_OPTIONS=\"\${JAVA_TOOL_OPTIONS:+\$JAVA_TOOL_OPTIONS }-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts\""
 } >> "${CLAUDE_ENV_FILE}"
 
 # shellcheck disable=SC1090
