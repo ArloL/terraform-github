@@ -12,4 +12,3 @@ for i in $(seq 1 10); do
     fi
     echo "Maven warm-up attempt ${i} incomplete, retrying..."
 done
-./mvnw --batch-mode --define maven.artifact.threads=1 --threads 1 test-compile --no-transfer-progress --quiet || true
