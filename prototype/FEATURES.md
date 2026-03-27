@@ -20,20 +20,9 @@ Implemented: `applyFixes()` now fixes branch protection drift for public repos. 
 
 Implemented: `RulesetArgs` config defines desired rulesets (name, include patterns, required linear history, no force pushes, required status checks, required review count). `GitHubClient` has full CRUD: `listRulesets()` and `getRuleset()` for reading, `createRuleset()` for creation, `updateRuleset()` for updates. `OrgChecker.checkRulesets()` diffs each desired ruleset against actual state (missing rulesets, include patterns, rule settings, status checks, review count). `applyFixes()` creates missing rulesets via POST and updates drifted ones via PUT, using `buildRulesetRequest()` to construct the payload with target `branch`, enforcement `active`, and all configured rules/conditions.
 
-## 6. GitHub Pages Validation and Fixing
+## ~~6. GitHub Pages Validation and Fixing~~ DONE
 
 Pages endpoint is queried and the github-pages environment is auto-created, but no actual Pages settings are validated (build type, source branch/path, HTTPS enforcement) and no fixes are applied.
-
-### Plan
-
-- Extend the `Pages` record to include `build_type`, `source` (branch + path), and `https_enforced`.
-- Add `RepositoryArgs` fields for pages config: `pagesBuildType`, `pagesSourceBranch`, `pagesSourcePath`.
-- Add diff logic comparing actual vs desired pages config.
-- Add `GitHubClient` methods:
-  - POST `/repos/{owner}/{repo}/pages` to enable pages.
-  - PUT `/repos/{owner}/{repo}/pages` to update config.
-  - DELETE `/repos/{owner}/{repo}/pages` to disable.
-- Check HTTPS enforcement via GET and update via PUT.
 
 ## 7. Secret Creation via `--fix`
 
