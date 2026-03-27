@@ -22,6 +22,7 @@ import java.util.Optional;
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
+import io.github.arlol.githubcheck.client.PagesRequest;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetRequest;
@@ -805,10 +806,18 @@ public class OrgChecker {
 		checkPages(pagesDiffs, actual, desired);
 		if (!pagesDiffs.isEmpty()) {
 			if (actual.pages().isEmpty()) {
-				client.createPages(org, name, desired.pagesArgs());
+				client.createPages(
+						org,
+						name,
+						buildPagesRequest(desired.pagesArgs(), null)
+				);
 				System.out.printf("[FIXED]   %s: pages created%n", name);
 			} else {
-				client.updatePages(org, name, desired.pagesArgs(), true);
+				client.updatePages(
+						org,
+						name,
+						buildPagesRequest(desired.pagesArgs(), true)
+				);
 				System.out.printf("[FIXED]   %s: pages updated%n", name);
 			}
 			remaining.removeAll(pagesDiffs);
@@ -817,6 +826,24 @@ public class OrgChecker {
 		// Secrets/environments (NOT fixable yet)
 
 		return remaining;
+	}
+
+	private static PagesRequest buildPagesRequest(
+			PagesArgs args,
+			Boolean httpsEnforced
+	) {
+		PagesRequest.Source source = null;
+		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
+			source = new PagesRequest.Source(
+					args.sourceBranch(),
+					args.sourcePath()
+			);
+		}
+		return new PagesRequest(
+				args.buildType().name().toLowerCase(Locale.ROOT),
+				source,
+				httpsEnforced
+		);
 	}
 
 	private static RulesetRequest buildRulesetRequest(RulesetArgs args) {

@@ -333,25 +333,9 @@ public class GitHubClient {
 	public PagesResponse createPages(
 			String owner,
 			String repo,
-			io.github.arlol.githubcheck.config.PagesArgs args
+			PagesRequest payload
 	) throws IOException, InterruptedException {
-		java.util.Map<String, Object> bodyMap = new java.util.LinkedHashMap<>();
-		bodyMap.put(
-				"build_type",
-				args.buildType().name().toLowerCase(Locale.ROOT)
-		);
-		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
-			bodyMap.put(
-					"source",
-					java.util.Map.of(
-							"branch",
-							args.sourceBranch(),
-							"path",
-							args.sourcePath()
-					)
-			);
-		}
-		String body = mapper.writeValueAsString(bodyMap);
+		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = post(
 				baseUrl + "/repos/" + owner + "/" + repo + "/pages",
 				body
@@ -365,30 +349,9 @@ public class GitHubClient {
 		return mapper.readValue(resp.body(), PagesResponse.class);
 	}
 
-	public void updatePages(
-			String owner,
-			String repo,
-			io.github.arlol.githubcheck.config.PagesArgs args,
-			boolean httpsEnforced
-	) throws IOException, InterruptedException {
-		java.util.Map<String, Object> bodyMap = new java.util.LinkedHashMap<>();
-		bodyMap.put(
-				"build_type",
-				args.buildType().name().toLowerCase(Locale.ROOT)
-		);
-		bodyMap.put("https_enforced", httpsEnforced);
-		if (args.buildType() == PagesResponse.BuildType.LEGACY) {
-			bodyMap.put(
-					"source",
-					java.util.Map.of(
-							"branch",
-							args.sourceBranch(),
-							"path",
-							args.sourcePath()
-					)
-			);
-		}
-		String body = mapper.writeValueAsString(bodyMap);
+	public void updatePages(String owner, String repo, PagesRequest payload)
+			throws IOException, InterruptedException {
+		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo + "/pages",
 				body
