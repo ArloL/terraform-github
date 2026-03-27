@@ -333,7 +333,7 @@ public class GitHubClient {
 	public PagesResponse createPages(
 			String owner,
 			String repo,
-			PagesRequest payload
+			PagesCreateRequest payload
 	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = post(
@@ -349,8 +349,11 @@ public class GitHubClient {
 		return mapper.readValue(resp.body(), PagesResponse.class);
 	}
 
-	public void updatePages(String owner, String repo, PagesRequest payload)
-			throws IOException, InterruptedException {
+	public void updatePages(
+			String owner,
+			String repo,
+			PagesUpdateRequest payload
+	) throws IOException, InterruptedException {
 		String body = mapper.writeValueAsString(payload);
 		HttpResponse<String> resp = put(
 				baseUrl + "/repos/" + owner + "/" + repo + "/pages",
