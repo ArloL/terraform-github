@@ -132,4 +132,31 @@ class GitHubClientPlaybackTest {
 		});
 	}
 
+	@Test
+	void getEnvironments_returnsRecordedEnvironments() throws Exception {
+		var environments = client.getEnvironments("ArloL", "terraform-github");
+		assertThat(environments).hasSize(1);
+		assertThat(environments).extracting(EnvironmentDetailsResponse::name)
+				.containsExactly("production");
+		var production = environments.getFirst();
+		assertThat(production.getWaitTimer()).isEqualTo(30);
+		assertThat(production.getReviewerIds()).containsExactly("User:1234567");
+		assertThat(production.deploymentBranchPolicy()).isNotNull();
+		assertThat(production.deploymentBranchPolicy().protectedBranches())
+				.isTrue();
+	}
+
+	@Test
+	void updateEnvironment_succeeds() {
+		var payload = new EnvironmentUpdateRequest(30, null, null);
+		assertThatNoException().isThrownBy(
+				() -> client.updateEnvironment(
+						"ArloL",
+						"terraform-github",
+						"production",
+						payload
+				)
+		);
+	}
+
 }

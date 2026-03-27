@@ -68,6 +68,21 @@ class GitHubClientRecordingTest {
 		);
 		client.getPages("ArloL", "terraform-github");
 		client.deletePages("ArloL", "terraform-github");
+		var environments = client.getEnvironments("ArloL", "terraform-github");
+		if (!environments.isEmpty()) {
+			var env = environments.getFirst();
+			var payload = new EnvironmentUpdateRequest(
+					env.getWaitTimer() > 0 ? env.getWaitTimer() : null,
+					null,
+					null
+			);
+			client.updateEnvironment(
+					"ArloL",
+					"terraform-github",
+					env.name(),
+					payload
+			);
+		}
 
 		wm.stopRecording();
 	}
