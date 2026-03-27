@@ -24,4 +24,4 @@ python3 "${SCRIPTS_DIR}/install-temurin.py"
 
 export PATH="${JAVA_HOME}/bin:${PATH}"
 
-sh "${SCRIPTS_DIR}/warmup-maven.sh"
+"./${SCRIPTS_DIR}/warmup-maven.sh"
