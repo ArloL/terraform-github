@@ -39,19 +39,9 @@ Secrets are checked for presence/absence but `--fix` does not create missing sec
 - Add a dependency on a libsodium/NaCl library (e.g. `com.goterl:lazysodium-java`) for sealed box encryption.
 - In `applyFixes()`, for each missing secret, look up value in the map and create it. If value not in map, report as unfixable.
 
-## 8. Environment Fixes (reviewers, wait timer, deployment branches)
+## ~~8. Environment Fixes (reviewers, wait timer, deployment branches)~~ DONE
 
-Environments are checked for existence and secret presence, but the spec requires managing reviewers, wait timers, and deployment branch policies. Fixing environments is also not implemented.
-
-### Plan
-
-- Extend `EnvironmentArgs` with fields: `reviewers`, `waitTimer`, `deploymentBranchPolicies`.
-- Extend `Environment` record to capture these from the API response.
-- Add diff logic for environment settings beyond just existence and secrets.
-- Add `GitHubClient` methods:
-  - PUT `/repos/{owner}/{repo}/environments/{name}` to create/update environments with full config.
-  - POST/DELETE for deployment branch policies.
-- Call from `applyFixes()`.
+Implemented: `EnvironmentArgs` extended with `waitTimer`, `deploymentBranchPolicy`, and `reviewers` fields (with builder methods). `EnvironmentDetailsResponse` replaces the former `Environment` record, parsing `protection_rules` (wait_timer, required_reviewers) and `deployment_branch_policy` from the API response, with `getWaitTimer()` and `getReviewerIds()` helpers. `GitHubClient.getEnvironments()` replaces `getEnvironmentNames()` returning full `EnvironmentDetailsResponse` objects; `updateEnvironment()` sends a PUT to `/repos/{owner}/{repo}/environments/{name}`. `RepositoryState` gains an `environmentDetails` map field. `OrgChecker.checkEnvironmentConfig()` diffs wait timer, deployment branch policy, and reviewer sets; `applyFixes()` calls `updateEnvironment()` via `buildEnvironmentUpdateRequest()` for any drifted environments.
 
 ## 9. Immutable Releases Validation
 
