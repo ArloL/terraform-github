@@ -124,4 +124,12 @@ class GitHubClientPlaybackTest {
 		});
 	}
 
+	@Test
+	void getPages_succeeds() {
+		assertThatNoException().isThrownBy(() -> {
+			client.getPages("ArloL", "terraform-github");
+			client.deletePages("ArloL", "terraform-github");
+		});
+	}
+
 }
