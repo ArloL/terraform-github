@@ -1120,7 +1120,7 @@ class OrgCheckerDiffTest {
 				name,
 				List.of(
 						new EnvironmentDetailsResponse.ProtectionRule(
-								"wait_timer",
+								EnvironmentDetailsResponse.ProtectionRuleType.WAIT_TIMER,
 								waitTimer,
 								null
 						)
@@ -1162,7 +1162,7 @@ class OrgCheckerDiffTest {
 				name,
 				List.of(
 						new EnvironmentDetailsResponse.ProtectionRule(
-								"required_reviewers",
+								EnvironmentDetailsResponse.ProtectionRuleType.REQUIRED_REVIEWERS,
 								null,
 								List.of(reviewer)
 						)

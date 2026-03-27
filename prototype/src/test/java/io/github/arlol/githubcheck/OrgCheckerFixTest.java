@@ -1153,7 +1153,7 @@ class OrgCheckerFixTest {
 				"production",
 				List.of(
 						new EnvironmentDetailsResponse.ProtectionRule(
-								"wait_timer",
+								EnvironmentDetailsResponse.ProtectionRuleType.WAIT_TIMER,
 								10,
 								null
 						)
@@ -1268,7 +1268,7 @@ class OrgCheckerFixTest {
 				"production",
 				List.of(
 						new EnvironmentDetailsResponse.ProtectionRule(
-								"wait_timer",
+								EnvironmentDetailsResponse.ProtectionRuleType.WAIT_TIMER,
 								30,
 								null
 						)

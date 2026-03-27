@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record EnvironmentDetailsResponse(
 		String name,
 		List<ProtectionRule> protectionRules,
@@ -15,8 +17,15 @@ public record EnvironmentDetailsResponse(
 				: List.of();
 	}
 
+	public enum ProtectionRuleType {
+		@JsonProperty("wait_timer")
+		WAIT_TIMER, @JsonProperty("required_reviewers")
+		REQUIRED_REVIEWERS, @JsonProperty("branch_policy")
+		BRANCH_POLICY
+	}
+
 	public record ProtectionRule(
-			String type,
+			ProtectionRuleType type,
 			Integer waitTimer,
 			List<Reviewer> reviewers
 	) {
@@ -51,7 +60,7 @@ public record EnvironmentDetailsResponse(
 			return null;
 		}
 		return protectionRules.stream()
-				.filter(r -> "wait_timer".equals(r.type()))
+				.filter(r -> ProtectionRuleType.WAIT_TIMER.equals(r.type()))
 				.findFirst()
 				.map(ProtectionRule::waitTimer)
 				.orElse(null);
@@ -63,7 +72,7 @@ public record EnvironmentDetailsResponse(
 			return ids;
 		}
 		for (ProtectionRule rule : protectionRules) {
-			if ("required_reviewers".equals(rule.type())
+			if (ProtectionRuleType.REQUIRED_REVIEWERS.equals(rule.type())
 					&& rule.reviewers() != null) {
 				for (Reviewer r : rule.reviewers()) {
 					if (r.reviewer() != null && r.reviewer().id() != null) {
