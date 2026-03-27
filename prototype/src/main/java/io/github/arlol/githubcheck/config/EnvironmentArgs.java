@@ -1,15 +1,22 @@
 package io.github.arlol.githubcheck.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class EnvironmentArgs {
 
 	private final String name;
 	private final List<String> secrets;
+	private final Integer waitTimer;
+	private final DeploymentBranchPolicy deploymentBranchPolicy;
+	private final List<Reviewer> reviewers;
 
 	private EnvironmentArgs(Builder builder) {
 		this.name = builder.name;
 		this.secrets = List.copyOf(builder.secrets);
+		this.waitTimer = builder.waitTimer;
+		this.deploymentBranchPolicy = builder.deploymentBranchPolicy;
+		this.reviewers = List.copyOf(builder.reviewers);
 	}
 
 	public String name() {
@@ -20,6 +27,30 @@ public final class EnvironmentArgs {
 		return this.secrets;
 	}
 
+	public Integer waitTimer() {
+		return this.waitTimer;
+	}
+
+	public DeploymentBranchPolicy deploymentBranchPolicy() {
+		return this.deploymentBranchPolicy;
+	}
+
+	public List<Reviewer> reviewers() {
+		return this.reviewers;
+	}
+
+	public record DeploymentBranchPolicy(
+			boolean protectedBranches,
+			boolean customBranchPolicies
+	) {
+	}
+
+	public record Reviewer(
+			String type,
+			long id
+	) {
+	}
+
 	public static Builder builder(String name) {
 		return new Builder(name);
 	}
@@ -28,6 +59,9 @@ public final class EnvironmentArgs {
 
 		private final String name;
 		private List<String> secrets = List.of();
+		private Integer waitTimer = null;
+		private DeploymentBranchPolicy deploymentBranchPolicy = null;
+		private List<Reviewer> reviewers = new ArrayList<>();
 
 		public Builder(String name) {
 			this.name = name;
@@ -35,6 +69,27 @@ public final class EnvironmentArgs {
 
 		public Builder secrets(String... secrets) {
 			this.secrets = List.of(secrets);
+			return this;
+		}
+
+		public Builder waitTimer(int minutes) {
+			this.waitTimer = minutes;
+			return this;
+		}
+
+		public Builder deploymentBranchPolicy(
+				boolean protectedBranches,
+				boolean customBranchPolicies
+		) {
+			this.deploymentBranchPolicy = new DeploymentBranchPolicy(
+					protectedBranches,
+					customBranchPolicies
+			);
+			return this;
+		}
+
+		public Builder reviewer(String type, long id) {
+			this.reviewers.add(new Reviewer(type, id));
 			return this;
 		}
 

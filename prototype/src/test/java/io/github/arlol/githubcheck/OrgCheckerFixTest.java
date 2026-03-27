@@ -30,6 +30,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
+import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
@@ -167,7 +168,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 	}
 
@@ -193,7 +195,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 	}
 
@@ -353,7 +356,8 @@ class OrgCheckerFixTest {
 				state.environmentSecretNames(),
 				state.workflowPermissions(),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(stateWithBadVuln, desired);
@@ -407,7 +411,8 @@ class OrgCheckerFixTest {
 				baseState.environmentSecretNames(),
 				baseState.workflowPermissions(),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -468,7 +473,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -521,7 +527,8 @@ class OrgCheckerFixTest {
 						}
 						""", WorkflowPermissions.class),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -586,7 +593,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -664,7 +672,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -892,7 +901,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(actualRuleset),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -980,7 +990,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(actualRuleset),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1031,7 +1042,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.empty()
+				Optional.empty(),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1087,7 +1099,8 @@ class OrgCheckerFixTest {
 						WorkflowPermissions.class
 				),
 				List.of(),
-				Optional.of(actualPages)
+				Optional.of(actualPages),
+				Map.of()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1120,6 +1133,180 @@ class OrgCheckerFixTest {
 		assertThat(remaining).isEmpty();
 		verify(0, postRequestedFor(urlEqualTo("/repos/ArloL/repo/pages")));
 		verify(0, putRequestedFor(urlEqualTo("/repos/ArloL/repo/pages")));
+	}
+
+	// ─── Environment config fix tests
+	// ──────────────────────────────────────
+
+	@Test
+	void environmentWaitTimerDrift_putsEnvironmentUpdate() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/environments/production"))
+						.willReturn(okJson("{}"))
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.environment("production", env -> env.waitTimer(30))
+				.build();
+
+		var actualEnv = new EnvironmentDetailsResponse(
+				"production",
+				List.of(
+						new EnvironmentDetailsResponse.ProtectionRule(
+								"wait_timer",
+								10,
+								null
+						)
+				),
+				null
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of("production", List.of()),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.empty(),
+				Map.of("production", actualEnv)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/environments/production")
+				).withRequestBody(equalToJson("""
+						{"wait_timer": 30}
+						"""))
+		);
+	}
+
+	@Test
+	void environmentDeploymentBranchPolicyDrift_putsEnvironmentUpdate()
+			throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/environments/production"))
+						.willReturn(okJson("{}"))
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.environment(
+						"production",
+						env -> env.deploymentBranchPolicy(true, false)
+				)
+				.build();
+
+		var actualEnv = new EnvironmentDetailsResponse(
+				"production",
+				List.of(),
+				new EnvironmentDetailsResponse.DeploymentBranchPolicy(
+						false,
+						true
+				)
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of("production", List.of()),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.empty(),
+				Map.of("production", actualEnv)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/environments/production")
+				).withRequestBody(equalToJson("""
+						{
+							"deployment_branch_policy": {
+								"protected_branches": true,
+								"custom_branch_policies": false
+							}
+						}
+						"""))
+		);
+	}
+
+	@Test
+	void noEnvironmentConfigDrift_noEnvironmentApiCall() throws Exception {
+		var desired = RepositoryArgs.create("repo")
+				.environment("production", env -> env.waitTimer(30))
+				.build();
+
+		var actualEnv = new EnvironmentDetailsResponse(
+				"production",
+				List.of(
+						new EnvironmentDetailsResponse.ProtectionRule(
+								"wait_timer",
+								30,
+								null
+						)
+				),
+				null
+		);
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of("production", List.of()),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.empty(),
+				Map.of("production", actualEnv)
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				0,
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/environments/production")
+				)
+		);
 	}
 
 }

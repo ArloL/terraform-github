@@ -668,11 +668,11 @@ class GitHubClientTest {
 		assertThat(client.getActionSecretNames("ArloL", "my-repo")).isEmpty();
 	}
 
-	// ─── getEnvironmentNames
-	// ────────────────────────────────────────────────────
+	// ─── getEnvironments
+	// ────────────────────────────────────────────────────────
 
 	@Test
-	void getEnvironmentNames_parsesNames() throws Exception {
+	void getEnvironments_parsesNames() throws Exception {
 		stubFor(
 				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.willReturn(okJson("""
@@ -686,12 +686,13 @@ class GitHubClientTest {
 								"""))
 		);
 
-		List<String> names = client.getEnvironmentNames("ArloL", "my-repo");
-		assertThat(names).containsExactlyInAnyOrder("production", "staging");
+		var envs = client.getEnvironments("ArloL", "my-repo");
+		assertThat(envs).extracting(EnvironmentDetailsResponse::name)
+				.containsExactlyInAnyOrder("production", "staging");
 	}
 
 	@Test
-	void getEnvironmentNames_empty() throws Exception {
+	void getEnvironments_empty() throws Exception {
 		stubFor(
 				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.willReturn(okJson("""
@@ -699,7 +700,7 @@ class GitHubClientTest {
 								"""))
 		);
 
-		assertThat(client.getEnvironmentNames("ArloL", "my-repo")).isEmpty();
+		assertThat(client.getEnvironments("ArloL", "my-repo")).isEmpty();
 	}
 
 	@Test
@@ -737,7 +738,7 @@ class GitHubClientTest {
 	}
 
 	@Test
-	void getEnvironmentNames_multiPage() throws Exception {
+	void getEnvironments_multiPage() throws Exception {
 		stubFor(
 				get(urlPathEqualTo("/repos/ArloL/my-repo/environments"))
 						.withQueryParam("page", absent())
@@ -765,8 +766,8 @@ class GitHubClientTest {
 						)
 		);
 
-		List<String> names = client.getEnvironmentNames("ArloL", "my-repo");
-		assertThat(names)
+		var envs = client.getEnvironments("ArloL", "my-repo");
+		assertThat(envs).extracting(EnvironmentDetailsResponse::name)
 				.containsExactlyInAnyOrder("production", "staging", "dev");
 	}
 
@@ -886,7 +887,7 @@ class GitHubClientTest {
 
 		// If the header doesn't match, WireMock returns 404 — so successful
 		// response confirms header was sent
-		client.getEnvironmentNames("ArloL", "my-repo");
+		client.getEnvironments("ArloL", "my-repo");
 
 		verify(
 				getRequestedFor(
