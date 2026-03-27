@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
+import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
@@ -143,6 +144,8 @@ class OrgCheckerDiffTest {
 		private String workflowPermissionsJson = GOOD_WORKFLOW_PERMISSIONS_JSON;
 		private List<RulesetDetailsResponse> rulesets = List.of();
 		private Optional<PagesResponse> pages = Optional.empty();
+		private Map<String, EnvironmentDetailsResponse> environmentDetails = Map
+				.of();
 
 		StateBuilder summaryOverride(String overridesJson) {
 			this.summaryJson = merge(this.summaryJson, overridesJson)
@@ -206,6 +209,13 @@ class OrgCheckerDiffTest {
 			return this;
 		}
 
+		StateBuilder environmentDetails(
+				Map<String, EnvironmentDetailsResponse> envDetails
+		) {
+			this.environmentDetails = envDetails;
+			return this;
+		}
+
 		RepositoryState build() {
 			return new RepositoryState(
 					"repo",
@@ -223,7 +233,8 @@ class OrgCheckerDiffTest {
 					environmentSecretNames,
 					parse(workflowPermissionsJson, WorkflowPermissions.class),
 					rulesets,
-					pages
+					pages,
+					environmentDetails
 			);
 		}
 
@@ -1096,6 +1107,231 @@ class OrgCheckerDiffTest {
 						"ruleset.main-branch-rules.required_status_checks"
 				) && d.contains("extra") && d.contains("unexpected-check")
 		);
+	}
+
+	// ─── Environment config drift
+	// ──────────────────────────────────────────
+
+	private static EnvironmentDetailsResponse envWithWaitTimer(
+			String name,
+			int waitTimer
+	) {
+		return new EnvironmentDetailsResponse(
+				name,
+				List.of(
+						new EnvironmentDetailsResponse.ProtectionRule(
+								"wait_timer",
+								waitTimer,
+								null
+						)
+				),
+				null
+		);
+	}
+
+	private static EnvironmentDetailsResponse envWithDeploymentBranchPolicy(
+			String name,
+			boolean protectedBranches,
+			boolean customBranchPolicies
+	) {
+		return new EnvironmentDetailsResponse(
+				name,
+				List.of(),
+				new EnvironmentDetailsResponse.DeploymentBranchPolicy(
+						protectedBranches,
+						customBranchPolicies
+				)
+		);
+	}
+
+	private static EnvironmentDetailsResponse envWithReviewer(
+			String name,
+			String type,
+			long id
+	) {
+		var reviewerEntity = new EnvironmentDetailsResponse.ReviewerEntity(
+				id,
+				null,
+				null
+		);
+		var reviewer = new EnvironmentDetailsResponse.Reviewer(
+				type,
+				reviewerEntity
+		);
+		return new EnvironmentDetailsResponse(
+				name,
+				List.of(
+						new EnvironmentDetailsResponse.ProtectionRule(
+								"required_reviewers",
+								null,
+								List.of(reviewer)
+						)
+				),
+				null
+		);
+	}
+
+	@Test
+	void noDrift_environmentWithCorrectWaitTimer() {
+		var args = defaultArgs().toBuilder()
+				.environment("production", env -> env.waitTimer(30))
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of("production", envWithWaitTimer("production", 30))
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void drift_environmentWaitTimerWrong() {
+		var args = defaultArgs().toBuilder()
+				.environment("production", env -> env.waitTimer(30))
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of("production", envWithWaitTimer("production", 10))
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args))
+				.contains("environment.production.wait_timer: want=30 got=10");
+	}
+
+	@Test
+	void drift_environmentWaitTimerMissing() {
+		var args = defaultArgs().toBuilder()
+				.environment("production", env -> env.waitTimer(30))
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of(
+								"production",
+								new EnvironmentDetailsResponse(
+										"production",
+										List.of(),
+										null
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"environment.production.wait_timer: want=30 got=null"
+		);
+	}
+
+	@Test
+	void noDrift_deploymentBranchPolicyMatches() {
+		var args = defaultArgs().toBuilder()
+				.environment(
+						"production",
+						env -> env.deploymentBranchPolicy(true, false)
+				)
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of(
+								"production",
+								envWithDeploymentBranchPolicy(
+										"production",
+										true,
+										false
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void drift_deploymentBranchPolicyWrong() {
+		var args = defaultArgs().toBuilder()
+				.environment(
+						"production",
+						env -> env.deploymentBranchPolicy(true, false)
+				)
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of(
+								"production",
+								envWithDeploymentBranchPolicy(
+										"production",
+										false,
+										true
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"environment.production.deployment_branch_policy.protected_branches: want=true got=false"
+		);
+	}
+
+	@Test
+	void drift_environmentReviewersMissing() {
+		var args = defaultArgs().toBuilder()
+				.environment("production", env -> env.reviewer("Team", 42L))
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of(
+								"production",
+								new EnvironmentDetailsResponse(
+										"production",
+										List.of(),
+										null
+								)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).anyMatch(
+				d -> d.contains("environment.production.reviewers")
+						&& d.contains("missing") && d.contains("Team:42")
+		);
+	}
+
+	@Test
+	void noDrift_environmentReviewersMatch() {
+		var args = defaultArgs().toBuilder()
+				.environment("production", env -> env.reviewer("Team", 42L))
+				.build();
+		var state = new StateBuilder()
+				.environmentSecretNames(Map.of("production", List.of()))
+				.environmentDetails(
+						Map.of(
+								"production",
+								envWithReviewer("production", "Team", 42L)
+						)
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void noDrift_environmentNoConfigChecked_whenArgsNotSet() {
+		var args = defaultArgs().toBuilder()
+				.environment(
+						"production",
+						env -> env.secrets("TF_GITHUB_TOKEN")
+				)
+				.build();
+		// actual env has a wait_timer, but args don't configure one — no drift
+		var state = new StateBuilder()
+				.environmentSecretNames(
+						Map.of("production", List.of("TF_GITHUB_TOKEN"))
+				)
+				.environmentDetails(
+						Map.of("production", envWithWaitTimer("production", 30))
+				)
+				.build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
 	}
 
 	@Test

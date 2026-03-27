@@ -185,8 +185,10 @@ public class GitHubClient {
 				.toList();
 	}
 
-	public List<String> getEnvironmentNames(String org, String repo)
-			throws IOException, InterruptedException {
+	public List<EnvironmentDetailsResponse> getEnvironments(
+			String org,
+			String repo
+	) throws IOException, InterruptedException {
 		String url = baseUrl + "/repos/" + org + "/" + repo
 				+ "/environments?per_page=100";
 		HttpResponse<String> resp = send(url);
@@ -197,8 +199,34 @@ public class GitHubClient {
 			);
 		}
 		return collectPaginatedArrayItems(resp, "environments").stream()
-				.map(e -> mapper.convertValue(e, Environment.class).name())
+				.map(
+						e -> mapper.convertValue(
+								e,
+								EnvironmentDetailsResponse.class
+						)
+				)
 				.toList();
+	}
+
+	public void updateEnvironment(
+			String org,
+			String repo,
+			String envName,
+			EnvironmentUpdateRequest payload
+	) throws IOException, InterruptedException {
+		String body = mapper.writeValueAsString(payload);
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + org + "/" + repo + "/environments/"
+						+ envName,
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new GitHubApiException(
+					"HTTP " + resp.statusCode() + " updating environment "
+							+ envName + " on " + org + "/" + repo + ": "
+							+ resp.body()
+			);
+		}
 	}
 
 	public List<String> getEnvironmentSecretNames(

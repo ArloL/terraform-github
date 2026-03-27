@@ -21,6 +21,8 @@ import java.util.Optional;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
+import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+import io.github.arlol.githubcheck.client.EnvironmentUpdateRequest;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesCreateRequest;
 import io.github.arlol.githubcheck.client.PagesUpdateRequest;
@@ -30,6 +32,7 @@ import io.github.arlol.githubcheck.client.RulesetRequest;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
 import io.github.arlol.githubcheck.client.SecurityAndAnalysis;
 import io.github.arlol.githubcheck.client.WorkflowPermissions;
+import io.github.arlol.githubcheck.config.EnvironmentArgs;
 import io.github.arlol.githubcheck.config.PagesArgs;
 import io.github.arlol.githubcheck.config.RepositoryArgs;
 import io.github.arlol.githubcheck.config.RulesetArgs;
@@ -159,13 +162,16 @@ public class OrgChecker {
 		}
 
 		List<String> secretNames = client.getActionSecretNames(org, name);
-		List<String> envNames = client.getEnvironmentNames(org, name);
+		List<EnvironmentDetailsResponse> environments = client
+				.getEnvironments(org, name);
 
 		Map<String, List<String>> envSecrets = new LinkedHashMap<>();
-		for (String envName : envNames) {
+		Map<String, EnvironmentDetailsResponse> envDetails = new LinkedHashMap<>();
+		for (EnvironmentDetailsResponse env : environments) {
+			envDetails.put(env.name(), env);
 			envSecrets.put(
-					envName,
-					client.getEnvironmentSecretNames(org, name, envName)
+					env.name(),
+					client.getEnvironmentSecretNames(org, name, env.name())
 			);
 		}
 
@@ -196,7 +202,8 @@ public class OrgChecker {
 				envSecrets,
 				wfPerms,
 				rulesets,
-				pages
+				pages,
+				envDetails
 		);
 	}
 
@@ -228,6 +235,7 @@ public class OrgChecker {
 		checkRulesets(diffs, actual, desired);
 		checkPages(diffs, actual, desired);
 		checkSecrets(diffs, actual, desired);
+		checkEnvironmentConfig(diffs, actual, desired);
 
 		return diffs;
 	}
@@ -570,6 +578,63 @@ public class OrgChecker {
 		}
 	}
 
+	private void checkEnvironmentConfig(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		for (var entry : desired.environments().entrySet()) {
+			String envName = entry.getKey();
+			EnvironmentArgs wantEnv = entry.getValue();
+			EnvironmentDetailsResponse actualEnv = actual.environmentDetails()
+					.get(envName);
+			if (actualEnv == null) {
+				continue; // already flagged as missing by checkSecrets
+			}
+
+			if (wantEnv.waitTimer() != null) {
+				check(
+						diffs,
+						"environment." + envName + ".wait_timer",
+						wantEnv.waitTimer(),
+						actualEnv.getWaitTimer()
+				);
+			}
+			if (wantEnv.deploymentBranchPolicy() != null) {
+				var want = wantEnv.deploymentBranchPolicy();
+				var got = actualEnv.deploymentBranchPolicy();
+				boolean gotProtected = got != null && got.protectedBranches();
+				boolean gotCustom = got != null && got.customBranchPolicies();
+				check(
+						diffs,
+						"environment." + envName
+								+ ".deployment_branch_policy.protected_branches",
+						want.protectedBranches(),
+						gotProtected
+				);
+				check(
+						diffs,
+						"environment." + envName
+								+ ".deployment_branch_policy.custom_branch_policies",
+						want.customBranchPolicies(),
+						gotCustom
+				);
+			}
+			if (!wantEnv.reviewers().isEmpty()) {
+				Set<String> want = wantEnv.reviewers()
+						.stream()
+						.map(r -> r.type() + ":" + r.id())
+						.collect(Collectors.toSet());
+				checkSets(
+						diffs,
+						"environment." + envName + ".reviewers",
+						want,
+						actualEnv.getReviewerIds()
+				);
+			}
+		}
+	}
+
 	private void checkPages(
 			List<String> diffs,
 			RepositoryState actual,
@@ -824,7 +889,33 @@ public class OrgChecker {
 			remaining.removeAll(pagesDiffs);
 		}
 
-		// Secrets/environments (NOT fixable yet)
+		// Environment config (wait_timer, deployment_branch_policy, reviewers)
+		// — fixable
+		List<String> envConfigDiffs = new ArrayList<>();
+		checkEnvironmentConfig(envConfigDiffs, actual, desired);
+		if (!envConfigDiffs.isEmpty()) {
+			for (var entry : desired.environments().entrySet()) {
+				String envName = entry.getKey();
+				String prefix = "environment." + envName + ".";
+				boolean hasDrift = envConfigDiffs.stream()
+						.anyMatch(d -> d.startsWith(prefix));
+				if (!hasDrift) {
+					continue;
+				}
+				EnvironmentUpdateRequest payload = buildEnvironmentUpdateRequest(
+						entry.getValue()
+				);
+				client.updateEnvironment(org, name, envName, payload);
+				System.out.printf(
+						"[FIXED]   %s: environment.%s updated%n",
+						name,
+						envName
+				);
+			}
+			remaining.removeAll(envConfigDiffs);
+		}
+
+		// Action secrets and environment names/secrets (NOT fixable yet)
 
 		return remaining;
 	}
@@ -855,6 +946,32 @@ public class OrgChecker {
 				args.buildType().name().toLowerCase(Locale.ROOT),
 				source,
 				true
+		);
+	}
+
+	private static EnvironmentUpdateRequest buildEnvironmentUpdateRequest(
+			EnvironmentArgs args
+	) {
+		List<EnvironmentUpdateRequest.Reviewer> reviewers = args.reviewers()
+				.stream()
+				.map(
+						r -> new EnvironmentUpdateRequest.Reviewer(
+								r.type(),
+								r.id()
+						)
+				)
+				.toList();
+		EnvironmentUpdateRequest.DeploymentBranchPolicy dbp = null;
+		if (args.deploymentBranchPolicy() != null) {
+			dbp = new EnvironmentUpdateRequest.DeploymentBranchPolicy(
+					args.deploymentBranchPolicy().protectedBranches(),
+					args.deploymentBranchPolicy().customBranchPolicies()
+			);
+		}
+		return new EnvironmentUpdateRequest(
+				args.waitTimer(),
+				reviewers.isEmpty() ? null : reviewers,
+				dbp
 		);
 	}
 

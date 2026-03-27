@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
+import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
@@ -22,13 +23,15 @@ public record RepositoryState(
 		Map<String, List<String>> environmentSecretNames,
 		WorkflowPermissions workflowPermissions,
 		List<RulesetDetailsResponse> rulesets,
-		Optional<PagesResponse> pages
+		Optional<PagesResponse> pages,
+		Map<String, EnvironmentDetailsResponse> environmentDetails
 ) {
 
 	public RepositoryState {
 		actionSecretNames = List.copyOf(actionSecretNames);
 		environmentSecretNames = Map.copyOf(environmentSecretNames);
 		rulesets = List.copyOf(rulesets);
+		environmentDetails = Map.copyOf(environmentDetails);
 	}
 
 }
