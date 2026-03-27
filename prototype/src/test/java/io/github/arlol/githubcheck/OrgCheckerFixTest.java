@@ -872,8 +872,8 @@ class OrgCheckerFixTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				42L,
 				"main-branch-rules",
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -941,8 +941,8 @@ class OrgCheckerFixTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -953,11 +953,11 @@ class OrgCheckerFixTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								"required_linear_history",
+								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								"required_status_checks",
+								RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS,
 								params
 						)
 				)

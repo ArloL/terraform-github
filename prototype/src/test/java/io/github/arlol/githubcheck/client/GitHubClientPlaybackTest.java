@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
+import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.WorkflowPermissions.DefaultWorkflowPermissions;
 
 class GitHubClientPlaybackTest {
@@ -46,7 +47,8 @@ class GitHubClientPlaybackTest {
 	void getRepo_returnsRecordedDetails() throws Exception {
 		RepositoryFull repo = client.getRepo("ArloL", "terraform-github");
 		assertThat(repo.name()).isEqualTo("terraform-github");
-		assertThat(repo.visibility()).isEqualTo("public");
+		assertThat(repo.visibility())
+				.isEqualTo(RepositoryFull.Visibility.PUBLIC);
 		assertThat(repo.description()).isEqualTo(
 				"A project to manage github settings with terraform"
 		);
@@ -140,7 +142,7 @@ class GitHubClientPlaybackTest {
 				.containsExactly("production");
 		var production = environments.getFirst();
 		assertThat(production.getWaitTimer()).isEqualTo(30);
-		assertThat(production.getReviewerIds()).containsExactly("User:1234567");
+		assertThat(production.getReviewerIds()).containsExactly("USER:1234567");
 		assertThat(production.deploymentBranchPolicy()).isNotNull();
 		assertThat(production.deploymentBranchPolicy().protectedBranches())
 				.isTrue();

@@ -874,7 +874,7 @@ class OrgCheckerDiffTest {
 
 	private static RulesetDetailsResponse rulesetWithRules(
 			String name,
-			String... ruleTypes
+			RulesetDetailsResponse.Rule.RuleType... ruleTypes
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetDetailsResponse.Conditions(
@@ -887,14 +887,14 @@ class OrgCheckerDiffTest {
 				null
 		);
 		List<RulesetDetailsResponse.Rule> rules = new java.util.ArrayList<>();
-		for (String type : ruleTypes) {
+		for (RulesetDetailsResponse.Rule.RuleType type : ruleTypes) {
 			rules.add(new RulesetDetailsResponse.Rule(type, null));
 		}
 		return new RulesetDetailsResponse(
 				1L,
 				name,
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -941,8 +941,8 @@ class OrgCheckerDiffTest {
 		return new RulesetDetailsResponse(
 				1L,
 				name,
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -953,15 +953,15 @@ class OrgCheckerDiffTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								"required_linear_history",
+								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								"non_fast_forward",
+								RulesetDetailsResponse.Rule.RuleType.NON_FAST_FORWARD,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								"required_status_checks",
+								RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS,
 								params
 						)
 				)
@@ -971,16 +971,14 @@ class OrgCheckerDiffTest {
 	@Test
 	void noDrift_noRulesetsConfigured() {
 		// actual has a ruleset, desired has none — no drift expected
-		var state = new StateBuilder()
-				.rulesets(
-						List.of(
-								rulesetWithRules(
-										"main-branch-rules",
-										"required_linear_history"
-								)
+		var state = new StateBuilder().rulesets(
+				List.of(
+						rulesetWithRules(
+								"main-branch-rules",
+								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY
 						)
 				)
-				.build();
+		).build();
 		assertThat(checker.computeDiffs(state, defaultArgs())).isEmpty();
 	}
 
@@ -1146,7 +1144,7 @@ class OrgCheckerDiffTest {
 
 	private static EnvironmentDetailsResponse envWithReviewer(
 			String name,
-			String type,
+			EnvironmentDetailsResponse.ReviewerType type,
 			long id
 	) {
 		var reviewerEntity = new EnvironmentDetailsResponse.ReviewerEntity(
@@ -1276,7 +1274,13 @@ class OrgCheckerDiffTest {
 	@Test
 	void drift_environmentReviewersMissing() {
 		var args = defaultArgs().toBuilder()
-				.environment("production", env -> env.reviewer("Team", 42L))
+				.environment(
+						"production",
+						env -> env.reviewer(
+								EnvironmentDetailsResponse.ReviewerType.TEAM,
+								42L
+						)
+				)
 				.build();
 		var state = new StateBuilder()
 				.environmentSecretNames(Map.of("production", List.of()))
@@ -1293,21 +1297,31 @@ class OrgCheckerDiffTest {
 				.build();
 		assertThat(checker.computeDiffs(state, args)).anyMatch(
 				d -> d.contains("environment.production.reviewers")
-						&& d.contains("missing") && d.contains("Team:42")
+						&& d.contains("missing") && d.contains("TEAM:42")
 		);
 	}
 
 	@Test
 	void noDrift_environmentReviewersMatch() {
 		var args = defaultArgs().toBuilder()
-				.environment("production", env -> env.reviewer("Team", 42L))
+				.environment(
+						"production",
+						env -> env.reviewer(
+								EnvironmentDetailsResponse.ReviewerType.TEAM,
+								42L
+						)
+				)
 				.build();
 		var state = new StateBuilder()
 				.environmentSecretNames(Map.of("production", List.of()))
 				.environmentDetails(
 						Map.of(
 								"production",
-								envWithReviewer("production", "Team", 42L)
+								envWithReviewer(
+										"production",
+										EnvironmentDetailsResponse.ReviewerType.TEAM,
+										42L
+								)
 						)
 				)
 				.build();
@@ -1365,8 +1379,8 @@ class OrgCheckerDiffTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -1377,7 +1391,7 @@ class OrgCheckerDiffTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								"pull_request",
+								RulesetDetailsResponse.Rule.RuleType.PULL_REQUEST,
 								prParams
 						)
 				)

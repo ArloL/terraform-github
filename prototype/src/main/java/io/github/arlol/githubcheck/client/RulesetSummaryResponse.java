@@ -3,7 +3,7 @@ package io.github.arlol.githubcheck.client;
 public record RulesetSummaryResponse(
 		long id,
 		String name,
-		String enforcement,
+		RulesetDetailsResponse.Enforcement enforcement,
 		String nodeId,
 		RulesetDetailsResponse.SourceType sourceType,
 		String source,

@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
+import io.github.arlol.githubcheck.client.RepositoryFull;
+
 @WireMockTest
 class GitHubClientTest {
 
@@ -58,10 +60,12 @@ class GitHubClientTest {
 		assertThat(repos).hasSize(2);
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
 		assertThat(repos.get(0).archived()).isFalse();
-		assertThat(repos.get(0).visibility()).isEqualTo("public");
+		assertThat(repos.get(0).visibility())
+				.isEqualTo(RepositoryFull.Visibility.PUBLIC);
 		assertThat(repos.get(1).name()).isEqualTo("repo-b");
 		assertThat(repos.get(1).archived()).isTrue();
-		assertThat(repos.get(1).visibility()).isEqualTo("private");
+		assertThat(repos.get(1).visibility())
+				.isEqualTo(RepositoryFull.Visibility.PRIVATE);
 	}
 
 	@Test

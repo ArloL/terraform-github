@@ -3,6 +3,8 @@ package io.github.arlol.githubcheck.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+
 public final class EnvironmentArgs {
 
 	private final String name;
@@ -46,7 +48,7 @@ public final class EnvironmentArgs {
 	}
 
 	public record Reviewer(
-			String type,
+			EnvironmentDetailsResponse.ReviewerType type,
 			long id
 	) {
 	}
@@ -88,7 +90,10 @@ public final class EnvironmentArgs {
 			return this;
 		}
 
-		public Builder reviewer(String type, long id) {
+		public Builder reviewer(
+				EnvironmentDetailsResponse.ReviewerType type,
+				long id
+		) {
 			this.reviewers.add(new Reviewer(type, id));
 			return this;
 		}
