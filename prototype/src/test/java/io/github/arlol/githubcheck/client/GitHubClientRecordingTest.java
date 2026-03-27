@@ -66,6 +66,8 @@ class GitHubClientRecordingTest {
 				"terraform-github",
 				rulesets.getFirst().id()
 		);
+		client.getPages("ArloL", "terraform-github");
+		client.deletePages("ArloL", "terraform-github");
 
 		wm.stopRecording();
 	}
