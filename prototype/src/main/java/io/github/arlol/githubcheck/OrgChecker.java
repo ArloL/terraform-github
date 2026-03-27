@@ -27,6 +27,7 @@ import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesCreateRequest;
 import io.github.arlol.githubcheck.client.PagesUpdateRequest;
 import io.github.arlol.githubcheck.client.PagesResponse;
+import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
 import io.github.arlol.githubcheck.client.RulesetRequest;
 import io.github.arlol.githubcheck.client.RulesetDetailsResponse;
@@ -156,7 +157,8 @@ public class OrgChecker {
 		}
 
 		BranchProtectionResponse branchProtection = null;
-		if (!archived && "public".equals(summary.visibility())) {
+		if (!archived
+				&& RepositoryFull.Visibility.PUBLIC == summary.visibility()) {
 			branchProtection = client.getBranchProtection(org, name, "main")
 					.orElse(null);
 		}
@@ -353,7 +355,8 @@ public class OrgChecker {
 			RepositoryState actual,
 			RepositoryArgs desired
 	) {
-		boolean isPublic = "public".equals(actual.summary().visibility());
+		boolean isPublic = RepositoryFull.Visibility.PUBLIC == actual.summary()
+				.visibility();
 		if (!isPublic) {
 			return;
 		}
@@ -464,7 +467,7 @@ public class OrgChecker {
 			);
 
 			// Build a map of actual rules by type
-			Map<String, RulesetDetailsResponse.Rule> actualRulesByType = Map
+			Map<RulesetDetailsResponse.Rule.RuleType, RulesetDetailsResponse.Rule> actualRulesByType = Map
 					.of();
 			if (actualRuleset.rules() != null) {
 				actualRulesByType = actualRuleset.rules()
@@ -479,8 +482,9 @@ public class OrgChecker {
 			}
 
 			// Check required_linear_history
-			boolean hasLinearHistory = actualRulesByType
-					.containsKey("required_linear_history");
+			boolean hasLinearHistory = actualRulesByType.containsKey(
+					RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY
+			);
 			check(
 					diffs,
 					"ruleset." + rName + ".required_linear_history",
@@ -489,8 +493,9 @@ public class OrgChecker {
 			);
 
 			// Check non_fast_forward (no force pushes)
-			boolean hasNonFastForward = actualRulesByType
-					.containsKey("non_fast_forward");
+			boolean hasNonFastForward = actualRulesByType.containsKey(
+					RulesetDetailsResponse.Rule.RuleType.NON_FAST_FORWARD
+			);
 			check(
 					diffs,
 					"ruleset." + rName + ".no_force_pushes",
@@ -503,8 +508,9 @@ public class OrgChecker {
 					wantedRuleset.requiredStatusChecks()
 			);
 			Set<String> gotChecks = new HashSet<>();
-			RulesetDetailsResponse.Rule statusCheckRule = actualRulesByType
-					.get("required_status_checks");
+			RulesetDetailsResponse.Rule statusCheckRule = actualRulesByType.get(
+					RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS
+			);
 			if (statusCheckRule != null && statusCheckRule.parameters() != null
 					&& statusCheckRule.parameters()
 							.requiredStatusChecks() != null) {
@@ -525,7 +531,7 @@ public class OrgChecker {
 			// Check required reviews
 			if (wantedRuleset.requiredReviewCount() != null) {
 				RulesetDetailsResponse.Rule prRule = actualRulesByType
-						.get("pull_request");
+						.get(RulesetDetailsResponse.Rule.RuleType.PULL_REQUEST);
 				Integer gotCount = null;
 				if (prRule != null && prRule.parameters() != null) {
 					gotCount = prRule.parameters()
@@ -623,7 +629,7 @@ public class OrgChecker {
 			if (!wantEnv.reviewers().isEmpty()) {
 				Set<String> want = wantEnv.reviewers()
 						.stream()
-						.map(r -> r.type() + ":" + r.id())
+						.map(r -> r.type().name() + ":" + r.id())
 						.collect(Collectors.toSet());
 				checkSets(
 						diffs,
@@ -978,10 +984,20 @@ public class OrgChecker {
 	private static RulesetRequest buildRulesetRequest(RulesetArgs args) {
 		List<RulesetRequest.Rule> rules = new ArrayList<>();
 		if (args.requiredLinearHistory()) {
-			rules.add(new RulesetRequest.Rule("required_linear_history", null));
+			rules.add(
+					new RulesetRequest.Rule(
+							RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY,
+							null
+					)
+			);
 		}
 		if (args.noForcePushes()) {
-			rules.add(new RulesetRequest.Rule("non_fast_forward", null));
+			rules.add(
+					new RulesetRequest.Rule(
+							RulesetDetailsResponse.Rule.RuleType.NON_FAST_FORWARD,
+							null
+					)
+			);
 		}
 		if (!args.requiredStatusChecks().isEmpty()) {
 			List<RulesetRequest.Rule.Parameters.StatusCheck> checks = args
@@ -996,7 +1012,7 @@ public class OrgChecker {
 					.toList();
 			rules.add(
 					new RulesetRequest.Rule(
-							"required_status_checks",
+							RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS,
 							new RulesetRequest.Rule.Parameters(
 									checks,
 									false,
@@ -1011,7 +1027,7 @@ public class OrgChecker {
 		if (args.requiredReviewCount() != null) {
 			rules.add(
 					new RulesetRequest.Rule(
-							"pull_request",
+							RulesetDetailsResponse.Rule.RuleType.PULL_REQUEST,
 							new RulesetRequest.Rule.Parameters(
 									null,
 									null,
@@ -1035,8 +1051,8 @@ public class OrgChecker {
 		);
 		return new RulesetRequest(
 				args.name(),
-				"branch",
-				"active",
+				RulesetDetailsResponse.Target.BRANCH,
+				RulesetDetailsResponse.Enforcement.ACTIVE,
 				conditions,
 				rules
 		);

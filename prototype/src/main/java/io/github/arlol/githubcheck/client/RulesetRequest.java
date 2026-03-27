@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record RulesetRequest(
 		String name,
-		String target,
-		String enforcement,
+		RulesetDetailsResponse.Target target,
+		RulesetDetailsResponse.Enforcement enforcement,
 		Conditions conditions,
 		List<Rule> rules
 ) {
@@ -92,7 +92,7 @@ public record RulesetRequest(
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record Rule(
-			String type,
+			RulesetDetailsResponse.Rule.RuleType type,
 			Parameters parameters
 	) {
 

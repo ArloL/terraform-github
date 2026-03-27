@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record RulesetDetailsResponse(
 		long id,
 		String name,
-		String target,
-		String enforcement,
+		Target target,
+		Enforcement enforcement,
 		String nodeId,
 		SourceType sourceType,
 		String source,
@@ -36,6 +36,20 @@ public record RulesetDetailsResponse(
 		ALWAYS, @JsonProperty("pull_requests_only")
 		PULL_REQUESTS_ONLY, @JsonProperty("never")
 		NEVER
+	}
+
+	public enum Target {
+		@JsonProperty("branch")
+		BRANCH, @JsonProperty("tag")
+		TAG, @JsonProperty("push")
+		PUSH
+	}
+
+	public enum Enforcement {
+		@JsonProperty("active")
+		ACTIVE, @JsonProperty("disabled")
+		DISABLED, @JsonProperty("evaluate")
+		EVALUATE
 	}
 
 	public record BypassActor(
@@ -131,9 +145,20 @@ public record RulesetDetailsResponse(
 	}
 
 	public record Rule(
-			String type,
+			RuleType type,
 			Parameters parameters
 	) {
+
+		public enum RuleType {
+			@JsonProperty("required_status_checks")
+			REQUIRED_STATUS_CHECKS, @JsonProperty("required_linear_history")
+			REQUIRED_LINEAR_HISTORY, @JsonProperty("non_fast_forward")
+			NON_FAST_FORWARD, @JsonProperty("pull_request")
+			PULL_REQUEST, @JsonProperty("creation")
+			CREATION, @JsonProperty("update")
+			UPDATE, @JsonProperty("deletion")
+			DELETION
+		}
 
 		public record Parameters(
 				// required_status_checks rule fields

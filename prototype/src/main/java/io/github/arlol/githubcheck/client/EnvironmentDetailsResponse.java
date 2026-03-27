@@ -36,8 +36,14 @@ public record EnvironmentDetailsResponse(
 
 	}
 
+	public enum ReviewerType {
+		@JsonProperty("User")
+		USER, @JsonProperty("Team")
+		TEAM
+	}
+
 	public record Reviewer(
-			String type,
+			ReviewerType type,
 			ReviewerEntity reviewer
 	) {
 	}
@@ -76,7 +82,7 @@ public record EnvironmentDetailsResponse(
 					&& rule.reviewers() != null) {
 				for (Reviewer r : rule.reviewers()) {
 					if (r.reviewer() != null && r.reviewer().id() != null) {
-						ids.add(r.type() + ":" + r.reviewer().id());
+						ids.add(r.type().name() + ":" + r.reviewer().id());
 					}
 				}
 			}
