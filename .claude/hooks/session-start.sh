@@ -24,14 +24,4 @@ python3 "${SCRIPTS_DIR}/install-temurin.py"
 
 export PATH="${JAVA_HOME}/bin:${PATH}"
 
-echo "Warming up Maven dependency cache..."
-PROTOTYPE_DIR="${CLAUDE_PROJECT_DIR}/prototype"
-cd "${PROTOTYPE_DIR}"
-for i in $(seq 1 10); do
-    find "${HOME}/.m2/repository" -name "*.lastUpdated" -delete 2>/dev/null || true
-    if ./mvnw -Dmaven.artifact.threads=1 -T 1 test-compile --no-transfer-progress -q 2>/dev/null; then
-        echo "Maven warm-up succeeded on attempt ${i}"
-        break
-    fi
-    echo "Maven warm-up attempt ${i} incomplete, retrying..."
-done
+sh "${SCRIPTS_DIR}/warmup-maven.sh"
