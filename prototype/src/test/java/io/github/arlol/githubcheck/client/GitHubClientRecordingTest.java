@@ -71,9 +71,8 @@ class GitHubClientRecordingTest {
 		var environments = client.getEnvironments("ArloL", "terraform-github");
 		if (!environments.isEmpty()) {
 			var env = environments.getFirst();
-			Integer waitTimer = env.getWaitTimer();
 			var payload = new EnvironmentUpdateRequest(
-					waitTimer != null && waitTimer > 0 ? waitTimer : null,
+					env.getWaitTimer() > 0 ? env.getWaitTimer() : null,
 					null,
 					null
 			);
