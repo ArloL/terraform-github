@@ -55,22 +55,16 @@ public record EnvironmentDetailsResponse(
 	) {
 	}
 
-	public Integer getWaitTimer() {
-		if (protectionRules == null) {
-			return null;
-		}
+	public int getWaitTimer() {
 		return protectionRules.stream()
 				.filter(r -> ProtectionRuleType.WAIT_TIMER.equals(r.type()))
 				.findFirst()
 				.map(ProtectionRule::waitTimer)
-				.orElse(null);
+				.orElse(0);
 	}
 
 	public Set<String> getReviewerIds() {
 		Set<String> ids = new HashSet<>();
-		if (protectionRules == null) {
-			return ids;
-		}
 		for (ProtectionRule rule : protectionRules) {
 			if (ProtectionRuleType.REQUIRED_REVIEWERS.equals(rule.type())
 					&& rule.reviewers() != null) {
