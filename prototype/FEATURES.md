@@ -43,16 +43,9 @@ Secrets are checked for presence/absence but `--fix` does not create missing sec
 
 Implemented: `EnvironmentArgs` extended with `waitTimer`, `deploymentBranchPolicy`, and `reviewers` fields (with builder methods). `EnvironmentDetailsResponse` replaces the former `Environment` record, parsing `protection_rules` (wait_timer, required_reviewers) and `deployment_branch_policy` from the API response, with `getWaitTimer()` and `getReviewerIds()` helpers. `GitHubClient.getEnvironments()` replaces `getEnvironmentNames()` returning full `EnvironmentDetailsResponse` objects; `updateEnvironment()` sends a PUT to `/repos/{owner}/{repo}/environments/{name}`. `RepositoryState` gains an `environmentDetails` map field. `OrgChecker.checkEnvironmentConfig()` diffs wait timer, deployment branch policy, and reviewer sets; `applyFixes()` calls `updateEnvironment()` via `buildEnvironmentUpdateRequest()` for any drifted environments.
 
-## 9. Immutable Releases Validation
+## ~~9. Immutable Releases Validation~~ DONE
 
-`GitHubClient.getImmutableReleases()` exists but is never called in `computeDiffs()`.
-
-### Plan
-
-- Add `immutableReleases` boolean field to `RepositoryArgs`.
-- In `computeDiffs()`, call `getImmutableReleases()` and compare against the desired value.
-- In `applyFixes()`, call the endpoint to enable/disable immutable releases.
-- Add `GitHubClient.updateImmutableReleases(owner, repo, enabled)`.
+Implemented: `RepositoryArgs` gained a nullable `Boolean immutableReleases` field (null = don't check). `RepositoryState` gained an `Optional<ImmutableReleases> immutableReleases` field. `OrgChecker.fetchState()` calls `client.getImmutableReleases()` for non-archived repos. `checkImmutableReleases()` compares the actual enabled state against the desired value when configured. `applyFixes()` calls `client.updateImmutableReleases()` (new PUT method added to `GitHubClient`) when drift is detected. WireMock stubs for GET and PUT `/repos/{owner}/{repo}/immutable-releases` were added, with corresponding playback tests in `GitHubClientPlaybackTest` and recording calls in `GitHubClientRecordingTest`.
 
 ## 10. Owner as CLI Argument (not hardcoded)
 

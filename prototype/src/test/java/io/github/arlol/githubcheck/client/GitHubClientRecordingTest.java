@@ -84,6 +84,20 @@ class GitHubClientRecordingTest {
 			);
 		}
 
+		var immutableReleases = client
+				.getImmutableReleases("ArloL", "terraform-github");
+		immutableReleases.ifPresent(ir -> {
+			try {
+				client.updateImmutableReleases(
+						"ArloL",
+						"terraform-github",
+						ir.enabled()
+				);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
 		wm.stopRecording();
 	}
 

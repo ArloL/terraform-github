@@ -20,6 +20,7 @@ public final class RepositoryArgs {
 	private final List<String> actionsSecrets;
 	private final Map<String, EnvironmentArgs> environments;
 	private final List<RulesetArgs> rulesets;
+	private final Boolean immutableReleases;
 
 	private RepositoryArgs(Builder builder) {
 		this.name = builder.name;
@@ -34,6 +35,7 @@ public final class RepositoryArgs {
 		this.environments = Collections
 				.unmodifiableMap(new LinkedHashMap<>(builder.environments));
 		this.rulesets = List.copyOf(builder.rulesets);
+		this.immutableReleases = builder.immutableReleases;
 	}
 
 	public String name() {
@@ -87,6 +89,10 @@ public final class RepositoryArgs {
 		return rulesets;
 	}
 
+	public Boolean immutableReleases() {
+		return immutableReleases;
+	}
+
 	public Builder toBuilder() {
 		return new Builder(this);
 	}
@@ -112,6 +118,7 @@ public final class RepositoryArgs {
 		private List<String> actionsSecrets = List.of();
 		private final Map<String, EnvironmentArgs> environments = new LinkedHashMap<>();
 		private List<RulesetArgs> rulesets = List.of();
+		private Boolean immutableReleases = null;
 
 		public Builder(String name) {
 			this.name = name;
@@ -129,6 +136,7 @@ public final class RepositoryArgs {
 			this.actionsSecrets = repositoryArgs.actionsSecrets;
 			this.environments.putAll(repositoryArgs.environments);
 			this.rulesets = repositoryArgs.rulesets;
+			this.immutableReleases = repositoryArgs.immutableReleases;
 		}
 
 		public Builder name(String name) {
@@ -205,6 +213,11 @@ public final class RepositoryArgs {
 
 		public Builder rulesets(RulesetArgs... rulesets) {
 			this.rulesets = List.of(rulesets);
+			return this;
+		}
+
+		public Builder immutableReleases(boolean v) {
+			this.immutableReleases = v;
 			return this;
 		}
 

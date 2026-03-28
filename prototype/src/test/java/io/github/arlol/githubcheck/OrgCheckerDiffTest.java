@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.EnvironmentReviewerType;
+import io.github.arlol.githubcheck.client.ImmutableReleases;
 import io.github.arlol.githubcheck.client.RulesetEnforcement;
 import io.github.arlol.githubcheck.client.RulesetRuleType;
 import io.github.arlol.githubcheck.client.RulesetTarget;
@@ -150,6 +151,8 @@ class OrgCheckerDiffTest {
 		private Optional<PagesResponse> pages = Optional.empty();
 		private Map<String, EnvironmentDetailsResponse> environmentDetails = Map
 				.of();
+		private Optional<ImmutableReleases> immutableReleases = Optional
+				.empty();
 
 		StateBuilder summaryOverride(String overridesJson) {
 			this.summaryJson = merge(this.summaryJson, overridesJson)
@@ -220,6 +223,11 @@ class OrgCheckerDiffTest {
 			return this;
 		}
 
+		StateBuilder immutableReleases(Optional<ImmutableReleases> value) {
+			this.immutableReleases = value;
+			return this;
+		}
+
 		RepositoryState build() {
 			return new RepositoryState(
 					"repo",
@@ -238,7 +246,8 @@ class OrgCheckerDiffTest {
 					parse(workflowPermissionsJson, WorkflowPermissions.class),
 					rulesets,
 					pages,
-					environmentDetails
+					environmentDetails,
+					immutableReleases
 			);
 		}
 
@@ -1400,6 +1409,37 @@ class OrgCheckerDiffTest {
 		assertThat(checker.computeDiffs(state, args)).contains(
 				"ruleset.main-branch-rules.required_review_count: want=2 got=1"
 		);
+	}
+
+	// ─── Immutable releases drift
+	// ────────────────────────────────────────────
+
+	@Test
+	void immutableReleases_noDrift_whenNotConfigured() {
+		var state = new StateBuilder()
+				.immutableReleases(Optional.of(new ImmutableReleases(false)))
+				.build();
+		List<String> diffs = checker.computeDiffs(state, defaultArgs());
+		assertThat(diffs).noneMatch(d -> d.startsWith("immutable_releases"));
+	}
+
+	@Test
+	void immutableReleases_noDrift_whenMatches() {
+		var state = new StateBuilder()
+				.immutableReleases(Optional.of(new ImmutableReleases(true)))
+				.build();
+		var args = defaultArgs().toBuilder().immutableReleases(true).build();
+		assertThat(checker.computeDiffs(state, args)).isEmpty();
+	}
+
+	@Test
+	void immutableReleases_drift_whenDisabled() {
+		var state = new StateBuilder()
+				.immutableReleases(Optional.of(new ImmutableReleases(false)))
+				.build();
+		var args = defaultArgs().toBuilder().immutableReleases(true).build();
+		assertThat(checker.computeDiffs(state, args))
+				.contains("immutable_releases: want=true got=false");
 	}
 
 }

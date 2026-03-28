@@ -161,4 +161,22 @@ class GitHubClientPlaybackTest {
 		);
 	}
 
+	@Test
+	void getImmutableReleases_returnsRecordedState() throws Exception {
+		var result = client.getImmutableReleases("ArloL", "terraform-github");
+		assertThat(result).isPresent();
+		assertThat(result.orElseThrow().enabled()).isTrue();
+	}
+
+	@Test
+	void updateImmutableReleases_succeeds() {
+		assertThatNoException().isThrownBy(
+				() -> client.updateImmutableReleases(
+						"ArloL",
+						"terraform-github",
+						true
+				)
+		);
+	}
+
 }

@@ -1,0 +1,18 @@
+{
+  "id" : "aabbccdd-0002-0000-0000-000000000002",
+  "name" : "repos_arlol_terraform-github_immutable-releases_PUT",
+  "request" : {
+    "url" : "/repos/ArloL/terraform-github/immutable-releases",
+    "method" : "PUT"
+  },
+  "response" : {
+    "status" : 200,
+    "headers" : {
+      "Content-Type" : "application/json; charset=utf-8",
+      "X-RateLimit-Remaining" : "3999"
+    },
+    "body" : "{\"enabled\":true}"
+  },
+  "persistent" : true,
+  "insertionIndex" : 101
+}

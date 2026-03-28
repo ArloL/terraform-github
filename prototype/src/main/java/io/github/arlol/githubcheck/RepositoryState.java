@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+import io.github.arlol.githubcheck.client.ImmutableReleases;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
 import io.github.arlol.githubcheck.client.RepositoryMinimal;
@@ -24,7 +25,8 @@ public record RepositoryState(
 		WorkflowPermissions workflowPermissions,
 		List<RulesetDetailsResponse> rulesets,
 		Optional<PagesResponse> pages,
-		Map<String, EnvironmentDetailsResponse> environmentDetails
+		Map<String, EnvironmentDetailsResponse> environmentDetails,
+		Optional<ImmutableReleases> immutableReleases
 ) {
 
 	public RepositoryState {

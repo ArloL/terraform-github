@@ -146,6 +146,25 @@ public class GitHubClient {
 		);
 	}
 
+	public void updateImmutableReleases(
+			String owner,
+			String repo,
+			boolean enabled
+	) throws IOException, InterruptedException {
+		String body = mapper.writeValueAsString(Map.of("enabled", enabled));
+		HttpResponse<String> resp = put(
+				baseUrl + "/repos/" + owner + "/" + repo
+						+ "/immutable-releases",
+				body
+		);
+		if (resp.statusCode() != 200) {
+			throw new GitHubApiException(
+					"HTTP " + resp.statusCode()
+							+ " updating immutable-releases on " + repo
+			);
+		}
+	}
+
 	public Optional<BranchProtectionResponse> getBranchProtection(
 			String owner,
 			String repo,

@@ -32,6 +32,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.EnvironmentReviewerType;
+import io.github.arlol.githubcheck.client.ImmutableReleases;
 import io.github.arlol.githubcheck.client.RulesetEnforcement;
 import io.github.arlol.githubcheck.client.RulesetRuleType;
 import io.github.arlol.githubcheck.client.RulesetTarget;
@@ -173,7 +174,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 	}
 
@@ -200,7 +202,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 	}
 
@@ -361,7 +364,8 @@ class OrgCheckerFixTest {
 				state.workflowPermissions(),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(stateWithBadVuln, desired);
@@ -416,7 +420,8 @@ class OrgCheckerFixTest {
 				baseState.workflowPermissions(),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -478,7 +483,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -532,7 +538,8 @@ class OrgCheckerFixTest {
 						""", WorkflowPermissions.class),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -598,7 +605,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -677,7 +685,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -906,7 +915,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(actualRuleset),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -995,7 +1005,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(actualRuleset),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1047,7 +1058,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1104,7 +1116,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.of(actualPages),
-				Map.of()
+				Map.of(),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1182,7 +1195,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of("production", actualEnv)
+				Map.of("production", actualEnv),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1240,7 +1254,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of("production", actualEnv)
+				Map.of("production", actualEnv),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1297,7 +1312,8 @@ class OrgCheckerFixTest {
 				),
 				List.of(),
 				Optional.empty(),
-				Map.of("production", actualEnv)
+				Map.of("production", actualEnv),
+				Optional.empty()
 		);
 
 		List<String> diffs = checker.computeDiffs(state, desired);
@@ -1310,6 +1326,54 @@ class OrgCheckerFixTest {
 				putRequestedFor(
 						urlEqualTo("/repos/ArloL/repo/environments/production")
 				)
+		);
+	}
+
+	// ─── Immutable releases fix tests
+	// ────────────────────────────────────
+
+	@Test
+	void immutableReleasesDrift_putsImmutableReleases() throws Exception {
+		stubFor(
+				put(urlEqualTo("/repos/ArloL/repo/immutable-releases"))
+						.willReturn(okJson("{\"enabled\":true}"))
+		);
+
+		var desired = RepositoryArgs.create("repo")
+				.immutableReleases(true)
+				.build();
+
+		var state = new RepositoryState(
+				"repo",
+				parse(GOOD_SUMMARY_JSON, RepositoryMinimal.class),
+				parse(GOOD_DETAILS_JSON, RepositoryFull.class),
+				true,
+				true,
+				parse(
+						GOOD_BRANCH_PROTECTION_JSON,
+						BranchProtectionResponse.class
+				),
+				List.of(),
+				Map.of(),
+				parse(
+						GOOD_WORKFLOW_PERMISSIONS_JSON,
+						WorkflowPermissions.class
+				),
+				List.of(),
+				Optional.empty(),
+				Map.of(),
+				Optional.of(new ImmutableReleases(false))
+		);
+
+		List<String> diffs = checker.computeDiffs(state, desired);
+		List<String> remaining = checker
+				.applyFixes("repo", state, desired, diffs);
+
+		assertThat(remaining).isEmpty();
+		verify(
+				putRequestedFor(
+						urlEqualTo("/repos/ArloL/repo/immutable-releases")
+				).withRequestBody(equalToJson("{\"enabled\":true}"))
 		);
 	}
 

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
+import io.github.arlol.githubcheck.client.ImmutableReleases;
 import io.github.arlol.githubcheck.client.BranchProtectionRequest;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 import io.github.arlol.githubcheck.client.EnvironmentUpdateRequest;
@@ -196,6 +197,10 @@ public class OrgChecker {
 		Optional<PagesResponse> pages = archived ? Optional.empty()
 				: client.getPages(org, name);
 
+		Optional<ImmutableReleases> immutableReleases = archived
+				? Optional.empty()
+				: client.getImmutableReleases(org, name);
+
 		return new RepositoryState(
 				name,
 				summary,
@@ -208,7 +213,8 @@ public class OrgChecker {
 				wfPerms,
 				rulesets,
 				pages,
-				envDetails
+				envDetails,
+				immutableReleases
 		);
 	}
 
@@ -241,6 +247,7 @@ public class OrgChecker {
 		checkPages(diffs, actual, desired);
 		checkSecrets(diffs, actual, desired);
 		checkEnvironmentConfig(diffs, actual, desired);
+		checkImmutableReleases(diffs, actual, desired);
 
 		return diffs;
 	}
@@ -686,6 +693,20 @@ public class OrgChecker {
 		check(diffs, "pages.https_enforced", true, p.httpsEnforced());
 	}
 
+	private void checkImmutableReleases(
+			List<String> diffs,
+			RepositoryState actual,
+			RepositoryArgs desired
+	) {
+		if (desired.immutableReleases() == null) {
+			return;
+		}
+		boolean got = actual.immutableReleases()
+				.map(ImmutableReleases::enabled)
+				.orElse(false);
+		check(diffs, "immutable_releases", desired.immutableReleases(), got);
+	}
+
 	// ─── Fix
 	// ──────────────────────────────────────────────────────────────
 
@@ -919,6 +940,20 @@ public class OrgChecker {
 				);
 			}
 			remaining.removeAll(envConfigDiffs);
+		}
+
+		// Immutable releases (fixable)
+		List<String> immutableReleasesDiffs = new ArrayList<>();
+		checkImmutableReleases(immutableReleasesDiffs, actual, desired);
+		if (!immutableReleasesDiffs.isEmpty()) {
+			client.updateImmutableReleases(
+					org,
+					name,
+					Boolean.TRUE.equals(desired.immutableReleases())
+			);
+			remaining.removeAll(immutableReleasesDiffs);
+			System.out
+					.printf("[FIXED]   %s: immutable_releases updated%n", name);
 		}
 
 		// Action secrets and environment names/secrets (NOT fixable yet)
