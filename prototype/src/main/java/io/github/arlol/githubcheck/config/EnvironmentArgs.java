@@ -3,7 +3,7 @@ package io.github.arlol.githubcheck.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+import io.github.arlol.githubcheck.client.EnvironmentReviewerType;
 
 public final class EnvironmentArgs {
 
@@ -48,7 +48,7 @@ public final class EnvironmentArgs {
 	}
 
 	public record Reviewer(
-			EnvironmentDetailsResponse.ReviewerType type,
+			EnvironmentReviewerType type,
 			long id
 	) {
 	}
@@ -90,10 +90,7 @@ public final class EnvironmentArgs {
 			return this;
 		}
 
-		public Builder reviewer(
-				EnvironmentDetailsResponse.ReviewerType type,
-				long id
-		) {
+		public Builder reviewer(EnvironmentReviewerType type, long id) {
 			this.reviewers.add(new Reviewer(type, id));
 			return this;
 		}

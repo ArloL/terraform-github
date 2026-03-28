@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import io.github.arlol.githubcheck.client.RepositoryFull;
+import io.github.arlol.githubcheck.client.RepositoryVisibility;
 import io.github.arlol.githubcheck.client.WorkflowPermissions.DefaultWorkflowPermissions;
 
 class GitHubClientPlaybackTest {
@@ -47,8 +48,7 @@ class GitHubClientPlaybackTest {
 	void getRepo_returnsRecordedDetails() throws Exception {
 		RepositoryFull repo = client.getRepo("ArloL", "terraform-github");
 		assertThat(repo.name()).isEqualTo("terraform-github");
-		assertThat(repo.visibility())
-				.isEqualTo(RepositoryFull.Visibility.PUBLIC);
+		assertThat(repo.visibility()).isEqualTo(RepositoryVisibility.PUBLIC);
 		assertThat(repo.description()).isEqualTo(
 				"A project to manage github settings with terraform"
 		);

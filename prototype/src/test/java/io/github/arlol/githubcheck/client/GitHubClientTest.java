@@ -30,6 +30,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import io.github.arlol.githubcheck.client.RepositoryFull;
+import io.github.arlol.githubcheck.client.RepositoryVisibility;
 
 @WireMockTest
 class GitHubClientTest {
@@ -61,11 +62,11 @@ class GitHubClientTest {
 		assertThat(repos.get(0).name()).isEqualTo("repo-a");
 		assertThat(repos.get(0).archived()).isFalse();
 		assertThat(repos.get(0).visibility())
-				.isEqualTo(RepositoryFull.Visibility.PUBLIC);
+				.isEqualTo(RepositoryVisibility.PUBLIC);
 		assertThat(repos.get(1).name()).isEqualTo("repo-b");
 		assertThat(repos.get(1).archived()).isTrue();
 		assertThat(repos.get(1).visibility())
-				.isEqualTo(RepositoryFull.Visibility.PRIVATE);
+				.isEqualTo(RepositoryVisibility.PRIVATE);
 	}
 
 	@Test
