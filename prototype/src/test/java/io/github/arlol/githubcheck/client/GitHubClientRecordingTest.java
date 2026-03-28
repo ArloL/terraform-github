@@ -72,7 +72,7 @@ class GitHubClientRecordingTest {
 		if (!environments.isEmpty()) {
 			var env = environments.getFirst();
 			var payload = new EnvironmentUpdateRequest(
-					env.getWaitTimer() > 0 ? env.getWaitTimer() : null,
+					env.getWaitTimer(),
 					null,
 					null
 			);

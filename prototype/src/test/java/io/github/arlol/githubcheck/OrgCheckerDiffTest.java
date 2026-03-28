@@ -1222,8 +1222,9 @@ class OrgCheckerDiffTest {
 						)
 				)
 				.build();
-		assertThat(checker.computeDiffs(state, args))
-				.contains("environment.production.wait_timer: want=30 got=0");
+		assertThat(checker.computeDiffs(state, args)).contains(
+				"environment.production.wait_timer: want=30 got=null"
+		);
 	}
 
 	@Test

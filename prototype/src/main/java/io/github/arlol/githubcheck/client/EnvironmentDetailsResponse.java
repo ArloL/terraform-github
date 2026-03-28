@@ -55,12 +55,12 @@ public record EnvironmentDetailsResponse(
 	) {
 	}
 
-	public int getWaitTimer() {
+	public Integer getWaitTimer() {
 		return protectionRules.stream()
 				.filter(r -> ProtectionRuleType.WAIT_TIMER.equals(r.type()))
 				.findFirst()
 				.map(ProtectionRule::waitTimer)
-				.orElse(0);
+				.orElse(null);
 	}
 
 	public Set<String> getReviewerIds() {
