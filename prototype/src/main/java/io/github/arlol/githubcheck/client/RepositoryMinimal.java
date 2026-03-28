@@ -25,7 +25,7 @@ public record RepositoryMinimal(
 		String language, // nullable, optional
 		boolean archived,
 		Boolean disabled, // optional
-		RepositoryFull.Visibility visibility,
+		RepositoryVisibility visibility,
 		String defaultBranch, // optional
 		List<String> topics, // optional
 		Integer forksCount, // optional

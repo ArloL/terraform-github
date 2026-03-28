@@ -31,6 +31,10 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+import io.github.arlol.githubcheck.client.EnvironmentReviewerType;
+import io.github.arlol.githubcheck.client.RulesetEnforcement;
+import io.github.arlol.githubcheck.client.RulesetRuleType;
+import io.github.arlol.githubcheck.client.RulesetTarget;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
@@ -872,8 +876,8 @@ class OrgCheckerFixTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				42L,
 				"main-branch-rules",
-				RulesetDetailsResponse.Target.BRANCH,
-				RulesetDetailsResponse.Enforcement.ACTIVE,
+				RulesetTarget.BRANCH,
+				RulesetEnforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -941,8 +945,8 @@ class OrgCheckerFixTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
-				RulesetDetailsResponse.Target.BRANCH,
-				RulesetDetailsResponse.Enforcement.ACTIVE,
+				RulesetTarget.BRANCH,
+				RulesetEnforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -953,11 +957,11 @@ class OrgCheckerFixTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY,
+								RulesetRuleType.REQUIRED_LINEAR_HISTORY,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS,
+								RulesetRuleType.REQUIRED_STATUS_CHECKS,
 								params
 						)
 				)

@@ -3,7 +3,6 @@ package io.github.arlol.githubcheck.client;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record EnvironmentUpdateRequest(
@@ -17,7 +16,7 @@ public record EnvironmentUpdateRequest(
 	}
 
 	public record Reviewer(
-			EnvironmentDetailsResponse.ReviewerType type,
+			EnvironmentReviewerType type,
 			long id
 	) {
 	}

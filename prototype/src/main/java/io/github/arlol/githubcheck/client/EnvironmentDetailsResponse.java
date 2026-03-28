@@ -36,14 +36,8 @@ public record EnvironmentDetailsResponse(
 
 	}
 
-	public enum ReviewerType {
-		@JsonProperty("User")
-		USER, @JsonProperty("Team")
-		TEAM
-	}
-
 	public record Reviewer(
-			ReviewerType type,
+			EnvironmentReviewerType type,
 			ReviewerEntity reviewer
 	) {
 	}

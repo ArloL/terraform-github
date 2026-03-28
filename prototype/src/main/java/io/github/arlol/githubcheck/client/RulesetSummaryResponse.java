@@ -3,9 +3,9 @@ package io.github.arlol.githubcheck.client;
 public record RulesetSummaryResponse(
 		long id,
 		String name,
-		RulesetDetailsResponse.Enforcement enforcement,
+		RulesetEnforcement enforcement,
 		String nodeId,
-		RulesetDetailsResponse.SourceType sourceType,
+		RulesetSourceType sourceType,
 		String source,
 		String createdAt,
 		String updatedAt

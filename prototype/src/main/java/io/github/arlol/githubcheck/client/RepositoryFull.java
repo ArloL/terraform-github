@@ -26,7 +26,7 @@ public record RepositoryFull(
 		boolean archived,
 		boolean disabled,
 		boolean isTemplate,
-		Visibility visibility,
+		RepositoryVisibility visibility,
 		String defaultBranch,
 		List<String> topics,
 		Integer forksCount,
@@ -74,13 +74,6 @@ public record RepositoryFull(
 
 	public RepositoryFull {
 		topics = topics == null ? null : List.copyOf(topics);
-	}
-
-	public enum Visibility {
-		@JsonProperty("public")
-		PUBLIC, @JsonProperty("private")
-		PRIVATE, @JsonProperty("internal")
-		INTERNAL
 	}
 
 }

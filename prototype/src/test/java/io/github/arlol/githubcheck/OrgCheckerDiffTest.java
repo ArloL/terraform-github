@@ -16,6 +16,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.github.arlol.githubcheck.client.BranchProtectionResponse;
 import io.github.arlol.githubcheck.client.EnvironmentDetailsResponse;
+import io.github.arlol.githubcheck.client.EnvironmentReviewerType;
+import io.github.arlol.githubcheck.client.RulesetEnforcement;
+import io.github.arlol.githubcheck.client.RulesetRuleType;
+import io.github.arlol.githubcheck.client.RulesetTarget;
 import io.github.arlol.githubcheck.client.GitHubClient;
 import io.github.arlol.githubcheck.client.PagesResponse;
 import io.github.arlol.githubcheck.client.RepositoryFull;
@@ -874,7 +878,7 @@ class OrgCheckerDiffTest {
 
 	private static RulesetDetailsResponse rulesetWithRules(
 			String name,
-			RulesetDetailsResponse.Rule.RuleType... ruleTypes
+			RulesetRuleType... ruleTypes
 	) {
 		var include = List.of("~DEFAULT_BRANCH");
 		var conditions = new RulesetDetailsResponse.Conditions(
@@ -887,14 +891,14 @@ class OrgCheckerDiffTest {
 				null
 		);
 		List<RulesetDetailsResponse.Rule> rules = new java.util.ArrayList<>();
-		for (RulesetDetailsResponse.Rule.RuleType type : ruleTypes) {
+		for (RulesetRuleType type : ruleTypes) {
 			rules.add(new RulesetDetailsResponse.Rule(type, null));
 		}
 		return new RulesetDetailsResponse(
 				1L,
 				name,
-				RulesetDetailsResponse.Target.BRANCH,
-				RulesetDetailsResponse.Enforcement.ACTIVE,
+				RulesetTarget.BRANCH,
+				RulesetEnforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -941,8 +945,8 @@ class OrgCheckerDiffTest {
 		return new RulesetDetailsResponse(
 				1L,
 				name,
-				RulesetDetailsResponse.Target.BRANCH,
-				RulesetDetailsResponse.Enforcement.ACTIVE,
+				RulesetTarget.BRANCH,
+				RulesetEnforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -953,15 +957,15 @@ class OrgCheckerDiffTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY,
+								RulesetRuleType.REQUIRED_LINEAR_HISTORY,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.NON_FAST_FORWARD,
+								RulesetRuleType.NON_FAST_FORWARD,
 								null
 						),
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.REQUIRED_STATUS_CHECKS,
+								RulesetRuleType.REQUIRED_STATUS_CHECKS,
 								params
 						)
 				)
@@ -971,14 +975,16 @@ class OrgCheckerDiffTest {
 	@Test
 	void noDrift_noRulesetsConfigured() {
 		// actual has a ruleset, desired has none — no drift expected
-		var state = new StateBuilder().rulesets(
-				List.of(
-						rulesetWithRules(
-								"main-branch-rules",
-								RulesetDetailsResponse.Rule.RuleType.REQUIRED_LINEAR_HISTORY
+		var state = new StateBuilder()
+				.rulesets(
+						List.of(
+								rulesetWithRules(
+										"main-branch-rules",
+										RulesetRuleType.REQUIRED_LINEAR_HISTORY
+								)
 						)
 				)
-		).build();
+				.build();
 		assertThat(checker.computeDiffs(state, defaultArgs())).isEmpty();
 	}
 
@@ -1144,7 +1150,7 @@ class OrgCheckerDiffTest {
 
 	private static EnvironmentDetailsResponse envWithReviewer(
 			String name,
-			EnvironmentDetailsResponse.ReviewerType type,
+			EnvironmentReviewerType type,
 			long id
 	) {
 		var reviewerEntity = new EnvironmentDetailsResponse.ReviewerEntity(
@@ -1276,10 +1282,7 @@ class OrgCheckerDiffTest {
 		var args = defaultArgs().toBuilder()
 				.environment(
 						"production",
-						env -> env.reviewer(
-								EnvironmentDetailsResponse.ReviewerType.TEAM,
-								42L
-						)
+						env -> env.reviewer(EnvironmentReviewerType.TEAM, 42L)
 				)
 				.build();
 		var state = new StateBuilder()
@@ -1306,10 +1309,7 @@ class OrgCheckerDiffTest {
 		var args = defaultArgs().toBuilder()
 				.environment(
 						"production",
-						env -> env.reviewer(
-								EnvironmentDetailsResponse.ReviewerType.TEAM,
-								42L
-						)
+						env -> env.reviewer(EnvironmentReviewerType.TEAM, 42L)
 				)
 				.build();
 		var state = new StateBuilder()
@@ -1319,7 +1319,7 @@ class OrgCheckerDiffTest {
 								"production",
 								envWithReviewer(
 										"production",
-										EnvironmentDetailsResponse.ReviewerType.TEAM,
+										EnvironmentReviewerType.TEAM,
 										42L
 								)
 						)
@@ -1379,8 +1379,8 @@ class OrgCheckerDiffTest {
 		var actualRuleset = new RulesetDetailsResponse(
 				1L,
 				"main-branch-rules",
-				RulesetDetailsResponse.Target.BRANCH,
-				RulesetDetailsResponse.Enforcement.ACTIVE,
+				RulesetTarget.BRANCH,
+				RulesetEnforcement.ACTIVE,
 				null,
 				null,
 				null,
@@ -1391,7 +1391,7 @@ class OrgCheckerDiffTest {
 				conditions,
 				List.of(
 						new RulesetDetailsResponse.Rule(
-								RulesetDetailsResponse.Rule.RuleType.PULL_REQUEST,
+								RulesetRuleType.PULL_REQUEST,
 								prParams
 						)
 				)
